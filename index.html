@@ -176,54 +176,78 @@
       <div class="title-row"><h2>Detalhamento da Remuneração no Mês Selecionado</h2><span id="autoBadge" class="badge hidden">atualizado automaticamente</span></div>
 
       <div class="resume-grid">
-        <div class="resume-box">
-          <h3>Proventos</h3>
-          <table class="table">
-            <thead>
-              <tr><th>Descrição</th><th class="right">Valor (R$)</th></tr>
-            </thead>
-            <tbody id="tbodyProventos"></tbody>
-            <tfoot><tr class="total-bruto"><td><strong>Somatório Remuneração Bruta</strong></td>
-                <td class="right total azul" id="totalBruto">R$ 0,00</td>
-              </tr>
-            </tfoot>
-          </table>
+        <div class="resume-box detail-collapse is-collapsed" data-collapse-section="proventos">
+          <button type="button" class="collapse-header" data-collapse-toggle="proventos" aria-expanded="false" aria-controls="proventosContent">
+            <span class="collapse-title">Proventos</span>
+            <span class="collapse-right">
+              <span class="collapse-total azul" id="totalBrutoHeader">R$ 0,00</span>
+              <span class="collapse-icon" aria-hidden="true"></span>
+            </span>
+          </button>
+          <div class="collapse-content" id="proventosContent">
+            <table class="table">
+              <thead>
+                <tr><th>Descrição</th><th class="right">Valor (R$)</th></tr>
+              </thead>
+              <tbody id="tbodyProventos"></tbody>
+              <tfoot><tr class="total-bruto"><td><strong>Somatório Remuneração Bruta</strong></td>
+                  <td class="right total azul" id="totalBruto">R$ 0,00</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
 
-        <div class="resume-box">
-          <h3>Descontos</h3>
-          <table class="table">
-            <thead>
-              <tr><th>Descrição</th><th class="right">Valor (R$)</th></tr>
-            </thead>
-            <tbody id="tbodyDescontos"></tbody>
-            <tfoot><tr class="total-descontos"><td><strong>Somatório Descontos</strong></td>
-                <td class="right total vermelho" id="totalDescontos">R$ 0,00</td>
-              </tr>
-            </tfoot>
-          </table>
+        <div class="resume-box detail-collapse is-collapsed" data-collapse-section="descontos">
+          <button type="button" class="collapse-header" data-collapse-toggle="descontos" aria-expanded="false" aria-controls="descontosContent">
+            <span class="collapse-title">Descontos</span>
+            <span class="collapse-right">
+              <span class="collapse-total vermelho" id="totalDescontosHeader">R$ 0,00</span>
+              <span class="collapse-icon" aria-hidden="true"></span>
+            </span>
+          </button>
+          <div class="collapse-content" id="descontosContent">
+            <table class="table">
+              <thead>
+                <tr><th>Descrição</th><th class="right">Valor (R$)</th></tr>
+              </thead>
+              <tbody id="tbodyDescontos"></tbody>
+              <tfoot><tr class="total-descontos"><td><strong>Somatório Descontos</strong></td>
+                  <td class="right total vermelho" id="totalDescontos">R$ 0,00</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
 
-        <div class="resume-box destaque">
-          <h3>Resumo</h3>
-          <div class="summary-line">
-            <span>Remuneração Bruta</span>
-            <span class="azul" id="resumoBruto">R$ 0,00</span>
-          </div>
+        <div class="resume-box destaque detail-collapse is-collapsed" data-collapse-section="resumo">
+          <button type="button" class="collapse-header" data-collapse-toggle="resumo" aria-expanded="false" aria-controls="resumoContent">
+            <span class="collapse-title">Resumo</span>
+            <span class="collapse-right">
+              <span class="collapse-total verde" id="resumoLiquidoHeader">R$ 0,00</span>
+              <span class="collapse-icon" aria-hidden="true"></span>
+            </span>
+          </button>
+          <div class="collapse-content resumo-content" id="resumoContent">
+            <div class="summary-line">
+              <span>Remuneração Bruta</span>
+              <span class="azul" id="resumoBruto">R$ 0,00</span>
+            </div>
 
-          <div class="summary-line">
-            <span>Descontos</span>
-            <span class="vermelho" id="resumoDescontos">R$ 0,00</span>
-          </div>
-          <div class="summary-line grande">
-            <span>Remuneração Líquida</span>
-            <span class="verde" id="resumoLiquido">R$ 0,00</span>
-          </div>
+            <div class="summary-line">
+              <span>Descontos</span>
+              <span class="vermelho" id="resumoDescontos">R$ 0,00</span>
+            </div>
+            <div class="summary-line grande">
+              <span>Remuneração Líquida</span>
+              <span class="verde" id="resumoLiquido">R$ 0,00</span>
+            </div>
 
-          <div class="notes">
-            <p class="muted">
-            </p>
-            <p id="metodoIrpf" class="muted"></p>
+            <div class="notes">
+              <p class="muted">
+              </p>
+              <p id="metodoIrpf" class="muted"></p>
+            </div>
           </div>
         </div>
       </div>

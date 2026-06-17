@@ -358,9 +358,29 @@ const totalDescontosEl = byId("totalDescontos");
 const resumoBrutoEl = byId("resumoBruto");
 const resumoDescontosEl = byId("resumoDescontos");
 const resumoLiquidoEl = byId("resumoLiquido");
+const totalBrutoHeaderEl = byId("totalBrutoHeader");
+const totalDescontosHeaderEl = byId("totalDescontosHeader");
+const resumoLiquidoHeaderEl = byId("resumoLiquidoHeader");
 const metodoIrpfEl = byId("metodoIrpf");
 
 form.addEventListener("submit", (e) => { e.preventDefault(); computeDetalhamento(); });
+
+function setupDetailCollapses(){
+  document.querySelectorAll("[data-collapse-toggle]").forEach((button) => {
+    const section = button.closest("[data-collapse-section]");
+    if (!section) return;
+    const isExpanded = button.getAttribute("aria-expanded") === "true";
+    section.classList.toggle("is-collapsed", !isExpanded);
+
+    button.addEventListener("click", () => {
+      const expanded = button.getAttribute("aria-expanded") === "true";
+      button.setAttribute("aria-expanded", String(!expanded));
+      section.classList.toggle("is-collapsed", expanded);
+    });
+  });
+}
+
+setupDetailCollapses();
 
 
 function computeDetalhamento() {
@@ -504,11 +524,17 @@ if (ipasgoSelecionado) {
   const deltaPercDesc  = showDelta && totalDescontosBase > 0 ? (deltaDesc  / totalDescontosBase * 100) : 0;
   const deltaPercLiq   = showDelta && liquidoBase > 0 ? (deltaLiq   / liquidoBase * 100) : 0;
 
-  totalBrutoEl.innerHTML = showDelta ? (fmt(totalBruto) + ` <small>(+${fmt(deltaBruto)} | ${fmtPerc(deltaPercBruto)})</small>`) : fmt(totalBruto);
-  totalDescontosEl.innerHTML = showDelta ? (fmt(totalDescontos) + ` <small>(+${fmt(deltaDesc)} | ${fmtPerc(deltaPercDesc)})</small>`) : fmt(totalDescontos);
-  resumoBrutoEl.innerHTML = showDelta ? (fmt(totalBruto) + ` <small>(+${fmt(deltaBruto)} | ${fmtPerc(deltaPercBruto)})</small>`) : fmt(totalBruto);
-  resumoDescontosEl.innerHTML = showDelta ? (fmt(totalDescontos) + ` <small>(+${fmt(deltaDesc)} | ${fmtPerc(deltaPercDesc)})</small>`) : fmt(totalDescontos);
-  resumoLiquidoEl.innerHTML = showDelta ? (fmt(liquido) + ` <small>(+${fmt(deltaLiq)} | ${fmtPerc(deltaPercLiq)})</small>`) : fmt(liquido);
+  const brutoHtml = showDelta ? (fmt(totalBruto) + ` <small>(+${fmt(deltaBruto)} | ${fmtPerc(deltaPercBruto)})</small>`) : fmt(totalBruto);
+  const descontosHtml = showDelta ? (fmt(totalDescontos) + ` <small>(+${fmt(deltaDesc)} | ${fmtPerc(deltaPercDesc)})</small>`) : fmt(totalDescontos);
+  const liquidoHtml = showDelta ? (fmt(liquido) + ` <small>(+${fmt(deltaLiq)} | ${fmtPerc(deltaPercLiq)})</small>`) : fmt(liquido);
+  totalBrutoEl.innerHTML = brutoHtml;
+  totalDescontosEl.innerHTML = descontosHtml;
+  resumoBrutoEl.innerHTML = brutoHtml;
+  resumoDescontosEl.innerHTML = descontosHtml;
+  resumoLiquidoEl.innerHTML = liquidoHtml;
+  if (totalBrutoHeaderEl) totalBrutoHeaderEl.textContent = fmt(totalBruto);
+  if (totalDescontosHeaderEl) totalDescontosHeaderEl.textContent = fmt(totalDescontos);
+  if (resumoLiquidoHeaderEl) resumoLiquidoHeaderEl.textContent = fmt(liquido);
   metodoIrpfEl.textContent = ``;  // ===== Férias (1/3) e 13º =====
   try {
     const noPrevTerco = true; // toggle removed
@@ -995,6 +1021,9 @@ byId("limpar").addEventListener("click", () => {
   resultado.hidden = true;
   tbodyProventos.innerHTML = "";
   tbodyDescontos.innerHTML = "";
+  if (totalBrutoHeaderEl) totalBrutoHeaderEl.textContent = "R$ 0,00";
+  if (totalDescontosHeaderEl) totalDescontosHeaderEl.textContent = "R$ 0,00";
+  if (resumoLiquidoHeaderEl) resumoLiquidoHeaderEl.textContent = "R$ 0,00";
   metodoIrpfEl.textContent = "";
 });
 

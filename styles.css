@@ -166,6 +166,107 @@ input::placeholder{color:#94a3b8}
 }
 .resume-box.destaque{display:flex;flex-direction:column;gap:10px}
 
+.detail-collapse{
+  padding:0;
+  overflow:hidden;
+}
+.resume-box.destaque.detail-collapse{
+  display:block;
+}
+.collapse-header{
+  width:100%;
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  border:0;
+  border-radius:14px;
+  background:transparent;
+  color:var(--text);
+  cursor:pointer;
+  font:inherit;
+  text-align:left;
+}
+.collapse-header:hover,
+.collapse-header:focus-visible{
+  background:rgba(255,255,255,.04);
+}
+.collapse-header:focus-visible{
+  outline:2px solid rgba(59,130,246,.75);
+  outline-offset:-2px;
+}
+.collapse-title{
+  font-size:1.05rem;
+  font-weight:700;
+  line-height:1.2;
+}
+.collapse-right{
+  min-width:0;
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+  text-align:right;
+}
+.collapse-total{
+  font-weight:800;
+  line-height:1.2;
+  font-variant-numeric:tabular-nums;
+}
+.collapse-total small{
+  display:block;
+  margin-top:2px;
+  font-size:.78rem;
+  font-weight:500;
+  opacity:.85;
+}
+.collapse-icon{
+  position:relative;
+  flex:0 0 30px;
+  width:30px;
+  height:30px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.04);
+}
+.collapse-icon::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:46%;
+  width:8px;
+  height:8px;
+  border-right:2px solid currentColor;
+  border-bottom:2px solid currentColor;
+  transform:translate(-50%,-50%) rotate(45deg);
+  transition:transform .18s ease, top .18s ease;
+}
+.detail-collapse:not(.is-collapsed) .collapse-icon::before{
+  top:54%;
+  transform:translate(-50%,-50%) rotate(-135deg);
+}
+.collapse-content{
+  padding:0 14px 14px;
+}
+.detail-collapse.is-collapsed .collapse-content{
+  display:none;
+}
+.resumo-content{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+@media (max-width:520px){
+  .collapse-header{
+    align-items:flex-start;
+  }
+  .collapse-right{
+    flex:1;
+  }
+}
+
 .table{width:100%;border-collapse:separate;border-spacing:0 8px}
 .table thead th{
   text-align:left;color:var(--muted);font-weight:600;padding:6px 10px
