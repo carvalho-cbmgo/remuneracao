@@ -234,6 +234,19 @@ input::placeholder{color:#94a3b8}
   font-variant-numeric:tabular-nums;
   white-space:nowrap;
 }
+.collapse-total[data-delta]{
+  display:inline-flex;
+  align-items:baseline;
+  justify-content:flex-end;
+  gap:6px;
+}
+.collapse-total[data-delta]::after{
+  content:attr(data-delta);
+  font-size:.76rem;
+  font-weight:700;
+  line-height:1.1;
+  white-space:nowrap;
+}
 .collapse-total small{
   display:block;
   margin-top:2px;
@@ -390,7 +403,7 @@ input::placeholder{color:#94a3b8}
 .notes{margin-top:6px}
 
 .site-footer{
-  text-align:center;color:var(--muted);padding:24px 12px;
+  text-align:center;color:var(--muted);padding:12px;
 }
 
 
@@ -537,13 +550,24 @@ option:hover { background-color: #1b2433 !important; }
 
 .rights-line{margin:0 0 2px 0; text-align:center}
 .rights-line small{font-size:.95rem; font-weight:600; letter-spacing:.2px}
+.rights-highlight small{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 14px;
+  border:1px solid rgba(250,204,21,.42);
+  border-radius:999px;
+  background:rgba(250,204,21,.12);
+  color:#fde68a;
+  box-shadow:0 0 0 1px rgba(250,204,21,.08);
+}
 
 /* === Tighten footer spacing on desktop and overall === */
 .site-footer{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:4px; /* controls spacing between rights-line and update-line */
+  gap:2px; /* controls spacing between rights-line and update-line */
 }
 .site-footer .rights-line,
 .site-footer .update-line{ margin:0 !important; }
@@ -822,7 +846,7 @@ option:hover { background-color: #1b2433 !important; }
   min-width:100%;
   border-spacing:0 6px;
   table-layout:auto;
-  font-size:.74rem;
+  font-size:.82rem;
 }
 #tabelaDetalhamentoAnual thead th{
   padding:7px 8px;
@@ -843,7 +867,7 @@ option:hover { background-color: #1b2433 !important; }
   white-space:normal;
 }
 #tabelaDetalhamentoAnual thead th:not(:first-child){
-  min-width:104px;
+  min-width:112px;
 }
 #tabelaDetalhamentoAnual tbody td{
   padding:8px 8px;
@@ -852,13 +876,13 @@ option:hover { background-color: #1b2433 !important; }
   vertical-align:middle;
 }
 #tabelaDetalhamentoAnual tbody td:not(:first-child){
-  min-width:104px;
+  min-width:112px;
   text-align:right;
   white-space:nowrap;
-  font-size:.72rem;
+  font-size:.84rem;
 }
 #tabelaDetalhamentoAnual tbody td strong{
-  font-size:.74rem;
+  font-size:.8rem;
 }
 
 

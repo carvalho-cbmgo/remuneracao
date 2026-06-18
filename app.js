@@ -7,6 +7,20 @@ const parseMoney = (str) => {
 };
 const fmt = (n) => BRL.format(Number(n || 0).toFixed ? Number(n).toFixed(2) : Number(n));
 const fmtSemMoeda = (n) => NUM_BR.format(Number(n || 0).toFixed ? Number(n).toFixed(2) : Number(n));
+const formatReajusteDelta = (delta, base) => {
+  if (!Number.isFinite(delta)) return "";
+  const amountSign = delta >= 0 ? "+" : "-";
+  const pct = base ? (delta / base) * 100 : 0;
+  const pctSign = pct >= 0 ? "+" : "-";
+  return `(${amountSign}${fmt(Math.abs(delta))} | ${pctSign}${Math.abs(pct).toFixed(2).replace(".", ",")}%)`;
+};
+const setReajusteDeltaAttr = (id, text) => {
+  const el = byId(id);
+  if (!el) return;
+  if (text && text.trim()) el.setAttribute("data-delta", text);
+  else el.removeAttribute("data-delta");
+};
+const clearReajusteDeltaAttrs = (ids) => ids.forEach((id) => setReajusteDeltaAttr(id, ""));
 
 const byId = (id) => document.getElementById(id);
 const tbodyProventos = byId("tbodyProventos");
@@ -551,6 +565,23 @@ if (ipasgoSelecionado) {
   if (totalBrutoHeaderEl) totalBrutoHeaderEl.textContent = fmt(totalBruto);
   if (totalDescontosHeaderEl) totalDescontosHeaderEl.textContent = fmt(totalDescontos);
   if (resumoLiquidoHeaderEl) resumoLiquidoHeaderEl.textContent = fmt(liquido);
+  if (showDelta) {
+    document.body.classList.add("deltas-on");
+    setReajusteDeltaAttr("totalBrutoHeader", formatReajusteDelta(deltaBruto, totalBrutoBase));
+    setReajusteDeltaAttr("totalDescontosHeader", formatReajusteDelta(deltaDesc, totalDescontosBase));
+    setReajusteDeltaAttr("resumoLiquidoHeader", formatReajusteDelta(deltaLiq, liquidoBase));
+  } else {
+    clearReajusteDeltaAttrs([
+      "totalBrutoHeader",
+      "totalDescontosHeader",
+      "resumoLiquidoHeader",
+      "feriasLiquidoHeader",
+      "decimoLiquidoHeader",
+      "ferias13TotLiquidoHeader",
+      "ferias13BoxLiquidoHeader",
+    ]);
+    document.body.classList.remove("deltas-on");
+  }
   metodoIrpfEl.textContent = ``;  // ===== Férias (1/3) e 13º =====
   try {
     const noPrevTerco = true; // toggle removed
@@ -636,6 +667,10 @@ const base13 = bruto13 - prev13 - dedDependentes13;
           if (byId("ferias13TotBrutoDelta")) byId("ferias13TotBrutoDelta").textContent = "";
           if (byId("ferias13TotDescDelta")) byId("ferias13TotDescDelta").textContent = "";
           if (byId("ferias13TotLiquidoDelta")) byId("ferias13TotLiquidoDelta").textContent = "";
+          setReajusteDeltaAttr("feriasLiquidoHeader", "");
+          setReajusteDeltaAttr("decimoLiquidoHeader", "");
+          setReajusteDeltaAttr("ferias13TotLiquidoHeader", "");
+          setReajusteDeltaAttr("ferias13BoxLiquidoHeader", "");
           return;
         }
         // Base SEM reajuste
@@ -694,6 +729,8 @@ const base13 = bruto13 - prev13 - dedDependentes13;
         const dBruto = round2(totalBrutoFerias13 - totalBrutoBaseF13);
         const dDesc  = round2(totalDescFerias13  - totalDescBaseF13);
         const dLiq   = round2(totalLiqFerias13   - totalLiqBaseF13);
+        const dFeriasLiq = round2(liquidoFerias - liquidoFeriasBase);
+        const dDecimoLiq = round2(liquido13 - liq13b);
 
         const pBruto = totalBrutoBaseF13 ? round2(dBruto / totalBrutoBaseF13 * 100) : 0;
         const pDesc  = totalDescBaseF13  ? round2(dDesc  / totalDescBaseF13  * 100) : 0;
@@ -710,6 +747,10 @@ const base13 = bruto13 - prev13 - dedDependentes13;
         if (byId("ferias13TotDescDelta")) byId("ferias13TotDescDelta").textContent = `(+${fmt(Math.abs(dDesc))} | ${fmtPerc(Math.abs(pDesc))})`;
         if (byId("ferias13TotLiquido")) byId("ferias13TotLiquido").innerHTML = fmt(totalLiqFerias13);
         if (byId("ferias13TotLiquidoDelta")) byId("ferias13TotLiquidoDelta").textContent = `(+${fmt(Math.abs(dLiq))} | ${fmtPerc(Math.abs(pLiq))})`;
+        setReajusteDeltaAttr("feriasLiquidoHeader", formatReajusteDelta(dFeriasLiq, liquidoFeriasBase));
+        setReajusteDeltaAttr("decimoLiquidoHeader", formatReajusteDelta(dDecimoLiq, liq13b));
+        setReajusteDeltaAttr("ferias13TotLiquidoHeader", formatReajusteDelta(dLiq, totalLiqBaseF13));
+        setReajusteDeltaAttr("ferias13BoxLiquidoHeader", formatReajusteDelta(dLiq, totalLiqBaseF13));
       } catch(e){ /* silencioso */ }
     })();
 }
@@ -1057,6 +1098,20 @@ byId("limpar").addEventListener("click", () => {
   if (ferias13BoxLiquidoHeaderEl) ferias13BoxLiquidoHeaderEl.textContent = "R$ 0,00";
   if (detalhamentoAnualTotalHeaderEl) detalhamentoAnualTotalHeaderEl.textContent = "R$ 0,00";
   if (valoresAnuaisMediaLiquidaEl) valoresAnuaisMediaLiquidaEl.textContent = "R$ 0,00";
+  clearReajusteDeltaAttrs([
+    "totalBrutoHeader",
+    "totalDescontosHeader",
+    "resumoLiquidoHeader",
+    "feriasLiquidoHeader",
+    "decimoLiquidoHeader",
+    "ferias13TotLiquidoHeader",
+    "ferias13BoxLiquidoHeader",
+    "valoresAnuaisProventos",
+    "valoresAnuaisDescontos",
+    "valoresAnuaisLiquido",
+    "valoresAnuaisMediaLiquida",
+  ]);
+  document.body.classList.remove("deltas-on");
   metodoIrpfEl.textContent = "";
 });
 
@@ -1142,6 +1197,16 @@ function resetReajuste(){
   const range = document.getElementById("reajusteRange");
   if (range){ range.value = "0"; }
   if (typeof updateReajusteRangeUI === "function"){ updateReajusteRangeUI(0); }
+  clearReajusteDeltaAttrs([
+    "totalBrutoHeader",
+    "totalDescontosHeader",
+    "resumoLiquidoHeader",
+    "feriasLiquidoHeader",
+    "decimoLiquidoHeader",
+    "ferias13TotLiquidoHeader",
+    "ferias13BoxLiquidoHeader",
+  ]);
+  document.body.classList.remove("deltas-on");
   computeDetalhamento && computeDetalhamento();
 }
 
@@ -2215,10 +2280,7 @@ byId("valorIpasgo").addEventListener("input", () => { recomputePercentFromValor(
   }
 
   function formatAnnualDelta(delta, base){
-    const sign = delta >= 0 ? "+" : "-";
-    const pct = base ? (delta / base) * 100 : 0;
-    const pctSign = pct >= 0 ? "+" : "-";
-    return `${sign}${fmt(Math.abs(delta))} | ${pctSign}${Math.abs(pct).toFixed(2).replace(".", ",")}%`;
+    return formatReajusteDelta(delta, base);
   }
 
   function getIpasgoAnnualValue(subsidio){
