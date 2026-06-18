@@ -361,6 +361,11 @@ const resumoLiquidoEl = byId("resumoLiquido");
 const totalBrutoHeaderEl = byId("totalBrutoHeader");
 const totalDescontosHeaderEl = byId("totalDescontosHeader");
 const resumoLiquidoHeaderEl = byId("resumoLiquidoHeader");
+const feriasLiquidoHeaderEl = byId("feriasLiquidoHeader");
+const decimoLiquidoHeaderEl = byId("decimoLiquidoHeader");
+const ferias13TotLiquidoHeaderEl = byId("ferias13TotLiquidoHeader");
+const detalhamentoAnualTotalHeaderEl = byId("detalhamentoAnualTotalHeader");
+const valoresAnuaisMediaLiquidaEl = byId("valoresAnuaisMediaLiquida");
 const metodoIrpfEl = byId("metodoIrpf");
 
 form.addEventListener("submit", (e) => { e.preventDefault(); computeDetalhamento(); });
@@ -595,15 +600,18 @@ const base13 = bruto13 - prev13 - dedDependentes13;
       byId("feriasDesc").textContent = fmt(descFerias);
       byId("feriasDescBreak").textContent = `Prev: ${fmt(prevFerias)} | IR: ${fmt(irFerias)}`;
       byId("feriasLiquido").textContent = fmt(liquidoFerias);
+      if (feriasLiquidoHeaderEl) feriasLiquidoHeaderEl.textContent = fmt(liquidoFerias);
 
       byId("decimoBruto").textContent = fmt(bruto13);
       byId("decimoDesc").textContent = fmt(desc13);
       byId("decimoDescBreak").textContent = `Prev: ${fmt(prev13)} | IR: ${fmt(ir13)}`;
       byId("decimoLiquido").textContent = fmt(liquido13);
+      if (decimoLiquidoHeaderEl) decimoLiquidoHeaderEl.textContent = fmt(liquido13);
 
       byId("ferias13TotBruto").textContent = fmt(totalBrutoFerias13);
       byId("ferias13TotDesc").textContent = fmt(totalDescFerias13);
       byId("ferias13TotLiquido").textContent = fmt(totalLiqFerias13);
+      if (ferias13TotLiquidoHeaderEl) ferias13TotLiquidoHeaderEl.textContent = fmt(totalLiqFerias13);
     
     // ===== Deltas do Resumo Adicional Férias e 13º (comparado à base sem reajuste) =====
     (function(){
@@ -1024,6 +1032,11 @@ byId("limpar").addEventListener("click", () => {
   if (totalBrutoHeaderEl) totalBrutoHeaderEl.textContent = "R$ 0,00";
   if (totalDescontosHeaderEl) totalDescontosHeaderEl.textContent = "R$ 0,00";
   if (resumoLiquidoHeaderEl) resumoLiquidoHeaderEl.textContent = "R$ 0,00";
+  if (feriasLiquidoHeaderEl) feriasLiquidoHeaderEl.textContent = "R$ 0,00";
+  if (decimoLiquidoHeaderEl) decimoLiquidoHeaderEl.textContent = "R$ 0,00";
+  if (ferias13TotLiquidoHeaderEl) ferias13TotLiquidoHeaderEl.textContent = "R$ 0,00";
+  if (detalhamentoAnualTotalHeaderEl) detalhamentoAnualTotalHeaderEl.textContent = "R$ 0,00";
+  if (valoresAnuaisMediaLiquidaEl) valoresAnuaisMediaLiquidaEl.textContent = "R$ 0,00";
   metodoIrpfEl.textContent = "";
 });
 
@@ -2181,10 +2194,14 @@ byId("valorIpasgo").addEventListener("input", () => { recomputePercentFromValor(
     const vp = document.getElementById("valoresAnuaisProventos");
     const vd = document.getElementById("valoresAnuaisDescontos");
     const vl = document.getElementById("valoresAnuaisLiquido");
+    const vm = document.getElementById("valoresAnuaisMediaLiquida");
+    const da = document.getElementById("detalhamentoAnualTotalHeader");
 
     if (vp) vp.textContent = fmt(totals.proventos);
     if (vd) vd.textContent = fmt(totals.descontos);
     if (vl) vl.textContent = fmt(totals.liquido);
+    if (vm) vm.textContent = fmt(totals.liquido / 12);
+    if (da) da.textContent = fmt(totals.liquido);
   }
 
   function snapshotResumoAnual(){

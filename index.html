@@ -259,46 +259,81 @@
           <h3>Adicional Férias (1/3) e 13º</h3>
           <div class="ferias13-responsive">
             <div class="f13-row">
-              <div class="f13-card f13-card-ferias">
-                <div class="f13-title">Adicional Férias (1/3) <button class="f13-info" type="button" aria-label="Informação sobre o terço de férias" title="Informação">i</button><div class="f13-tooltip" role="tooltip">Neste simulador, não incide contribuição previdenciária (10,5%) sobre o terço de férias.</div></div>
-                <div class="f13-item"><span>Bruto</span><strong class="azul" id="feriasBruto">R$ 0,00</strong></div>
-                <div class="f13-item">
-                  <span>Descontos</span><strong class="vermelho" id="feriasDesc">R$ 0,00</strong>
+              <div class="f13-card f13-card-ferias detail-collapse is-collapsed" data-collapse-section="ferias">
+                <button type="button" class="collapse-header" data-collapse-toggle="ferias" aria-expanded="false" aria-controls="feriasContent">
+                  <span class="collapse-title">Adicional Férias (1/3)</span>
+                  <span class="collapse-right">
+                    <span class="collapse-total verde" id="feriasLiquidoHeader">R$ 0,00</span>
+                    <span class="collapse-icon" aria-hidden="true"></span>
+                  </span>
+                </button>
+                <div class="collapse-content f13-collapse-content" id="feriasContent">
+                  <div class="f13-title">Adicional Férias (1/3) <button class="f13-info" type="button" aria-label="Informação sobre o terço de férias" title="Informação">i</button><div class="f13-tooltip" role="tooltip">Neste simulador, não incide contribuição previdenciária (10,5%) sobre o terço de férias.</div></div>
+                  <div class="f13-item"><span>Bruto</span><strong class="azul" id="feriasBruto">R$ 0,00</strong></div>
+                  <div class="f13-item">
+                    <span>Descontos</span><strong class="vermelho" id="feriasDesc">R$ 0,00</strong>
+                  </div>
+                  <small class="muted f13-sub" id="feriasDescBreak">Prev: R$ 0,00 | IR: R$ 0,00</small>
+                  <div class="f13-item total"><span>Líquido</span><strong class="verde" id="feriasLiquido">R$ 0,00</strong></div>
                 </div>
-                <small class="muted f13-sub" id="feriasDescBreak">Prev: R$ 0,00 | IR: R$ 0,00</small>
-                <div class="f13-item total"><span>Líquido</span><strong class="verde" id="feriasLiquido">R$ 0,00</strong></div>
               </div>
 
-              <div class="f13-card f13-card-decimo">
-                <div class="f13-title">13º (gratificação natalina)</div>
-                <div class="f13-item"><span>Bruto</span><strong class="azul" id="decimoBruto">R$ 0,00</strong></div>
-                <div class="f13-item">
-                  <span>Descontos</span><strong class="vermelho" id="decimoDesc">R$ 0,00</strong>
+              <div class="f13-card f13-card-decimo detail-collapse is-collapsed" data-collapse-section="decimo">
+                <button type="button" class="collapse-header" data-collapse-toggle="decimo" aria-expanded="false" aria-controls="decimoContent">
+                  <span class="collapse-title">13º (gratificação natalina)</span>
+                  <span class="collapse-right">
+                    <span class="collapse-total verde" id="decimoLiquidoHeader">R$ 0,00</span>
+                    <span class="collapse-icon" aria-hidden="true"></span>
+                  </span>
+                </button>
+                <div class="collapse-content f13-collapse-content" id="decimoContent">
+                  <div class="f13-title">13º (gratificação natalina)</div>
+                  <div class="f13-item"><span>Bruto</span><strong class="azul" id="decimoBruto">R$ 0,00</strong></div>
+                  <div class="f13-item">
+                    <span>Descontos</span><strong class="vermelho" id="decimoDesc">R$ 0,00</strong>
+                  </div>
+                  <small class="muted f13-sub" id="decimoDescBreak">Prev: R$ 0,00 | IR: R$ 0,00</small>
+                  <div class="f13-item total"><span>Líquido</span><strong class="verde" id="decimoLiquido">R$ 0,00</strong></div>
                 </div>
-                <small class="muted f13-sub" id="decimoDescBreak">Prev: R$ 0,00 | IR: R$ 0,00</small>
-                <div class="f13-item total"><span>Líquido</span><strong class="verde" id="decimoLiquido">R$ 0,00</strong></div>
               </div>
             
 
-              <div class="f13-card f13-summary">
-                <div class="f13-title">Resumo Adicional Férias e 13º</div>
-                <div class="f13-item f13-item--stack no-divider"><span>Total Bruto</span><div class="f13-right-col"><strong class="azul" id="ferias13TotBruto">R$ 0,00</strong><small class="muted f13-delta" id="ferias13TotBrutoDelta"></small></div></div>
-              
-                <div class="f13-item f13-item--stack no-divider"><span>Total Descontos</span><div class="f13-right-col"><strong class="vermelho" id="ferias13TotDesc">R$ 0,00</strong><small class="muted f13-delta" id="ferias13TotDescDelta"></small></div></div>
-              
-                <div class="f13-item f13-item--stack total no-divider"><span>Total Líquido</span><div class="f13-right-col"><strong class="verde" id="ferias13TotLiquido">R$ 0,00</strong><small class="muted f13-delta" id="ferias13TotLiquidoDelta"></small></div></div>
+              <div class="f13-card f13-summary detail-collapse is-collapsed" data-collapse-section="ferias13-resumo">
+                <button type="button" class="collapse-header" data-collapse-toggle="ferias13-resumo" aria-expanded="false" aria-controls="ferias13ResumoContent">
+                  <span class="collapse-title">Resumo Adicional Férias e 13º</span>
+                  <span class="collapse-right">
+                    <span class="collapse-total verde" id="ferias13TotLiquidoHeader">R$ 0,00</span>
+                    <span class="collapse-icon" aria-hidden="true"></span>
+                  </span>
+                </button>
+                <div class="collapse-content f13-collapse-content" id="ferias13ResumoContent">
+                  <div class="f13-title">Resumo Adicional Férias e 13º</div>
+                  <div class="f13-item f13-item--stack no-divider"><span>Total Bruto</span><div class="f13-right-col"><strong class="azul" id="ferias13TotBruto">R$ 0,00</strong><small class="muted f13-delta" id="ferias13TotBrutoDelta"></small></div></div>
+
+                  <div class="f13-item f13-item--stack no-divider"><span>Total Descontos</span><div class="f13-right-col"><strong class="vermelho" id="ferias13TotDesc">R$ 0,00</strong><small class="muted f13-delta" id="ferias13TotDescDelta"></small></div></div>
+
+                  <div class="f13-item f13-item--stack total no-divider"><span>Total Líquido</span><div class="f13-right-col"><strong class="verde" id="ferias13TotLiquido">R$ 0,00</strong><small class="muted f13-delta" id="ferias13TotLiquidoDelta"></small></div></div>
+                </div>
               </div>
             </div>
     </div>          
   </div>
 
-        <div class="resume-box destaque" id="detalhamentoAnualBox">
-          <h3>Detalhamento Anual (remunerações mês a mês, Adicional Férias (1/3) e 13º)</h3>
-          <div class="table-scroll">
-            <table class="table table-compact" id="tabelaDetalhamentoAnual">
-              <thead id="theadDetalhamentoAnual"></thead>
-              <tbody id="tbodyDetalhamentoAnual"></tbody>
-            </table>
+        <div class="resume-box destaque detail-collapse is-collapsed" id="detalhamentoAnualBox" data-collapse-section="detalhamento-anual">
+          <button type="button" class="collapse-header" data-collapse-toggle="detalhamento-anual" aria-expanded="false" aria-controls="detalhamentoAnualContent">
+            <span class="collapse-title">Detalhamento Anual (remunerações mês a mês, Adicional Férias (1/3) e 13º)</span>
+            <span class="collapse-right">
+              <span class="collapse-total verde" id="detalhamentoAnualTotalHeader">R$ 0,00</span>
+              <span class="collapse-icon" aria-hidden="true"></span>
+            </span>
+          </button>
+          <div class="collapse-content" id="detalhamentoAnualContent">
+            <div class="table-scroll">
+              <table class="table table-compact" id="tabelaDetalhamentoAnual">
+                <thead id="theadDetalhamentoAnual"></thead>
+                <tbody id="tbodyDetalhamentoAnual"></tbody>
+              </table>
+            </div>
           </div>
 	</div>
 
@@ -316,6 +351,10 @@
           <div class="summary-line grande">
             <span class="verde"><strong>REMUNERAÇÃO LÍQUIDA</strong></span>
             <span class="verde" id="valoresAnuaisLiquido">R$ 0,00</span>
+          </div>
+          <div class="summary-line grande media-liquida-destaque">
+            <span class="amarelo"><strong>Média de Remuneração Líquida Mensal</strong></span>
+            <span class="amarelo" id="valoresAnuaisMediaLiquida">R$ 0,00</span>
           </div>
         </div>
 
@@ -375,10 +414,14 @@
         const vp = document.getElementById('valoresAnuaisProventos');
         const vd = document.getElementById('valoresAnuaisDescontos');
         const vl = document.getElementById('valoresAnuaisLiquido');
+        const vm = document.getElementById('valoresAnuaisMediaLiquida');
+        const da = document.getElementById('detalhamentoAnualTotalHeader');
 
         if (vp) vp.textContent = BRL_ANUAL.format(proventos);
         if (vd) vd.textContent = BRL_ANUAL.format(descontos);
         if (vl) vl.textContent = BRL_ANUAL.format(liquido);
+        if (vm) vm.textContent = BRL_ANUAL.format(liquido / 12);
+        if (da) da.textContent = BRL_ANUAL.format(liquido);
       } catch (e) {
         // silencioso
       }
