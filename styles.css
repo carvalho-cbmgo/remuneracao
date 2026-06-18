@@ -1046,28 +1046,34 @@ option:hover { background-color: #1b2433 !important; }
 /* VALORES ANUAIS (usa data-delta nos ids abaixo) */
 #valoresAnuaisProventos,
 #valoresAnuaisDescontos,
-#valoresAnuaisLiquido{
-  display:inline-block;
-  width:100%;
+#valoresAnuaisLiquido,
+#valoresAnuaisMediaLiquida{
+  display:inline-flex;
+  align-items:baseline;
+  justify-content:flex-end;
+  gap:6px;
+  width:auto;
   text-align:right;
   white-space:nowrap;
   vertical-align:top;
 }
 #valoresAnuaisProventos[data-delta]::after,
 #valoresAnuaisDescontos[data-delta]::after,
-#valoresAnuaisLiquido[data-delta]::after{
-  display:block;
-  width:100%;
+#valoresAnuaisLiquido[data-delta]::after,
+#valoresAnuaisMediaLiquida[data-delta]::after{
+  display:inline;
+  width:auto;
   text-align:right;
-  margin-top:2px;
+  margin-top:0;
   line-height:1.2;
   font-weight:700;
-  font-size:0.85rem;
+  font-size:0.78rem;
   content:" " attr(data-delta);
 }
 #valoresAnuaisProventos[data-delta]::after{ color:#0d6efd; }  /* azul */
 #valoresAnuaisDescontos[data-delta]::after{ color:#dc3545; }  /* vermelho */
 #valoresAnuaisLiquido[data-delta]::after{ color:#198754; }    /* verde */
+#valoresAnuaisMediaLiquida[data-delta]::after{ color:#facc15; } /* amarelo */
 
 /* RESUMO ANUAL (também com data-delta) */
 #resumoAnualProventos,

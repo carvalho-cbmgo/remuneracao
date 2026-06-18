@@ -1,10 +1,12 @@
 // ====== Utilidades ======
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+const NUM_BR = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const parseMoney = (str) => {
   if (!str) return 0;
-  return Number(String(str).replace(/\s/g, "").replace(/\./g, "").replace(",", ".")) || 0;
+  return Number(String(str).replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".")) || 0;
 };
 const fmt = (n) => BRL.format(Number(n || 0).toFixed ? Number(n).toFixed(2) : Number(n));
+const fmtSemMoeda = (n) => NUM_BR.format(Number(n || 0).toFixed ? Number(n).toFixed(2) : Number(n));
 
 const byId = (id) => document.getElementById(id);
 const tbodyProventos = byId("tbodyProventos");
@@ -832,7 +834,7 @@ const base13 = bruto13 - prev13 - dedDependentes13;
       renderHead();
       const row = (label, arr) => {
         const cls = label === 'Proventos' ? 'f13-row-proventos' : (label === 'Descontos' ? 'f13-row-descontos' : 'f13-row-liquido');
-        return '<tr class="'+cls+'"><td><strong>'+label+'</strong></td>' + arr.map(v=>`<td class="right">${fmt(v)}</td>`).join('') + '</tr>';
+        return '<tr class="'+cls+'"><td><strong>'+label+'</strong></td>' + arr.map(v=>`<td class="right">${fmtSemMoeda(v)}</td>`).join('') + '</tr>';
       };
       
       const f13 = (window && window.__F13__) ? window.__F13__ : { ferias:{bruto:0,descontos:0,liquido:0}, decimo:{bruto:0,descontos:0,liquido:0} };
@@ -883,7 +885,7 @@ const base13 = bruto13 - prev13 - dedDependentes13;
       const provs=[], descs=[], liqs=[];
       for (let i=0;i<12;i++){ const r = calcMensal(i); provs.push(r.bruto); descs.push(r.descontos); liqs.push(r.liquido); }
       thead.innerHTML = '<tr><th></th>' + meses.map(m=>`<th>${m}</th>`).join('') + `<th>Férias (1/3)</th><th>13º</th></tr>`;
-      const row = (label, arr) => '<tr><td><strong>'+label+'</strong></td>' + arr.map(v=>`<td class="right">${fmt(v)}</td>`).join('') + '</tr>';
+      const row = (label, arr) => '<tr><td><strong>'+label+'</strong></td>' + arr.map(v=>`<td class="right">${fmtSemMoeda(v)}</td>`).join('') + '</tr>';
       
       // Acrescentar as colunas finais com valores da seção "Férias e 13º"
       const getNumByIdAnual2 = (id) => {
@@ -953,8 +955,15 @@ if (badge){
         }
         const c1 = row.cells[row.cells.length - 2];
         const c2 = row.cells[row.cells.length - 1];
-        c1.textContent = t1 ?? "—";
-        c2.textContent = t2 ?? "—";
+        const fmtCell = (txt) => {
+          if (txt == null) return "—";
+          const clean = String(txt).replace(/\u00A0/g, " ").trim();
+          if (!/\d/.test(clean)) return clean || "—";
+          const n = typeof parseMoney === "function" ? parseMoney(clean) : Number(clean);
+          return Number.isFinite(n) ? fmtSemMoeda(n) : String(txt).replace(/\bR\$\s*/g, "").trim();
+        };
+        c1.textContent = fmtCell(t1);
+        c2.textContent = fmtCell(t2);
         c1.classList.add("right");
         c2.classList.add("right");
       };
@@ -2198,6 +2207,109 @@ byId("valorIpasgo").addEventListener("input", () => { recomputePercentFromValor(
     }
   }
 
+  function setAnnualDeltaAttr(id, text){
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (text && text.trim()) el.setAttribute("data-delta", text);
+    else el.removeAttribute("data-delta");
+  }
+
+  function formatAnnualDelta(delta, base){
+    const sign = delta >= 0 ? "+" : "-";
+    const pct = base ? (delta / base) * 100 : 0;
+    const pctSign = pct >= 0 ? "+" : "-";
+    return `${sign}${fmt(Math.abs(delta))} | ${pctSign}${Math.abs(pct).toFixed(2).replace(".", ",")}%`;
+  }
+
+  function getIpasgoAnnualValue(subsidio){
+    const sel = document.getElementById("ipasgo");
+    const mode = sel ? sel.value : "nao";
+    if (mode === "basico") return Math.min(round2(subsidio * 0.0681), IPASGO_TETO_BASICO);
+    if (mode === "especial") return Math.min(round2(subsidio * 0.1248), IPASGO_TETO_ESPECIAL);
+    if (mode === "manual") return round2(parseMoney(document.getElementById("valorIpasgo")?.value || "0"));
+    return 0;
+  }
+
+  function computeResumoAnualForPercent(percent){
+    const posto = document.getElementById("posto")?.value;
+    if (!posto || !SUBSIDIO[posto]) return null;
+
+    const dependentes = Number(document.getElementById("dependentes")?.value || 0);
+    const baseSubs = SUBSIDIO[posto];
+    const subsidio = round2(baseSubs * (1 + (Number(percent || 0) / 100)));
+    const adicionaisCalc = typeof getAdicionaisCalculo === "function"
+      ? getAdicionaisCalculo()
+      : { totalTributavel: 0, totalIsento: 0, total: 0 };
+    const adicionaisTrib = round2(adicionaisCalc.totalTributavel || 0);
+    const adicionaisTotal = round2(adicionaisCalc.total || 0);
+    const ipasgoValor = getIpasgoAnnualValue(subsidio);
+    const associacaoValor = parseMoney(document.getElementById("associacaoValor")?.value || "0");
+
+    const calcMensal = (monthIndex) => {
+      const P = PARAMS_IRRF[monthIndex <= 3 ? "jan_abr" : "mai_dez"];
+      const rendimentoTributavel = round2(subsidio + adicionaisTrib);
+      const bruto = round2(subsidio + ABONO_FARDAMENTO + adicionaisTotal);
+      const pensao = round2(subsidio * ALIQUOTA_PENSAO);
+      const dedDependentes = round2(P.dependente * dependentes);
+      const simplificado = Math.min(rendimentoTributavel * 0.25, P.desconto_simplificado_limite);
+      let baseCalc = rendimentoTributavel - Math.max(round2(pensao + dedDependentes), simplificado);
+      if (baseCalc < 0) baseCalc = 0;
+      let aliquota = 0, deducao = 0;
+      for (const faixa of P.faixas) {
+        if (baseCalc <= faixa.ate) { aliquota = faixa.aliquota; deducao = faixa.deducao; break; }
+      }
+      let irpf = round2(baseCalc * aliquota - deducao);
+      if (irpf < 0) irpf = 0;
+      const descontos = round2(FARDAMENTO + FAS + pensao + irpf + ipasgoValor + associacaoValor);
+      return { bruto, descontos, liquido: round2(bruto - descontos), pensao, irpf };
+    };
+
+    let proventos = 0, descontos = 0, liquido = 0;
+    for (let i = 0; i < 12; i++) {
+      const m = calcMensal(i);
+      proventos += m.bruto;
+      descontos += m.descontos;
+      liquido += m.liquido;
+    }
+
+    const mes = document.getElementById("mes")?.value || "";
+    const periodo = ["Janeiro","Fevereiro","Março","Abril"].includes(mes) ? "jan_abr" : "mai_dez";
+    const P = PARAMS_IRRF[periodo];
+    const mensalSelecionado = calcMensal(periodo === "jan_abr" ? 0 : 4);
+    const terco = round2(subsidio / 3);
+    const dedDependentesFerias = round2(P.dependente * dependentes);
+    const simplificadoFerias = Math.min((subsidio + terco) * 0.25, P.desconto_simplificado_limite);
+    let baseFerias = (subsidio + terco) - Math.max(round2(mensalSelecionado.pensao + dedDependentesFerias), simplificadoFerias);
+    if (baseFerias < 0) baseFerias = 0;
+    let aliqFerias = 0, dedFerias = 0;
+    for (const faixa of P.faixas) {
+      if (baseFerias <= faixa.ate) { aliqFerias = faixa.aliquota; dedFerias = faixa.deducao; break; }
+    }
+    let irFeriasTotal = round2(baseFerias * aliqFerias - dedFerias);
+    if (irFeriasTotal < 0) irFeriasTotal = 0;
+    const descFerias = round2(Math.max(0, irFeriasTotal - mensalSelecionado.irpf));
+    const liqFerias = round2(terco - descFerias);
+
+    const bruto13 = subsidio;
+    const prev13 = round2(bruto13 * ALIQUOTA_PENSAO);
+    const P13 = PARAMS_IRRF["jan_abr"];
+    let base13 = bruto13 - prev13 - round2(P13.dependente * dependentes);
+    if (base13 < 0) base13 = 0;
+    let aliq13 = 0, ded13 = 0;
+    for (const faixa of P13.faixas) {
+      if (base13 <= faixa.ate) { aliq13 = faixa.aliquota; ded13 = faixa.deducao; break; }
+    }
+    let ir13 = round2(base13 * aliq13 - ded13);
+    if (ir13 < 0) ir13 = 0;
+    const desc13 = round2(prev13 + ir13);
+    const liq13 = round2(bruto13 - desc13);
+
+    proventos = round2(proventos + terco + bruto13);
+    descontos = round2(descontos + descFerias + desc13);
+    liquido = round2(liquido + liqFerias + liq13);
+    return { proventos, descontos, liquido };
+  }
+
   function writeAnualTotalsFromTable(){
     const totals = getResumoAnualTotals();
     if (!totals) return;
@@ -2207,12 +2319,28 @@ byId("valorIpasgo").addEventListener("input", () => { recomputePercentFromValor(
     const vl = document.getElementById("valoresAnuaisLiquido");
     const vm = document.getElementById("valoresAnuaisMediaLiquida");
     const da = document.getElementById("detalhamentoAnualTotalHeader");
+    const pct = Number(typeof __reajustePercent !== "undefined" ? __reajustePercent : getReajustePercent()) || 0;
 
     if (vp) vp.textContent = fmt(totals.proventos);
     if (vd) vd.textContent = fmt(totals.descontos);
     if (vl) vl.textContent = fmt(totals.liquido);
     if (vm) vm.textContent = fmt(totals.liquido / 12);
     if (da) da.textContent = fmt(totals.liquido);
+
+    const ids = ["valoresAnuaisProventos", "valoresAnuaisDescontos", "valoresAnuaisLiquido", "valoresAnuaisMediaLiquida"];
+    if (pct <= 0) {
+      ids.forEach((id) => setAnnualDeltaAttr(id, ""));
+      document.body.classList.remove("deltas-on");
+      return;
+    }
+
+    const base = computeResumoAnualForPercent(0);
+    if (!base) return;
+    setAnnualDeltaAttr("valoresAnuaisProventos", formatAnnualDelta(round2(totals.proventos - base.proventos), base.proventos));
+    setAnnualDeltaAttr("valoresAnuaisDescontos", formatAnnualDelta(round2(totals.descontos - base.descontos), base.descontos));
+    setAnnualDeltaAttr("valoresAnuaisLiquido", formatAnnualDelta(round2(totals.liquido - base.liquido), base.liquido));
+    setAnnualDeltaAttr("valoresAnuaisMediaLiquida", formatAnnualDelta(round2((totals.liquido / 12) - (base.liquido / 12)), base.liquido / 12));
+    document.body.classList.add("deltas-on");
   }
 
   function snapshotResumoAnual(){
