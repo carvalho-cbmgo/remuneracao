@@ -375,13 +375,21 @@ function setupDetailCollapses(){
   document.querySelectorAll("[data-collapse-toggle]").forEach((button) => {
     const section = button.closest("[data-collapse-section]");
     if (!section) return;
-    const isExpanded = button.getAttribute("aria-expanded") === "true";
-    section.classList.toggle("is-collapsed", !isExpanded);
+    const title = button.querySelector(".collapse-title")?.textContent?.trim() || "conteúdo";
+    const syncButtonState = () => {
+      const isExpanded = button.getAttribute("aria-expanded") === "true";
+      section.classList.toggle("is-collapsed", !isExpanded);
+      const action = isExpanded ? "Recolher" : "Expandir";
+      button.title = `${action} ${title}`;
+      button.setAttribute("aria-label", `${action} ${title}`);
+    };
+
+    syncButtonState();
 
     button.addEventListener("click", () => {
       const expanded = button.getAttribute("aria-expanded") === "true";
       button.setAttribute("aria-expanded", String(!expanded));
-      section.classList.toggle("is-collapsed", expanded);
+      syncButtonState();
     });
   });
 }
@@ -719,7 +727,7 @@ const base13 = bruto13 - prev13 - dedDependentes13;
   } catch(_e) { /* no-op */ }
 // ===== Detalhamento Anual =====
   try {
-    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    const meses = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
     const thead = byId("theadDetalhamentoAnual");
     const tbody = byId("tbodyDetalhamentoAnual");
     if (!thead || !tbody) { /* sem seção */ } else {
@@ -838,7 +846,7 @@ const base13 = bruto13 - prev13 - dedDependentes13;
 } catch(e){ /* silencioso */ }
   // ===== Detalhamento Anual (12 meses: Jan–Dez) =====
   try {
-    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    const meses = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
     const thead = byId("theadDetalhamentoAnual");
     const tbody = byId("tbodyDetalhamentoAnual");
     if (thead && tbody){
@@ -874,7 +882,7 @@ const base13 = bruto13 - prev13 - dedDependentes13;
       }
       const provs=[], descs=[], liqs=[];
       for (let i=0;i<12;i++){ const r = calcMensal(i); provs.push(r.bruto); descs.push(r.descontos); liqs.push(r.liquido); }
-      thead.innerHTML = '<tr><th></th>' + meses.map(m=>`<th>${m}</th>`).join('') + `<th>Adicional Férias (1/3)</th><th>13º (gratificação natalina)</th></tr>`;
+      thead.innerHTML = '<tr><th></th>' + meses.map(m=>`<th>${m}</th>`).join('') + `<th>Férias (1/3)</th><th>13º</th></tr>`;
       const row = (label, arr) => '<tr><td><strong>'+label+'</strong></td>' + arr.map(v=>`<td class="right">${fmt(v)}</td>`).join('') + '</tr>';
       
       // Acrescentar as colunas finais com valores da seção "Férias e 13º"
@@ -926,7 +934,7 @@ if (badge){
         const cols = tr.children.length;
         if (cols < 15) {
           tr.insertAdjacentHTML("beforeend",
-            '<th>Adicional Férias (1/3)</th><th>13º (gratificação natalina)</th>');
+            '<th>Férias (1/3)</th><th>13º</th>');
         }
       };
       const getTxt = (id) => {

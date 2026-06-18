@@ -159,8 +159,8 @@ input::placeholder{color:#94a3b8}
 .btn.ghost{background: transparent;border-color: rgba(255,255,255,.12)}
 
 .results-card{
-  background:linear-gradient(180deg, rgba(16,34,28,.98), rgba(12,26,24,.98));
-  border-color:rgba(34,197,94,.24);
+  background:linear-gradient(180deg, rgba(20,32,55,.98), rgba(13,26,44,.98));
+  border-color:rgba(59,130,246,.28);
 }
 .results-card h3{margin:0 0 10px 0}
 .resume-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
@@ -783,16 +783,16 @@ option:hover { background-color: #1b2433 !important; }
   padding:0 12px 12px;
 }
 #tabelaDetalhamentoAnual{
-  width:100%;
-  min-width:920px;
+  width:max-content;
+  min-width:100%;
   border-spacing:0 6px;
-  table-layout:fixed;
-  font-size:.78rem;
+  table-layout:auto;
+  font-size:.74rem;
 }
 #tabelaDetalhamentoAnual thead th{
-  padding:7px 5px;
+  padding:7px 8px;
   color:#cbd5e1;
-  font-size:.72rem;
+  font-size:.7rem;
   font-weight:700;
   line-height:1.15;
   text-align:center;
@@ -802,24 +802,28 @@ option:hover { background-color: #1b2433 !important; }
 }
 #tabelaDetalhamentoAnual thead th:first-child,
 #tabelaDetalhamentoAnual tbody td:first-child{
-  width:132px;
-  min-width:132px;
+  width:126px;
+  min-width:126px;
   text-align:left;
   white-space:normal;
 }
+#tabelaDetalhamentoAnual thead th:not(:first-child){
+  min-width:104px;
+}
 #tabelaDetalhamentoAnual tbody td{
-  padding:8px 5px;
+  padding:8px 8px;
   line-height:1.15;
   font-variant-numeric:tabular-nums;
   vertical-align:middle;
 }
 #tabelaDetalhamentoAnual tbody td:not(:first-child){
+  min-width:104px;
   text-align:right;
   white-space:nowrap;
-  font-size:.74rem;
+  font-size:.72rem;
 }
 #tabelaDetalhamentoAnual tbody td strong{
-  font-size:.78rem;
+  font-size:.74rem;
 }
 
 
@@ -838,7 +842,7 @@ option:hover { background-color: #1b2433 !important; }
 
 /* Valores Anuais */
 #valoresAnuaisBox {
-  width:min(100%, 540px);
+  width:min(100%, 480px);
   margin:16px auto 0;
   border-color:#facc15;
 } /* borda amarela para destacar o box */
