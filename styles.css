@@ -262,7 +262,7 @@ input::placeholder{color:#94a3b8}
   transform:translate(-50%,-50%) rotate(45deg);
   transition:transform .18s ease, top .18s ease;
 }
-.detail-collapse:not(.is-collapsed) .collapse-icon::before{
+.detail-collapse:not(.is-collapsed) > .collapse-header .collapse-icon::before{
   top:54%;
   transform:translate(-50%,-50%) rotate(-135deg);
 }
@@ -360,10 +360,10 @@ input::placeholder{color:#94a3b8}
 }
 #valoresAnuaisBox .summary-line.grande{
   display:grid;
-  grid-template-columns:minmax(12rem, 1fr) auto;
+  grid-template-columns:minmax(13rem, 1fr) max-content;
   align-items:center;
   font-size:1rem;
-  gap:8px;
+  gap:16px;
 }
 #valoresAnuaisBox .summary-line > span:first-child{
   display:block;
@@ -448,12 +448,20 @@ option:hover { background-color: #1b2433 !important; }
 .reajuste-wrap.hidden{display:none}
 .reajuste-label{font-weight:600}
 .reajuste-wrap input{width:120px;text-align:center}
-.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
+.actions{
+  position:relative;
+  display:flex;
+  gap:10px;
+  flex-wrap:nowrap;
+  justify-content:center;
+  align-items:center;
+  min-height:48px;
+}
 .reajuste-quick{display:flex;gap:6px;align-items:center}
 .btn.mini{padding:6px 10px;border-radius:10px;font-size:.85rem}
 .invalid{border-color: rgba(239,68,68,.8) !important; box-shadow: 0 0 0 3px rgba(239,68,68,.15)}
 .reajuste-select{min-width:100px;padding:8px 10px;border-radius:10px;text-align:center}
-.reajuste-range{display:flex;align-items:center;gap:10px;min-width:260px;flex:1}
+.reajuste-range{display:flex;align-items:center;gap:10px;min-width:260px;flex:0 1 360px;width:min(38vw, 360px)}
 .reajuste-range input[type=range]{flex:1}
 .range-val{min-width:64px;text-align:center;padding:4px 8px;border-radius:999px;
   background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.35);color:#bfdbfe;font-variant-numeric:tabular-nums}
@@ -475,6 +483,33 @@ option:hover { background-color: #1b2433 !important; }
   .reajuste-wrap.hidden{display:none}
 }
 
+/* Slider do reajuste alinhado à direita sem deslocar os botões centrais */
+#reajusteWrap:not(.hidden){
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  justify-content:flex-end;
+  max-width:min(42vw, 390px);
+}
+@media (max-width: 900px){
+  .actions{
+    flex-wrap:wrap;
+    min-height:0;
+  }
+  #reajusteWrap:not(.hidden){
+    position:static;
+    transform:none;
+    flex:1 1 100%;
+    justify-content:center;
+    max-width:100%;
+    width:100%;
+  }
+  .reajuste-range{
+    width:min(100%, 360px);
+  }
+}
 
 /* ===== Totais em estilo de "pill", como Remuneração Líquida ===== */
 .table tfoot tr.total-bruto td{
@@ -842,7 +877,7 @@ option:hover { background-color: #1b2433 !important; }
 
 /* Valores Anuais */
 #valoresAnuaisBox {
-  width:min(100%, 480px);
+  width:min(100%, 720px);
   margin:16px auto 0;
   border-color:#facc15;
 } /* borda amarela para destacar o box */
