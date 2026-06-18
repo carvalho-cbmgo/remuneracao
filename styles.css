@@ -76,9 +76,9 @@ body{
 
 .inputs-card{margin-bottom:22px}
 .grid-2{
-  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;
 }
-@media (max-width:840px){ .grid-2{grid-template-columns:1fr} }
+@media (max-width:900px){ .grid-2{grid-template-columns:1fr} }
 
 .form-group{display:flex;flex-direction:column;gap:8px}
 .dep-add-group{grid-column:1 / -1}
@@ -141,7 +141,7 @@ input::placeholder{color:#94a3b8}
 .hidden{display:none}
 .muted{color:var(--muted);font-size:.9rem}
 
-.actions{display:flex;gap:10px;margin-top:8px}
+.actions{display:flex;gap:10px;margin-top:8px;justify-content:center;align-items:center}
 .btn{
   padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.08);
   background: rgba(255,255,255,.03); color:var(--text);
@@ -155,7 +155,7 @@ input::placeholder{color:#94a3b8}
 .btn.ghost{background: transparent;border-color: rgba(255,255,255,.12)}
 
 .results-card h3{margin:0 0 10px 0}
-.resume-grid{display:grid;grid-template-columns:2fr 2fr 1.2fr;gap:18px}
+.resume-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 @media (max-width:1100px){ .resume-grid{grid-template-columns:1fr} }
 
 .resume-box{
@@ -177,9 +177,9 @@ input::placeholder{color:#94a3b8}
   width:100%;
   min-height:58px;
   display:flex;
-  flex-wrap:wrap;
+  flex-wrap:nowrap;
   align-items:center;
-  gap:12px;
+  gap:8px;
   padding:14px;
   border:0;
   border-radius:14px;
@@ -198,30 +198,33 @@ input::placeholder{color:#94a3b8}
   outline-offset:-2px;
 }
 .collapse-title{
-  flex:1 1 140px;
+  flex:1 1 auto;
   min-width:0;
-  font-size:1.05rem;
+  font-size:.98rem;
   font-weight:700;
   line-height:1.2;
-  overflow-wrap:anywhere;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 .collapse-right{
-  flex:0 1 auto;
+  flex:0 0 auto;
   min-width:0;
   max-width:100%;
   margin-left:auto;
   display:flex;
   align-items:center;
   justify-content:flex-end;
-  gap:10px;
+  gap:8px;
   text-align:right;
 }
 .collapse-total{
   min-width:0;
+  flex:0 0 auto;
   font-weight:800;
   line-height:1.2;
   font-variant-numeric:tabular-nums;
-  overflow-wrap:anywhere;
+  white-space:nowrap;
 }
 .collapse-total small{
   display:block;
@@ -268,13 +271,17 @@ input::placeholder{color:#94a3b8}
 }
 @media (max-width:520px){
   .collapse-header{
-    align-items:flex-start;
+    gap:7px;
+    padding:12px;
   }
+  .collapse-title{font-size:.9rem}
+  .collapse-total{font-size:.9rem}
   .collapse-right{
-    width:100%;
-    flex:1;
-    margin-left:0;
+    width:auto;
+    flex:0 0 auto;
+    margin-left:auto;
   }
+  .collapse-icon{flex-basis:26px;width:26px;height:26px}
 }
 
 .table{width:100%;border-collapse:separate;border-spacing:0 8px}
@@ -377,15 +384,15 @@ option:hover { background-color: #1b2433 !important; }
 }
 
 .section-row{display:grid;grid-template-columns:1fr;gap:18px;margin-top:10px}
-@media (min-width: 1024px){
-  .section-row{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+@media (min-width: 900px){
+  .section-row{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}
 }
 .section-row .section-box{grid-column:auto}
 .reajuste-wrap{display:flex;align-items:center;gap:8px}
 .reajuste-wrap.hidden{display:none}
 .reajuste-label{font-weight:600}
 .reajuste-wrap input{width:120px;text-align:center}
-.actions{display:flex;gap:10px;flex-wrap:wrap}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
 .reajuste-quick{display:flex;gap:6px;align-items:center}
 .btn.mini{padding:6px 10px;border-radius:10px;font-size:.85rem}
 .invalid{border-color: rgba(239,68,68,.8) !important; box-shadow: 0 0 0 3px rgba(239,68,68,.15)}
@@ -397,7 +404,7 @@ option:hover { background-color: #1b2433 !important; }
 
 /* ==== Ajuste desktop: slider ao lado do botão "Simular Reajuste" ==== */
 @media (min-width: 1024px){
-  .actions{display:flex;gap:10px;flex-wrap:nowrap;align-items:center}
+  .actions{display:flex;gap:10px;flex-wrap:nowrap;align-items:center;justify-content:center}
   #reajusteWrap{display:none}
   .reajuste-range{flex:0 1 360px;min-width:260px}
   .reajuste-wrap.hidden{display:none}
@@ -406,7 +413,7 @@ option:hover { background-color: #1b2433 !important; }
 
 /* ==== Ajuste desktop: slider ao lado do botão "Simular Reajuste" (somente quando visível) ==== */
 @media (min-width: 1024px){
-  .actions{display:flex;gap:10px;flex-wrap:nowrap;align-items:center}
+  .actions{display:flex;gap:10px;flex-wrap:nowrap;align-items:center;justify-content:center}
   #reajusteWrap:not(.hidden){display:flex}
   .reajuste-range{flex:0 1 360px;min-width:260px}
   .reajuste-wrap.hidden{display:none}
@@ -516,6 +523,11 @@ option:hover { background-color: #1b2433 !important; }
 
 
 @media(min-width:768px){.f13-row{grid-template-columns:1fr 1fr 1fr}}
+@media(min-width:1024px){.f13-row{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr) minmax(0,1.38fr)}}
+.f13-card .collapse-header{min-height:54px;padding:12px}
+.f13-card .collapse-title{font-size:.9rem}
+.f13-card .collapse-total{font-size:.9rem}
+.f13-card .collapse-icon{flex-basis:26px;width:26px;height:26px}
 
 
 /* Equal heights for Férias & 13º cards */
