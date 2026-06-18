@@ -364,6 +364,7 @@ const resumoLiquidoHeaderEl = byId("resumoLiquidoHeader");
 const feriasLiquidoHeaderEl = byId("feriasLiquidoHeader");
 const decimoLiquidoHeaderEl = byId("decimoLiquidoHeader");
 const ferias13TotLiquidoHeaderEl = byId("ferias13TotLiquidoHeader");
+const ferias13BoxLiquidoHeaderEl = byId("ferias13BoxLiquidoHeader");
 const detalhamentoAnualTotalHeaderEl = byId("detalhamentoAnualTotalHeader");
 const valoresAnuaisMediaLiquidaEl = byId("valoresAnuaisMediaLiquida");
 const metodoIrpfEl = byId("metodoIrpf");
@@ -612,6 +613,7 @@ const base13 = bruto13 - prev13 - dedDependentes13;
       byId("ferias13TotDesc").textContent = fmt(totalDescFerias13);
       byId("ferias13TotLiquido").textContent = fmt(totalLiqFerias13);
       if (ferias13TotLiquidoHeaderEl) ferias13TotLiquidoHeaderEl.textContent = fmt(totalLiqFerias13);
+      if (ferias13BoxLiquidoHeaderEl) ferias13BoxLiquidoHeaderEl.textContent = fmt(totalLiqFerias13);
     
     // ===== Deltas do Resumo Adicional Férias e 13º (comparado à base sem reajuste) =====
     (function(){
@@ -1035,6 +1037,7 @@ byId("limpar").addEventListener("click", () => {
   if (feriasLiquidoHeaderEl) feriasLiquidoHeaderEl.textContent = "R$ 0,00";
   if (decimoLiquidoHeaderEl) decimoLiquidoHeaderEl.textContent = "R$ 0,00";
   if (ferias13TotLiquidoHeaderEl) ferias13TotLiquidoHeaderEl.textContent = "R$ 0,00";
+  if (ferias13BoxLiquidoHeaderEl) ferias13BoxLiquidoHeaderEl.textContent = "R$ 0,00";
   if (detalhamentoAnualTotalHeaderEl) detalhamentoAnualTotalHeaderEl.textContent = "R$ 0,00";
   if (valoresAnuaisMediaLiquidaEl) valoresAnuaisMediaLiquidaEl.textContent = "R$ 0,00";
   metodoIrpfEl.textContent = "";

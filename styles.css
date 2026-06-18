@@ -351,14 +351,29 @@ input::placeholder{color:#94a3b8}
   gap:8px;
 }
 #valoresAnuaisBox .summary-line.grande{
+  display:grid;
+  grid-template-columns:minmax(12rem, 1fr) auto;
+  align-items:center;
   font-size:1rem;
   gap:8px;
+}
+#valoresAnuaisBox .summary-line > span:first-child{
+  display:block;
+  overflow:visible;
+  text-overflow:clip;
+}
+#valoresAnuaisBox .summary-line > span:last-child{
+  justify-self:end;
 }
 @media (max-width:520px){
   .resumo-content .summary-line.grande,
   #valoresAnuaisBox .summary-line.grande{
-    font-size:.92rem;
+    font-size:.9rem;
     padding:9px 10px;
+  }
+  #valoresAnuaisBox .summary-line.grande{
+    grid-template-columns:minmax(9.8rem, 1fr) auto;
+    font-size:.84rem;
   }
 }
 

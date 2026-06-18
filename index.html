@@ -99,7 +99,6 @@
   <div class="section-title">ASSOCIAÇÕES</div>
     <div class="form-group">
       <input type="text" id="associacaoValor" inputmode="decimal" placeholder="0,00" />
-      <small class="muted">Informe o valor da mensalidade da associação (se houver).</small>
     </div>
   </div> 
 
@@ -253,8 +252,15 @@
 
      
         <div class="section-sep" aria-hidden="true"></div>
-<div class="resume-box destaque" id="ferias13Box">
-          <h3>Adicional Férias (1/3) e 13º</h3>
+<div class="resume-box destaque detail-collapse is-collapsed" id="ferias13Box" data-collapse-section="ferias13-box">
+          <button type="button" class="collapse-header" data-collapse-toggle="ferias13-box" aria-expanded="false" aria-controls="ferias13Content">
+            <span class="collapse-title">Adicional Férias (1/3) e 13º</span>
+            <span class="collapse-right">
+              <span class="collapse-total verde" id="ferias13BoxLiquidoHeader">R$ 0,00</span>
+              <span class="collapse-icon" aria-hidden="true"></span>
+            </span>
+          </button>
+          <div class="collapse-content" id="ferias13Content">
           <div class="ferias13-responsive">
             <div class="f13-row">
               <div class="f13-card f13-card-ferias detail-collapse is-collapsed" data-collapse-section="ferias">
@@ -298,14 +304,14 @@
 
               <div class="f13-card f13-summary detail-collapse is-collapsed" data-collapse-section="ferias13-resumo">
                 <button type="button" class="collapse-header" data-collapse-toggle="ferias13-resumo" aria-expanded="false" aria-controls="ferias13ResumoContent">
-                  <span class="collapse-title">Resumo Adicional Férias e 13º</span>
+                  <span class="collapse-title">Resumo</span>
                   <span class="collapse-right">
                     <span class="collapse-total verde" id="ferias13TotLiquidoHeader">R$ 0,00</span>
                     <span class="collapse-icon" aria-hidden="true"></span>
                   </span>
                 </button>
                 <div class="collapse-content f13-collapse-content" id="ferias13ResumoContent">
-                  <div class="f13-title">Resumo Adicional Férias e 13º</div>
+                  <div class="f13-title">Resumo</div>
                   <div class="f13-item f13-item--stack no-divider"><span>Total Bruto</span><div class="f13-right-col"><strong class="azul" id="ferias13TotBruto">R$ 0,00</strong><small class="muted f13-delta" id="ferias13TotBrutoDelta"></small></div></div>
 
                   <div class="f13-item f13-item--stack no-divider"><span>Total Descontos</span><div class="f13-right-col"><strong class="vermelho" id="ferias13TotDesc">R$ 0,00</strong><small class="muted f13-delta" id="ferias13TotDescDelta"></small></div></div>
@@ -315,6 +321,7 @@
               </div>
             </div>
     </div>          
+          </div>
   </div>
 
         <div class="resume-box destaque detail-collapse is-collapsed" id="detalhamentoAnualBox" data-collapse-section="detalhamento-anual">
