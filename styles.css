@@ -768,11 +768,59 @@ option:hover { background-color: #1b2433 !important; }
 }
 
 
-.table-scroll{overflow-x:auto}
+.table-scroll{
+  width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding-bottom:4px;
+}
 
 .table-compact th,.table-compact td{padding:6px 8px}
 
 #detalhamentoAnualBox{margin-top:18px}
+
+#detalhamentoAnualContent{
+  padding:0 12px 12px;
+}
+#tabelaDetalhamentoAnual{
+  width:100%;
+  min-width:920px;
+  border-spacing:0 6px;
+  table-layout:fixed;
+  font-size:.78rem;
+}
+#tabelaDetalhamentoAnual thead th{
+  padding:7px 5px;
+  color:#cbd5e1;
+  font-size:.72rem;
+  font-weight:700;
+  line-height:1.15;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:break-word;
+  vertical-align:bottom;
+}
+#tabelaDetalhamentoAnual thead th:first-child,
+#tabelaDetalhamentoAnual tbody td:first-child{
+  width:132px;
+  min-width:132px;
+  text-align:left;
+  white-space:normal;
+}
+#tabelaDetalhamentoAnual tbody td{
+  padding:8px 5px;
+  line-height:1.15;
+  font-variant-numeric:tabular-nums;
+  vertical-align:middle;
+}
+#tabelaDetalhamentoAnual tbody td:not(:first-child){
+  text-align:right;
+  white-space:nowrap;
+  font-size:.74rem;
+}
+#tabelaDetalhamentoAnual tbody td strong{
+  font-size:.78rem;
+}
 
 
 /* Cores para Detalhamento Anual */
