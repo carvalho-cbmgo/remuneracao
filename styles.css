@@ -781,7 +781,11 @@ option:hover { background-color: #1b2433 !important; }
 
 
 /* Valores Anuais */
-#valoresAnuaisBox { margin-top: 16px; border-color: #facc15; } /* borda amarela para destacar o box */
+#valoresAnuaisBox {
+  width:min(100%, 680px);
+  margin:16px auto 0;
+  border-color:#facc15;
+} /* borda amarela para destacar o box */
 #valoresAnuaisBox h3 { color: #facc15; } /* título em amarelo */
 #tabelaValoresAnuais td { padding: 6px 8px; }
 #tabelaValoresAnuais td.right { text-align: right; }
