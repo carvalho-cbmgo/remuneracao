@@ -74,7 +74,11 @@ body{
 }
 .card h2{margin:0 0 12px 0;letter-spacing:.3px}
 
-.inputs-card{margin-bottom:22px}
+.inputs-card{
+  margin-bottom:22px;
+  background:linear-gradient(180deg, rgba(20,32,55,.98), rgba(13,26,44,.98));
+  border-color:rgba(59,130,246,.28);
+}
 .grid-2{
   display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;
 }
@@ -154,8 +158,12 @@ input::placeholder{color:#94a3b8}
 }
 .btn.ghost{background: transparent;border-color: rgba(255,255,255,.12)}
 
+.results-card{
+  background:linear-gradient(180deg, rgba(16,34,28,.98), rgba(12,26,24,.98));
+  border-color:rgba(34,197,94,.24);
+}
 .results-card h3{margin:0 0 10px 0}
-.resume-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.resume-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
 @media (max-width:1100px){ .resume-grid{grid-template-columns:1fr} }
 
 .resume-box{
@@ -571,15 +579,15 @@ option:hover { background-color: #1b2433 !important; }
 
 
 @media(min-width:768px){.f13-row{grid-template-columns:1fr 1fr 1fr}}
-@media(min-width:1024px){.f13-row{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr) minmax(0,1.38fr)}}
+@media(min-width:1024px){.f13-row{grid-template-columns:minmax(0,1.28fr) minmax(0,1.08fr) minmax(0,.88fr)}}
 .f13-card .collapse-header{min-height:54px;padding:12px}
-.f13-card .collapse-title{font-size:.9rem}
+.f13-card .collapse-title{font-size:.88rem;white-space:normal;overflow:visible;text-overflow:clip}
 .f13-card .collapse-total{font-size:.9rem}
 .f13-card .collapse-icon{flex-basis:26px;width:26px;height:26px}
 
 
 /* Equal heights for Férias & 13º cards */
-.f13-row{align-items:stretch}
+.f13-row{align-items:start}
 .f13-card{display:flex;flex-direction:column;height:100%}
 .f13-item.total{margin-top:auto}
 
@@ -782,7 +790,7 @@ option:hover { background-color: #1b2433 !important; }
 
 /* Valores Anuais */
 #valoresAnuaisBox {
-  width:min(100%, 680px);
+  width:min(100%, 540px);
   margin:16px auto 0;
   border-color:#facc15;
 } /* borda amarela para destacar o box */
