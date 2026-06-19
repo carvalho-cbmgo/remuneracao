@@ -236,16 +236,25 @@ input::placeholder{color:#94a3b8}
 }
 .collapse-total[data-delta]{
   display:inline-flex;
-  align-items:baseline;
+  flex-direction:column;
+  align-items:flex-end;
   justify-content:flex-end;
-  gap:6px;
+  gap:3px;
 }
 .collapse-total[data-delta]::after{
   content:attr(data-delta);
+  display:block;
+  text-align:right;
   font-size:.76rem;
-  font-weight:700;
+  font-weight:600;
   line-height:1.1;
   white-space:nowrap;
+}
+.collapse-header:has(.collapse-total[data-delta]){
+  align-items:flex-start;
+}
+.collapse-header:has(.collapse-total[data-delta]) .collapse-title{
+  padding-top:2px;
 }
 .collapse-total small{
   display:block;
@@ -347,12 +356,15 @@ input::placeholder{color:#94a3b8}
 .summary-line.grande{font-size:1.15rem;border:1px solid rgba(34,197,94,.35); background: rgba(34,197,94,.08)}
 .summary-line.grande.descontos-destaque{font-size:1.15rem;border:1px solid rgba(220,38,38,.35); background: rgba(220,38,38,.08)}
 .summary-line.grande.proventos-destaque{font-size:1.15rem;border:1px solid rgba(37,99,235,.35); background: rgba(37,99,235,.08)}
-.summary-line.grande.media-liquida-destaque{font-size:1.05rem;border:1px solid rgba(250,204,21,.38); background:rgba(250,204,21,.08)}
+.summary-line.grande.media-liquida-destaque{font-size:.98rem;border:1px solid rgba(250,204,21,.18); background:rgba(250,204,21,.035)}
 .amarelo{color:#facc15}
 
 .resumo-content .summary-line,
 #valoresAnuaisBox .summary-line{
   flex-wrap:nowrap;
+}
+.resumo-content .summary-line{
+  align-items:flex-start;
 }
 .resumo-content .summary-line > span:first-child,
 #valoresAnuaisBox .summary-line > span:first-child{
@@ -366,6 +378,20 @@ input::placeholder{color:#94a3b8}
 #valoresAnuaisBox .summary-line > span:last-child{
   flex:0 0 auto;
   white-space:nowrap;
+}
+.resumo-content .summary-line > span:last-child{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  justify-content:center;
+}
+.resumo-content .summary-line > span:last-child small{
+  display:block;
+  margin-top:3px;
+  font-size:.74rem;
+  font-weight:500;
+  line-height:1.15;
+  text-align:right;
 }
 .resumo-content .summary-line.grande{
   font-size:1rem;
@@ -554,12 +580,13 @@ option:hover { background-color: #1b2433 !important; }
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  padding:8px 14px;
-  border:1px solid rgba(250,204,21,.42);
-  border-radius:999px;
-  background:rgba(250,204,21,.12);
-  color:#fde68a;
-  box-shadow:0 0 0 1px rgba(250,204,21,.08);
+  padding:5px 10px;
+  border:1px solid rgba(203,213,225,.12);
+  border-radius:6px;
+  background:rgba(255,255,255,.025);
+  color:rgba(226,232,240,.86);
+  box-shadow:none;
+  font-weight:500;
 }
 
 /* === Tighten footer spacing on desktop and overall === */
@@ -1133,6 +1160,11 @@ option:hover { background-color: #1b2433 !important; }
 #valoresAnuaisDescontos[data-delta]::after{ color:#dc3545; }  /* vermelho */
 #valoresAnuaisLiquido[data-delta]::after{ color:#198754; }    /* verde */
 #valoresAnuaisMediaLiquida[data-delta]::after{ color:#facc15; } /* amarelo */
+#valoresAnuaisBox .media-liquida-destaque,
+#valoresAnuaisBox .media-liquida-destaque span,
+#valoresAnuaisMediaLiquida[data-delta]::after{
+  font-weight:400;
+}
 
 /* RESUMO ANUAL (também com data-delta) */
 #resumoAnualProventos,
