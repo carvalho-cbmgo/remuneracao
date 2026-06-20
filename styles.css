@@ -577,16 +577,30 @@ option:hover { background-color: #1b2433 !important; }
 .rights-line{margin:0 0 2px 0; text-align:center}
 .rights-line small{font-size:.95rem; font-weight:600; letter-spacing:.2px}
 .rights-highlight small{
-  display:inline-flex;
+  display:inline-block;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:rgba(226,232,240,.8);
+  font-weight:500;
+  letter-spacing:.3px;
+}
+.rights-highlight{
+  width:min(100%, 620px);
+  display:flex;
   align-items:center;
   justify-content:center;
-  padding:5px 10px;
-  border:1px solid rgba(203,213,225,.12);
-  border-radius:6px;
-  background:rgba(255,255,255,.025);
-  color:rgba(226,232,240,.86);
-  box-shadow:none;
-  font-weight:500;
+  gap:10px;
+}
+.rights-highlight::before,
+.rights-highlight::after{
+  content:"";
+  width:min(12vw, 72px);
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(148,163,184,.28));
+}
+.rights-highlight::after{
+  transform:scaleX(-1);
 }
 
 /* === Tighten footer spacing on desktop and overall === */
@@ -1160,6 +1174,30 @@ option:hover { background-color: #1b2433 !important; }
 #valoresAnuaisDescontos[data-delta]::after{ color:#dc3545; }  /* vermelho */
 #valoresAnuaisLiquido[data-delta]::after{ color:#198754; }    /* verde */
 #valoresAnuaisMediaLiquida[data-delta]::after{ color:#facc15; } /* amarelo */
+#valoresAnuaisProventos[data-delta],
+#valoresAnuaisDescontos[data-delta],
+#valoresAnuaisLiquido[data-delta]{
+  flex-direction:column;
+  align-items:flex-end;
+  gap:3px;
+}
+#valoresAnuaisProventos[data-delta]::after,
+#valoresAnuaisDescontos[data-delta]::after,
+#valoresAnuaisLiquido[data-delta]::after{
+  display:block;
+  margin-top:2px;
+  font-weight:600;
+}
+#valoresAnuaisBox .summary-line:has(> #valoresAnuaisProventos[data-delta]),
+#valoresAnuaisBox .summary-line:has(> #valoresAnuaisDescontos[data-delta]),
+#valoresAnuaisBox .summary-line:has(> #valoresAnuaisLiquido[data-delta]){
+  align-items:start;
+}
+#valoresAnuaisBox .summary-line:has(> #valoresAnuaisProventos[data-delta]) > span:first-child,
+#valoresAnuaisBox .summary-line:has(> #valoresAnuaisDescontos[data-delta]) > span:first-child,
+#valoresAnuaisBox .summary-line:has(> #valoresAnuaisLiquido[data-delta]) > span:first-child{
+  padding-top:2px;
+}
 #valoresAnuaisBox .media-liquida-destaque,
 #valoresAnuaisBox .media-liquida-destaque span,
 #valoresAnuaisMediaLiquida[data-delta]::after{
@@ -1236,11 +1274,13 @@ body:not(.deltas-on) [id$="Delta"] {
 }
 @media (max-width:520px){
   .brand .brand-mark{
-    width:64px;
-    height:44px;
+    width:clamp(88px, 28vw, 112px);
+    height:auto;
+    aspect-ratio:3 / 2;
+    flex:0 0 auto;
   }
   .brand-text h1{
-    font-size:1.55rem;
+    font-size:1.35rem;
   }
 }
 
