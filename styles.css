@@ -1176,26 +1176,30 @@ option:hover { background-color: #1b2433 !important; }
 #valoresAnuaisMediaLiquida[data-delta]::after{ color:#facc15; } /* amarelo */
 #valoresAnuaisProventos[data-delta],
 #valoresAnuaisDescontos[data-delta],
-#valoresAnuaisLiquido[data-delta]{
+#valoresAnuaisLiquido[data-delta],
+#valoresAnuaisMediaLiquida[data-delta]{
   flex-direction:column;
   align-items:flex-end;
   gap:3px;
 }
 #valoresAnuaisProventos[data-delta]::after,
 #valoresAnuaisDescontos[data-delta]::after,
-#valoresAnuaisLiquido[data-delta]::after{
+#valoresAnuaisLiquido[data-delta]::after,
+#valoresAnuaisMediaLiquida[data-delta]::after{
   display:block;
   margin-top:2px;
   font-weight:600;
 }
 #valoresAnuaisBox .summary-line:has(> #valoresAnuaisProventos[data-delta]),
 #valoresAnuaisBox .summary-line:has(> #valoresAnuaisDescontos[data-delta]),
-#valoresAnuaisBox .summary-line:has(> #valoresAnuaisLiquido[data-delta]){
+#valoresAnuaisBox .summary-line:has(> #valoresAnuaisLiquido[data-delta]),
+#valoresAnuaisBox .summary-line:has(> #valoresAnuaisMediaLiquida[data-delta]){
   align-items:start;
 }
 #valoresAnuaisBox .summary-line:has(> #valoresAnuaisProventos[data-delta]) > span:first-child,
 #valoresAnuaisBox .summary-line:has(> #valoresAnuaisDescontos[data-delta]) > span:first-child,
-#valoresAnuaisBox .summary-line:has(> #valoresAnuaisLiquido[data-delta]) > span:first-child{
+#valoresAnuaisBox .summary-line:has(> #valoresAnuaisLiquido[data-delta]) > span:first-child,
+#valoresAnuaisBox .summary-line:has(> #valoresAnuaisMediaLiquida[data-delta]) > span:first-child{
   padding-top:2px;
 }
 #valoresAnuaisBox .media-liquida-destaque,
@@ -1281,6 +1285,60 @@ body:not(.deltas-on) [id$="Delta"] {
   }
   .brand-text h1{
     font-size:1.35rem;
+  }
+}
+
+@media (max-width:640px){
+  .inputs-card{
+    padding:16px 14px;
+  }
+  .grid-2{
+    gap:10px;
+  }
+  .grid-2 > .form-group{
+    display:grid;
+    grid-template-columns:minmax(104px, .9fr) minmax(0, 1.1fr);
+    align-items:center;
+    column-gap:10px;
+  }
+  .grid-2 > .form-group > label{
+    margin:0;
+    font-size:.88rem;
+    line-height:1.2;
+  }
+  .grid-2 > .form-group > select{
+    min-width:0;
+    padding:10px 30px 10px 10px;
+  }
+  .section-row{
+    gap:10px;
+    margin-top:12px;
+  }
+  .section-row .section-box{
+    display:grid;
+    grid-template-columns:minmax(104px, .9fr) minmax(0, 1.1fr);
+    align-items:start;
+    column-gap:10px;
+    row-gap:8px;
+    margin-top:0;
+    padding:10px 12px;
+  }
+  .section-row .section-title{
+    margin:0;
+    padding-top:11px;
+    font-size:.88rem;
+    line-height:1.2;
+  }
+  .section-row .section-box > .form-group{
+    min-width:0;
+  }
+  .section-row .section-box > .form-group select,
+  .section-row .section-box > .form-group input{
+    min-width:0;
+    padding:10px;
+  }
+  #grupoIpasgoValor{
+    grid-column:1 / -1;
   }
 }
 
