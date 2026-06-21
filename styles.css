@@ -159,8 +159,31 @@ input::placeholder{color:#94a3b8}
 .btn.ghost{background: transparent;border-color: rgba(255,255,255,.12)}
 
 .results-card{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  padding:0;
+  border:0;
+  box-shadow:none;
+  background:transparent;
+}
+.results-card[hidden]{
+  display:none;
+}
+.output-section{
   background:linear-gradient(180deg, rgba(20,32,55,.98), rgba(13,26,44,.98));
-  border-color:rgba(59,130,246,.28);
+  border:1px solid rgba(148,163,184,.2);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:22px;
+}
+.output-monthly{border-color:rgba(59,130,246,.28)}
+.output-ferias13{border-color:rgba(34,197,94,.24)}
+.output-annual-values{border-color:rgba(250,204,21,.24)}
+.output-annual-detail{border-color:rgba(148,163,184,.24)}
+.output-section h2{
+  margin:0 0 12px;
+  letter-spacing:.3px;
 }
 .results-card h3{margin:0 0 10px 0}
 .resume-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
@@ -625,6 +648,7 @@ option:hover { background-color: #1b2433 !important; }
 .site-header{align-items:center}
 .brand-img{image-rendering:auto}
 .input-with-badge{display:flex;align-items:center;gap:8px}
+.ipasgo-label-mobile{display:none}
 
 .percent-badge{white-space:nowrap;font-size:.9rem;padding:4px 8px;border-radius:999px;background:rgba(59,130,246,.12);color:#1d4ed8;border:1px solid rgba(29,78,216,.2)}
 
@@ -645,7 +669,7 @@ option:hover { background-color: #1b2433 !important; }
 .section-sep{height:1px;background:rgba(148,163,184,.35);margin:20px 0 20px;border-radius:999px}
 
 /* Extra spacing for the Férias e 13º box */
-#ferias13Box{margin-top:12px}
+#ferias13Box{margin-top:0}
 
 
 /* ===== Férias & 13º: mobile-first cards ===== */
@@ -877,7 +901,7 @@ option:hover { background-color: #1b2433 !important; }
 
 .table-compact th,.table-compact td{padding:6px 8px}
 
-#detalhamentoAnualBox{margin-top:18px}
+#detalhamentoAnualBox{margin-top:0}
 
 #detalhamentoAnualContent{
   padding:0 12px 12px;
@@ -943,7 +967,7 @@ option:hover { background-color: #1b2433 !important; }
 /* Valores Anuais */
 #valoresAnuaisBox {
   width:min(100%, 720px);
-  margin:16px auto 0;
+  margin:0 auto;
   border-color:#facc15;
 } /* borda amarela para destacar o box */
 #valoresAnuaisBox h3 { color: #facc15; } /* título em amarelo */
@@ -1289,6 +1313,12 @@ body:not(.deltas-on) [id$="Delta"] {
 }
 
 @media (max-width:640px){
+  .results-card{
+    gap:12px;
+  }
+  .output-section{
+    padding:14px 12px;
+  }
   .inputs-card{
     padding:16px 14px;
   }
@@ -1355,6 +1385,45 @@ body:not(.deltas-on) [id$="Delta"] {
   }
   #grupoIpasgoValor{
     grid-column:1 / -1;
+  }
+  .ipasgo-label-desktop{
+    display:none;
+  }
+  .ipasgo-label-mobile{
+    display:inline;
+  }
+  #grupoIpasgoValor:not(.hidden){
+    display:grid;
+    grid-template-columns:auto minmax(48px, 1fr) auto;
+    align-items:center;
+    gap:6px;
+    width:100%;
+    margin-top:2px;
+  }
+  #grupoIpasgoValor .spacer-6{
+    display:none;
+  }
+  #grupoIpasgoValor label{
+    margin:0;
+    white-space:nowrap;
+    font-size:.78rem;
+    line-height:1.1;
+  }
+  #grupoIpasgoValor label small{
+    font-size:inherit;
+  }
+  #grupoIpasgoValor .input-with-badge{
+    display:contents;
+  }
+  #grupoIpasgoValor input{
+    width:100%;
+    min-width:0;
+    padding:8px;
+  }
+  #grupoIpasgoValor .percent-badge{
+    min-width:0;
+    padding:4px 6px;
+    font-size:.76rem;
   }
   #ferias13Box > .collapse-header,
   #detalhamentoAnualBox > .collapse-header{

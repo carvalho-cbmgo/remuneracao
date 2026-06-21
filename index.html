@@ -114,7 +114,7 @@
     </div>
     <div class="form-group hidden" id="grupoIpasgoValor">
   <div class="spacer-6"></div>
-  <label for="valorIpasgo"> <small class="muted">Informe Valor Mensal Plano de Saúde (R$)</small></label>
+  <label for="valorIpasgo"><small class="muted"><span class="ipasgo-label-desktop">Informe Valor Mensal Plano de Saúde (R$)</span><span class="ipasgo-label-mobile">Informe valor (R$)</span></small></label>
   <div class="input-with-badge">
     <input type="text" id="valorIpasgo" inputmode="decimal" placeholder="0,00" />
     <span id="ipasgoPercentBadge" class="percent-badge">0,00&nbsp;%</span>
@@ -169,7 +169,8 @@
       </div>
     </div>
 
-    <section class="card results-card" id="resultado" hidden>
+    <section class="results-card" id="resultado" hidden>
+      <section class="output-section output-monthly">
       <div class="title-row"><h2>Detalhamento da Remuneração no Mês Selecionado</h2><span id="autoBadge" class="badge hidden">atualizado automaticamente</span></div>
 
       <div class="resume-grid">
@@ -248,10 +249,9 @@
           </div>
         </div>
       </div>
+      </section>
 
-
-     
-        <div class="section-sep" aria-hidden="true"></div>
+      <section class="output-section output-ferias13">
 <div class="resume-box destaque detail-collapse is-collapsed" id="ferias13Box" data-collapse-section="ferias13-box">
           <button type="button" class="collapse-header" data-collapse-toggle="ferias13-box" aria-expanded="false" aria-controls="ferias13Content">
             <span class="collapse-title">Adicional Férias e 13º</span>
@@ -323,26 +323,9 @@
     </div>          
           </div>
   </div>
+      </section>
 
-        <div class="resume-box destaque detail-collapse is-collapsed" id="detalhamentoAnualBox" data-collapse-section="detalhamento-anual">
-          <button type="button" class="collapse-header" data-collapse-toggle="detalhamento-anual" aria-expanded="false" aria-controls="detalhamentoAnualContent">
-            <span class="collapse-title">Detalhamento Anual</span>
-            <span class="collapse-right">
-              <span class="collapse-total verde" id="detalhamentoAnualTotalHeader">R$ 0,00</span>
-              <span class="collapse-icon" aria-hidden="true"></span>
-            </span>
-          </button>
-          <div class="collapse-content" id="detalhamentoAnualContent">
-            <div class="table-scroll">
-              <table class="table table-compact" id="tabelaDetalhamentoAnual">
-                <thead id="theadDetalhamentoAnual"></thead>
-                <tbody id="tbodyDetalhamentoAnual"></tbody>
-              </table>
-            </div>
-          </div>
-	</div>
-
-
+      <section class="output-section output-annual-values">
         <div class="resume-box destaque" id="valoresAnuaisBox">
           <h3>VALORES ANUAIS</h3>
           <div class="summary-line grande proventos-destaque">
@@ -362,6 +345,27 @@
             <span class="amarelo" id="valoresAnuaisMediaLiquida">R$ 0,00</span>
           </div>
         </div>
+      </section>
+
+      <section class="output-section output-annual-detail">
+        <div class="resume-box destaque detail-collapse is-collapsed" id="detalhamentoAnualBox" data-collapse-section="detalhamento-anual">
+          <button type="button" class="collapse-header" data-collapse-toggle="detalhamento-anual" aria-expanded="false" aria-controls="detalhamentoAnualContent">
+            <span class="collapse-title">Detalhamento Anual</span>
+            <span class="collapse-right">
+              <span class="collapse-total verde" id="detalhamentoAnualTotalHeader">R$ 0,00</span>
+              <span class="collapse-icon" aria-hidden="true"></span>
+            </span>
+          </button>
+          <div class="collapse-content" id="detalhamentoAnualContent">
+            <div class="table-scroll">
+              <table class="table table-compact" id="tabelaDetalhamentoAnual">
+                <thead id="theadDetalhamentoAnual"></thead>
+                <tbody id="tbodyDetalhamentoAnual"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
 
     </section>
   </main>
