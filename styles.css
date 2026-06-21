@@ -1340,5 +1340,51 @@ body:not(.deltas-on) [id$="Delta"] {
   #grupoIpasgoValor{
     grid-column:1 / -1;
   }
+  #ferias13Box > .collapse-header,
+  #detalhamentoAnualBox > .collapse-header{
+    align-items:flex-start;
+  }
+  #ferias13Box > .collapse-header .collapse-title,
+  #detalhamentoAnualBox > .collapse-header .collapse-title{
+    flex:1 1 0;
+    min-width:0;
+    padding-top:2px;
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+    overflow-wrap:anywhere;
+    line-height:1.2;
+  }
+  #ferias13Box > .collapse-header .collapse-total[data-delta]::after,
+  #detalhamentoAnualBox > .collapse-header .collapse-total[data-delta]::after{
+    max-width:100px;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    font-size:.68rem;
+  }
+  #valoresAnuaisBox .summary-line.grande{
+    grid-template-columns:minmax(0, 1fr) auto;
+    gap:8px;
+    padding:9px 8px;
+  }
+  #valoresAnuaisBox .summary-line > span:first-child{
+    min-width:0;
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+    overflow-wrap:anywhere;
+    line-height:1.2;
+  }
+  #valoresAnuaisBox .summary-line > span:last-child{
+    min-width:0;
+    max-width:100%;
+  }
+  #valoresAnuaisBox [data-delta]::after{
+    max-width:min(42vw, 145px);
+    white-space:normal;
+    overflow-wrap:anywhere;
+    text-align:right;
+    font-size:.7rem;
+  }
 }
 
