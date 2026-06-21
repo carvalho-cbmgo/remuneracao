@@ -1332,6 +1332,22 @@ body:not(.deltas-on) [id$="Delta"] {
   .section-row .section-box > .form-group{
     min-width:0;
   }
+  .section-row .adicionais-box > .form-group{
+    display:contents;
+  }
+  .section-row .adicionais-box #adicionaisChips{
+    grid-column:1 / -1;
+    width:100%;
+    margin:2px 0 0;
+    justify-content:flex-start;
+    align-items:center;
+  }
+  .section-row .adicionais-box #adicionaisChips:empty{
+    display:none;
+  }
+  .section-row .adicionais-box .adicional-chip{
+    flex:0 0 auto;
+  }
   .section-row .section-box > .form-group select,
   .section-row .section-box > .form-group input{
     min-width:0;
