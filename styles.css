@@ -402,6 +402,13 @@ input::placeholder{color:#94a3b8}
   flex:0 0 auto;
   white-space:nowrap;
 }
+.resumo-content .summary-line > span:first-child{
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  overflow-wrap:anywhere;
+  line-height:1.2;
+}
 .resumo-content .summary-line > span:last-child{
   display:flex;
   flex-direction:column;
@@ -894,8 +901,11 @@ option:hover { background-color: #1b2433 !important; }
 
 .table-scroll{
   width:100%;
+  position:relative;
+  isolation:isolate;
   overflow-x:auto;
   overflow-y:hidden;
+  overscroll-behavior-inline:contain;
   padding-bottom:4px;
 }
 
@@ -926,10 +936,19 @@ option:hover { background-color: #1b2433 !important; }
 }
 #tabelaDetalhamentoAnual thead th:first-child,
 #tabelaDetalhamentoAnual tbody td:first-child{
+  position:sticky;
+  left:0;
+  z-index:2;
   width:126px;
   min-width:126px;
   text-align:left;
   white-space:normal;
+  background:#142238;
+  box-shadow:8px 0 12px -10px rgba(0,0,0,.9);
+}
+#tabelaDetalhamentoAnual thead th:first-child{
+  z-index:3;
+  background:#101c2f;
 }
 #tabelaDetalhamentoAnual thead th:not(:first-child){
   min-width:112px;
