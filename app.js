@@ -95,6 +95,10 @@ const ac4TotalPreview = byId("ac4TotalPreview");
 const ac4BreakdownPreview = byId("ac4BreakdownPreview");
 const ac4ConfirmBtn = byId("ac4Confirm");
 const ac4CancelBtn = byId("ac4Cancel");
+const infoSubsidiosBtn = byId("infoSubsidiosBtn");
+const subsidiosModal = byId("subsidiosModal");
+const tbodySubsidios = byId("tbodySubsidios");
+const subsidiosCloseBtn = byId("subsidiosClose");
 const AC2_VALOR = 1050.00;
 const AC3_VALOR = 828.00;
 const AC5_VALOR = 1000.00;
@@ -235,6 +239,52 @@ function closeAc4Modal(){
   ac4Modal.classList.add("hidden");
 }
 
+function renderSubsidiosTable(){
+  if (!tbodySubsidios) return;
+  tbodySubsidios.innerHTML = Object.entries(SUBSIDIO).map(([posto, valor]) => `
+    <tr>
+      <td>${escapeHtml(posto)}</td>
+      <td>${fmt(valor)}</td>
+    </tr>
+  `).join("");
+}
+
+function openSubsidiosModal(){
+  if (!subsidiosModal) return;
+  renderSubsidiosTable();
+  subsidiosModal.classList.remove("hidden");
+  if (infoSubsidiosBtn) infoSubsidiosBtn.setAttribute("aria-expanded", "true");
+  if (subsidiosCloseBtn) subsidiosCloseBtn.focus();
+}
+
+function closeSubsidiosModal(){
+  if (!subsidiosModal) return;
+  subsidiosModal.classList.add("hidden");
+  if (infoSubsidiosBtn) {
+    infoSubsidiosBtn.setAttribute("aria-expanded", "false");
+    infoSubsidiosBtn.focus();
+  }
+}
+
+function bindSubsidiosModal(){
+  if (infoSubsidiosBtn){
+    infoSubsidiosBtn.addEventListener("click", openSubsidiosModal);
+  }
+  if (subsidiosCloseBtn){
+    subsidiosCloseBtn.addEventListener("click", closeSubsidiosModal);
+  }
+  if (subsidiosModal){
+    subsidiosModal.addEventListener("click", (e) => {
+      if (e.target === subsidiosModal) closeSubsidiosModal();
+    });
+  }
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && subsidiosModal && !subsidiosModal.classList.contains("hidden")){
+      closeSubsidiosModal();
+    }
+  });
+}
+
 function renderAdicionaisChips(){
   if (!adicionaisChips) return;
   const ordem = ["AC2", "AC3", "AC4", "AC5"];
@@ -323,6 +373,7 @@ function bindAdicionaisEventos(){
 }
 
 bindAdicionaisEventos();
+bindSubsidiosModal();
 renderAdicionaisChips();
 
 

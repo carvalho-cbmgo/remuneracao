@@ -22,7 +22,10 @@
 
   <main class="container">
     <section class="card inputs-card">
-      <h2>Informações de Entrada</h2>
+      <div class="input-card-title">
+        <h2>Informações de Entrada</h2>
+        <button type="button" id="infoSubsidiosBtn" class="info-icon-btn" aria-label="Exibir tabela de subsídios utilizados nos cálculos" aria-controls="subsidiosModal" aria-expanded="false" title="Subsídios utilizados nos cálculos"></button>
+      </div>
       <form id="formRemuneracao">
         <div class="grid-2">
           <div class="form-group">
@@ -135,6 +138,29 @@
         </div>
       </form>
     </section>
+
+        <div id="subsidiosModal" class="subsidios-modal hidden" role="dialog" aria-modal="true" aria-labelledby="subsidiosTitulo">
+      <div class="subsidios-modal-card">
+        <div class="subsidios-modal-head">
+          <div>
+            <h3 id="subsidiosTitulo">Subsídios por Posto / Graduação</h3>
+            <p class="muted">Valores de subsídio utilizados nos cálculos do site.</p>
+          </div>
+          <button type="button" id="subsidiosClose" class="modal-close-btn" aria-label="Fechar tabela de subsídios">x</button>
+        </div>
+        <div class="subsidios-table-scroll">
+          <table class="table subsidios-table">
+            <thead>
+              <tr>
+                <th>Posto / Graduação</th>
+                <th>Subsídio</th>
+              </tr>
+            </thead>
+            <tbody id="tbodySubsidios"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
         <div id="ac4Modal" class="ac4-modal hidden" role="dialog" aria-modal="true" aria-labelledby="ac4Titulo">
       <div class="ac4-modal-card">
