@@ -14,7 +14,7 @@
       <div class="brand-mark"><img src="assets/bandeira-goias.png" alt="Bandeira do Estado de Goiás" class="brand-img"></div>
       <div class="brand-text">
         <h1>Remuneração CBMGO</h1>
-        <p class="simulador-linha">Simulador de proventos e descontos</p>
+        <p class="simulador-linha">Simulador proventos e descontos</p>
         <p class="database-tag">Referência: <span class="database-period">julho/2026</span></p>
       </div>
     </div>
@@ -43,19 +43,24 @@
             <label for="posto">Posto / Graduação</label>
             <select id="posto" required>
               <option value="" disabled selected>Selecione...</option>
-              <option value="CEL">CEL</option>
-              <option value="TC">TC</option>
-              <option value="MAJ">MAJ</option>
-              <option value="CAP">CAP</option>
-              <option value="1º TEN">1º TEN</option>
-              <option value="2º TEN">2º TEN</option>
-              <option value="SUBTEN / ASP OF">SUBTEN / ASP OF</option>
-              <option value="1º SGT / Cadete 3º Ano">1º SGT  / Cadete 3º Ano</option>
-              <option value="2º SGT / Cadete 2º Ano">2º SGT / Cadete 2º Ano</option>
-              <option value="3º SGT / Cadete 1º Ano">3º SGT / Cadete 1º Ano</option>
-              <option value="CB">CB</option>
-              <option value="SD 1º CLASSE">SD 1º CLASSE</option>
-              <option value="SD 2º CLASSE">SD 2º CLASSE</option>
+              <option value="Coronel - Nível II">Coronel - Nível II</option>
+              <option value="Coronel - Nível I">Coronel - Nível I</option>
+              <option value="Tenente-Coronel">Tenente-Coronel</option>
+              <option value="Major">Major</option>
+              <option value="Capitão">Capitão</option>
+              <option value="Primeiro-Tenente">Primeiro-Tenente</option>
+              <option value="Segundo-Tenente">Segundo-Tenente</option>
+              <option value="Aspirante a oficial">Aspirante a oficial</option>
+              <option value="Cadete 3º ano">Cadete 3º ano</option>
+              <option value="Cadete 2º ano">Cadete 2º ano</option>
+              <option value="Cadete 1º ano">Cadete 1º ano</option>
+              <option value="Subtenente">Subtenente</option>
+              <option value="Primeiro-Sargento">Primeiro-Sargento</option>
+              <option value="Segundo-Sargento">Segundo-Sargento</option>
+              <option value="Terceiro-Sargento">Terceiro-Sargento</option>
+              <option value="Cabo">Cabo</option>
+              <option value="Soldado de 1ª Classe">Soldado de 1ª Classe</option>
+              <option value="Soldado de 2ª Classe">Soldado de 2ª Classe</option>
             </select>
           </div>
 
@@ -144,18 +149,11 @@
         <div class="subsidios-modal-head">
           <div>
             <h3 id="subsidiosTitulo">Subsídios por Posto / Graduação</h3>
-            <p class="muted">Valores de subsídio utilizados nos cálculos do site.</p>
           </div>
           <button type="button" id="subsidiosClose" class="modal-close-btn" aria-label="Fechar tabela de subsídios">x</button>
         </div>
         <div class="subsidios-table-scroll">
-          <table class="table subsidios-table">
-            <thead>
-              <tr>
-                <th>Posto / Graduação</th>
-                <th>Subsídio</th>
-              </tr>
-            </thead>
+          <table class="table subsidios-table" aria-label="Tabela de subsídios por posto ou graduação">
             <tbody id="tbodySubsidios"></tbody>
           </table>
         </div>
@@ -398,7 +396,7 @@
   </main>
   <footer class="site-footer" role="contentinfo">
     <p class="rights-line rights-highlight"><small>© <span id="ano"></span> Todos os direitos reservados<br>Cadete CARVALHO, CBMGO</small></p>
-    <p class="update-line"><small>Última atualização: <strong>Julho / 2026</strong></small></p>
+    <p class="update-line"><small>Última atualização: <strong><a class="official-link" href="https://diariooficial.abc.go.gov.br/portal/edicoes/download/7247" target="_blank" rel="noopener noreferrer"><span>DOU/GO N° 24.809 - 29/6/2026</span><img class="official-link-img" src="assets/icone-diario-oficial.svg" alt="" aria-hidden="true"></a></strong></small></p>
   </footer>
 
   <script src="app.js"></script>

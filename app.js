@@ -26,27 +26,32 @@ const byId = (id) => document.getElementById(id);
 const tbodyProventos = byId("tbodyProventos");
 const tbodyDescontos = byId("tbodyDescontos");
 
-// ====== Tabela de Subsídio Efetivo por Posto/Graduação ====== SUBTEN ATUAL 17185.74
+// ====== Tabela de Subsídio Efetivo por Posto/Graduação ======
 const SUBSIDIO = {
-  "CEL": 40294.19,
-  "TC": 36321.50,
-  "MAJ": 32632.62,
-  "CAP": 28547.01,
-  "1º TEN": 20724.98,
-  "2º TEN": 17823.47,
-  "SUBTEN / ASP OF": 17185.74,
-  "1º SGT / Cadete 3º Ano": 13516.29,
-  "2º SGT / Cadete 2º Ano": 11714.11,
-  "3º SGT / Cadete 1º Ano": 10813.02,
-  "CB": 9861.48,
-  "SD 1º CLASSE": 8980.36,
-  "SD 2º CLASSE": 8145.45
+  "Coronel - Nível II": 48353.02,
+  "Coronel - Nível I": 40294.18,
+  "Tenente-Coronel": 36321.51,
+  "Major": 32632.62,
+  "Capitão": 28547.01,
+  "Primeiro-Tenente": 20724.98,
+  "Segundo-Tenente": 17930.43,
+  "Aspirante a oficial": 17167.09,
+  "Cadete 3º ano": 13516.29,
+  "Cadete 2º ano": 11714.12,
+  "Cadete 1º ano": 10813.01,
+  "Subtenente": 17167.09,
+  "Primeiro-Sargento": 13516.29,
+  "Segundo-Sargento": 11714.12,
+  "Terceiro-Sargento": 10813.01,
+  "Cabo": 9861.48,
+  "Soldado de 1ª Classe": 8980.38,
+  "Soldado de 2ª Classe": 8145.38
 };
 
 // ====== Constantes fixas ======
 const ABONO_FARDAMENTO = 51.99;
 const FARDAMENTO = 51.99;
-const FAS = round2(SUBSIDIO["CAP"] * 0.0035);
+const FAS = round2(SUBSIDIO["Capitão"] * 0.0035);
 const ALIQUOTA_PENSAO = 0.105;
 const IPASGO_TETO_BASICO = 838.71;
 const IPASGO_TETO_ESPECIAL = 1247.93;
