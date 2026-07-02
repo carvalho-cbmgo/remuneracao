@@ -884,7 +884,7 @@ option:hover { background-color: #1b2433 !important; }
 }
 .subsidios-modal.hidden{display:none}
 .subsidios-modal-card{
-  width:min(430px, calc(100vw - 32px));
+  width:min(460px, calc(100vw - 32px));
   max-height:calc(100vh - 32px);
   overflow:hidden;
   background:linear-gradient(180deg,#0f172a,#0b1220);
@@ -901,7 +901,7 @@ option:hover { background-color: #1b2433 !important; }
 }
 .subsidios-modal-head h3{
   margin:0;
-  font-size:1.12rem;
+  font-size:1.22rem;
   line-height:1.18;
   color:#f8fafc;
   font-weight:800;
@@ -955,21 +955,21 @@ option:hover { background-color: #1b2433 !important; }
   width:100%;
   min-width:0;
   table-layout:fixed;
-  font-size:.9rem;
+  font-size:1rem;
   border-spacing:0 5px;
 }
 .subsidios-table tbody td{
-  padding:7px 8px;
+  padding:8px 9px;
 }
 .subsidios-table tbody td:first-child{
-  width:57%;
+  width:58%;
   white-space:normal;
   overflow:visible;
   overflow-wrap:anywhere;
   line-height:1.18;
 }
 .subsidios-table tbody td:last-child{
-  width:43%;
+  width:42%;
   text-align:right;
   white-space:nowrap;
 }
@@ -989,25 +989,25 @@ option:hover { background-color: #1b2433 !important; }
     padding:10px;
   }
   .subsidios-modal-card{
-    width:min(390px, calc(100vw - 20px));
+    width:min(420px, calc(100vw - 20px));
     padding:10px;
   }
   .subsidios-modal-head h3{
-    font-size:1rem;
+    font-size:1.08rem;
   }
   .subsidios-table{
-    font-size:.82rem;
+    font-size:.9rem;
     border-spacing:0 3px;
   }
   .subsidios-table tbody td{
-    padding:5px 6px;
+    padding:6px 7px;
   }
   .subsidios-table tbody td:first-child{
-    width:55%;
+    width:56%;
   }
   .subsidios-table tbody td:last-child{
-    width:45%;
-    font-size:.8rem;
+    width:44%;
+    font-size:.88rem;
   }
 }
 .ac4-modal-card{
