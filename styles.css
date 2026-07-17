@@ -127,6 +127,13 @@ body{
   stroke-linecap:round;stroke-linejoin:round;
   vertical-align:-.15em;
 }
+/* Ícones que não usam a classe base .icon (têm tamanho próprio), mas
+   compartilham o mesmo desenho vetorial em traço (stroke) — sem isto,
+   renderizam como formas sólidas pretas em vez de contorno. */
+.field-icon,.select-caret,.collapse-icon,.ac4-pill-check{
+  fill:none;stroke:currentColor;stroke-width:1.75;
+  stroke-linecap:round;stroke-linejoin:round;
+}
 
 /* =========================================================================
    Ambient background
@@ -251,7 +258,7 @@ body{
    ========================================================================= */
 .disclaimer-bar{
   display:flex;align-items:flex-start;gap:10px;
-  margin:0 0 18px;padding:12px 16px;
+  margin:0 0 10px;padding:12px 16px;
   border:1px solid rgba(251,191,36,.28);border-left:3px solid var(--gold-strong);
   border-radius:12px;background:rgba(251,191,36,.055);
   color:#efe6cf;font-size:.84rem;line-height:1.5;
@@ -264,7 +271,7 @@ body{
 /* =========================================================================
    Layout / Card system
    ========================================================================= */
-.container{max-width:1180px;margin:22px auto 18px;padding:0 20px}
+.container{max-width:1180px;margin:12px auto 18px;padding:0 20px}
 
 .card{
   position:relative;
@@ -899,22 +906,6 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 #tabelaDetalhamentoAnual tbody tr.f13-row-liquido td:not(:first-child){color:#86efac !important}
 
 /* =========================================================================
-   Empty state
-   ========================================================================= */
-.empty-state{
-  display:none;
-  flex-direction:column;align-items:center;gap:14px;text-align:center;
-  margin-top:26px;padding:44px 24px;
-  border:1px dashed var(--border-strong);border-radius:var(--radius-lg);
-  background:rgba(255,255,255,.015);
-  color:var(--muted);
-}
-#resultado[hidden] ~ .empty-state{display:flex}
-.empty-state-icon{width:34px;height:34px;color:var(--muted-2)}
-.empty-state p{margin:0;max-width:420px;font-size:.92rem;line-height:1.5}
-.empty-state strong{color:var(--text-dim)}
-
-/* =========================================================================
    Footer
    ========================================================================= */
 .site-footer{max-width:1180px;margin:6px auto 40px;padding:0 20px;text-align:center;color:var(--muted)}
@@ -942,7 +933,7 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 
 @media (max-width:840px){
   .card{padding:20px}
-  .container{margin:16px auto 32px}
+  .container{margin:10px auto 32px}
   .title-row h2{font-size:1.05rem}
 }
 @media (max-width:640px){
@@ -963,10 +954,9 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .grid-2 .field .select-wrap{flex:1 1 58%;min-width:0}
   .grid-2 .field select{width:100%;font-size:.88rem;padding:10px 28px 10px 10px}
   .grid-2 .field .select-caret{right:10px}
-  /* Adicionais: título e seletor na mesma linha; chips abaixo em largura total */
   /* Título e seletor SEMPRE na mesma linha (nowrap): o seletor encolhe
-     o quanto for preciso; os chips selecionados ficam numa linha própria,
-     fora da linha flex, então nunca disputam espaço com o seletor. */
+     o quanto for preciso; conteúdo complementar (chips, campo manual do
+     plano) fica em linha própria, fora da linha flex, sem disputar espaço. */
   .adicionais-row{display:flex;flex-wrap:nowrap;align-items:center;gap:8px}
   .adicionais-box .section-title{margin-bottom:0;flex:0 0 auto;white-space:nowrap}
   .adicionais-row .form-group{flex:1 1 auto;min-width:0}
@@ -977,6 +967,12 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .associacoes-box{display:flex;align-items:center;gap:10px}
   .associacoes-box .section-title{margin-bottom:0;flex:0 0 auto}
   .associacoes-box .form-group{flex:1 1 auto;min-width:0}
+  /* Plano de Saúde: título e seletor na mesma linha */
+  .planosaude-row{display:flex;flex-wrap:nowrap;align-items:center;gap:8px}
+  .planosaude-box .section-title{margin-bottom:0;flex:0 0 auto;white-space:nowrap}
+  .planosaude-row .form-group{flex:1 1 auto;min-width:0}
+  .planosaude-row .select-wrap{width:100%;min-width:0}
+  .planosaude-row select{width:100%;min-width:0;padding-right:26px}
   /* Sem espaçamento entre o título do detalhamento e o card Proventos */
   .output-monthly{gap:0}
   .title-row{margin-bottom:0}
@@ -995,7 +991,7 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .annual-stat{padding:14px 14px 12px}
   .annual-stat-value{font-size:1.16rem}
   #detalhamentoAnualContent{padding:0 10px 12px}
-  .disclaimer-bar{font-size:.78rem;padding:10px 12px;margin-bottom:14px}
+  .disclaimer-bar{font-size:.78rem;padding:10px 12px;margin-bottom:8px}
   .site-footer{margin:0 auto 24px}
 }
 @media (max-width:420px){
@@ -1013,7 +1009,6 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .f13-item span{font-size:.78rem}
   .f13-item strong{font-size:.9rem}
   .table tbody td strong{font-size:.86rem}
-  .empty-state{padding:32px 16px}
 }
 
 /* Value refresh micro-feedback (see enhance.js) */
