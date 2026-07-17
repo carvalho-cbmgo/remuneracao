@@ -286,7 +286,6 @@ body{
   display:flex;align-items:center;gap:10px;
 }
 .card h2 .icon{color:var(--gold);width:1.15em;height:1.15em}
-.card-subtitle{margin:2px 0 0;color:var(--muted);font-size:.9rem}
 
 .inputs-card{
   margin-bottom:26px;
@@ -959,6 +958,9 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   /* Botão "Subsídios" na mesma linha do título "Informações de Entrada" */
   .input-card-title{flex-wrap:nowrap;align-items:flex-start;gap:10px;margin-bottom:10px}
   .info-icon-btn{margin-left:auto;flex:0 0 auto}
+  /* Menos distância entre o fim de "Informações de Entrada" e o rodapé
+     (quando o resultado ainda não está visível) */
+  .inputs-card{margin-bottom:10px}
   /* Campos com rótulo e seletor na mesma linha, sem cortar conteúdo */
   .grid-2{gap:10px;margin-bottom:12px}
   .grid-2 .field{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
@@ -1020,7 +1022,6 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .annual-stat-label{font-size:.7rem}
   .badge{font-size:.68rem;padding:4px 9px}
   .card h2{font-size:1.02rem}
-  .card-subtitle{font-size:.82rem}
   .info-icon-btn{padding:8px}
   .f13-item span{font-size:.78rem}
   .f13-item strong{font-size:.9rem}
