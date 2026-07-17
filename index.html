@@ -40,6 +40,8 @@
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.2V12l3.4 2"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-calendar-date" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17"/><path d="M8 3v4M16 3v4"/><circle cx="12" cy="14.8" r="2.4"/></symbol>
+      <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7.5h8.5M17.8 7.5H20"/><circle cx="15.2" cy="7.5" r="2.3"/><path d="M4 16.5h2.2M9.5 16.5H20"/><circle cx="6.8" cy="16.5" r="2.3"/></symbol>
       <symbol id="i-history" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5V9h4.5"/><path d="M12 8v4.3l3 1.9"/></symbol>
     </defs>
   </svg>
@@ -85,7 +87,7 @@
       <form id="formRemuneracao">
         <div class="grid-2">
           <div class="form-group field">
-            <label for="mesAno"><svg class="field-icon" aria-hidden="true"><use href="#i-calendar"></use></svg><span>Mês de referência</span></label>
+            <label for="mesAno"><svg class="field-icon" aria-hidden="true"><use href="#i-calendar-date"></use></svg><span>Data de referência</span></label>
             <div class="select-wrap">
               <select id="mesAno" required></select>
               <svg class="select-caret" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
@@ -161,7 +163,7 @@
             </div>
           </div>
 
-          <div class="section-box">
+          <div class="section-box associacoes-box">
             <div class="section-title"><svg class="icon" aria-hidden="true"><use href="#i-building"></use></svg>Associações</div>
             <div class="form-group">
               <div class="input-with-prefix">
@@ -202,7 +204,7 @@
           </div>
           <div id="reajusteWrap" class="reajuste-wrap hidden">
             <div class="reajuste-quick reajuste-range">
-              <svg class="icon reajuste-icon" aria-hidden="true"><use href="#i-percent"></use></svg>
+              <svg class="icon reajuste-icon" aria-hidden="true"><use href="#i-sliders"></use></svg>
               <input type="range" id="reajusteRange" min="0" max="30" step="0.01" value="0" aria-label="Percentual de reajuste (0 a 30%)" />
               <span id="reajusteRangeVal" class="range-val" contenteditable="true">0,00%</span>
             </div>
@@ -483,23 +485,31 @@
           <h3><svg class="icon" aria-hidden="true"><use href="#i-bar-chart"></use></svg>VALORES ANUAIS</h3>
           <div class="annual-stats-grid">
             <div class="annual-stat annual-stat-azul">
-              <svg class="icon annual-stat-icon" aria-hidden="true"><use href="#i-wallet"></use></svg>
-              <span class="annual-stat-label">Proventos</span>
+              <div class="annual-stat-head">
+                <svg class="icon annual-stat-icon" aria-hidden="true"><use href="#i-wallet"></use></svg>
+                <span class="annual-stat-label">Proventos</span>
+              </div>
               <span class="annual-stat-value azul" id="valoresAnuaisProventos">R$ 0,00</span>
             </div>
             <div class="annual-stat annual-stat-vermelho">
-              <svg class="icon annual-stat-icon" aria-hidden="true"><use href="#i-trend-down"></use></svg>
-              <span class="annual-stat-label">Descontos</span>
+              <div class="annual-stat-head">
+                <svg class="icon annual-stat-icon" aria-hidden="true"><use href="#i-trend-down"></use></svg>
+                <span class="annual-stat-label">Descontos</span>
+              </div>
               <span class="annual-stat-value vermelho" id="valoresAnuaisDescontos">R$ 0,00</span>
             </div>
             <div class="annual-stat annual-stat-verde">
-              <svg class="icon annual-stat-icon" aria-hidden="true"><use href="#i-shield-check"></use></svg>
-              <span class="annual-stat-label">Remuneração Líquida</span>
+              <div class="annual-stat-head">
+                <svg class="icon annual-stat-icon" aria-hidden="true"><use href="#i-shield-check"></use></svg>
+                <span class="annual-stat-label">Remuneração Líquida</span>
+              </div>
               <span class="annual-stat-value verde" id="valoresAnuaisLiquido">R$ 0,00</span>
             </div>
             <div class="annual-stat annual-stat-amarelo">
-              <svg class="icon annual-stat-icon" aria-hidden="true"><use href="#i-bar-chart"></use></svg>
-              <span class="annual-stat-label">Média Mensal</span>
+              <div class="annual-stat-head">
+                <svg class="icon annual-stat-icon" aria-hidden="true"><use href="#i-bar-chart"></use></svg>
+                <span class="annual-stat-label">Média Mensal</span>
+              </div>
               <span class="annual-stat-value amarelo" id="valoresAnuaisMediaLiquida">R$ 0,00</span>
             </div>
           </div>

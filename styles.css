@@ -673,6 +673,7 @@ input[type="text"]:focus-visible{border-color:var(--primary);box-shadow:0 0 0 3p
    Results — shared collapse system
    ========================================================================= */
 .results-card{display:flex;flex-direction:column;gap:22px;margin-top:26px;scroll-margin-top:96px}
+.output-monthly{scroll-margin-top:96px}
 .output-section{display:flex;flex-direction:column;gap:16px}
 .title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .title-row h2{margin:0}
@@ -796,8 +797,9 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 .summary-line.grande.media-liquida-destaque{font-size:1rem;border-color:rgba(250,204,21,.25);background:var(--amber-soft);box-shadow:none}
 
 /* Resumo: espaçamento vertical entre as linhas (Bruta / Descontos / Líquida)
-   para as bordas não se sobreporem ao expandir o card */
-.resumo-content{display:flex;flex-direction:column;gap:10px}
+   para as bordas não se sobreporem ao expandir o card, e respiro entre o
+   cabeçalho "Resumo" e a primeira linha */
+.resumo-content{display:flex;flex-direction:column;gap:10px;padding-top:12px}
 .resumo-content .summary-line{align-items:flex-start;flex-wrap:nowrap}
 .resumo-content .summary-line > span:first-child{white-space:normal;overflow:visible;line-height:1.2;flex:1 1 auto}
 .resumo-content .summary-line > span:last-child{flex:0 0 auto;white-space:nowrap;display:flex;flex-direction:column;align-items:flex-end;justify-content:center}
@@ -865,7 +867,7 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 .annual-stat{
   position:relative;padding:16px 16px 14px;border-radius:var(--radius);
   background:rgba(255,255,255,.03);border:1px solid var(--border);
-  overflow:hidden;
+  overflow:hidden;text-align:center;
   transition:transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 .annual-stat:hover{transform:translateY(-2px)}
@@ -874,13 +876,15 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 .annual-stat-vermelho::before{background:linear-gradient(135deg,#fb7185,#ef4444)}
 .annual-stat-verde::before{background:var(--grad-accent)}
 .annual-stat-amarelo::before{background:linear-gradient(135deg,#fde68a,#f59e0b)}
-.annual-stat-icon{width:20px;height:20px;margin-bottom:10px;color:var(--muted)}
+/* Ícone e rótulo na mesma linha, centralizados no card */
+.annual-stat-head{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.annual-stat-icon{width:18px;height:18px;color:var(--muted);flex:0 0 auto}
 .annual-stat-azul .annual-stat-icon{color:var(--primary)}
 .annual-stat-vermelho .annual-stat-icon{color:var(--danger)}
 .annual-stat-verde .annual-stat-icon{color:var(--accent)}
 .annual-stat-amarelo .annual-stat-icon{color:var(--amber)}
-.annual-stat-label{display:block;font-size:.76rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.annual-stat-value{display:block;font-family:var(--font-mono);font-size:1.34rem;font-weight:800;letter-spacing:-.01em}
+.annual-stat-label{font-size:.76rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+.annual-stat-value{display:block;text-align:center;font-family:var(--font-mono);font-size:1.34rem;font-weight:800;letter-spacing:-.01em}
 @media (max-width:520px){.annual-stat-value{font-size:1.1rem}}
 
 /* =========================================================================
@@ -962,12 +966,31 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 @media (max-width:640px){
   .actions-buttons{width:100%;flex-direction:column;align-items:stretch}
   .actions-buttons .btn{width:100%;justify-content:center}
+  /* Barra de reajuste em linha única: ícone | barra | percentual à direita */
   .reajuste-wrap{width:100%}
-  .reajuste-quick{width:100%;height:auto;min-height:46px;padding:10px 14px;flex-wrap:wrap;justify-content:center}
-  #reajusteRange{flex:1 1 100%;width:100%;min-width:0}
-  .range-val{align-self:center}
+  .reajuste-quick{width:100%;height:auto;min-height:46px;padding:8px 12px;flex-wrap:nowrap;justify-content:space-between;gap:10px}
+  #reajusteRange{flex:1 1 auto;width:auto;min-width:0}
+  .range-val{flex:0 0 auto;align-self:center}
+  /* Botão "Subsídios" na mesma linha do título "Informações de Entrada" */
+  .input-card-title{flex-wrap:nowrap;align-items:flex-start;gap:10px}
+  .info-icon-btn{margin-left:auto;flex:0 0 auto}
+  /* Campos com rótulo e seletor na mesma linha, sem cortar conteúdo */
+  .grid-2{gap:10px;margin-bottom:12px}
+  .grid-2 .field{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .grid-2 .field label{flex:0 1 auto;min-width:0;margin-bottom:0}
+  .grid-2 .field .select-wrap{flex:1 1 58%;min-width:0}
+  .grid-2 .field select{width:100%;font-size:.88rem;padding:10px 28px 10px 10px}
+  .grid-2 .field .select-caret{right:10px}
+  /* Associações: título e campo na mesma linha */
+  .associacoes-box{display:flex;align-items:center;gap:10px}
+  .associacoes-box .section-title{margin-bottom:0;flex:0 0 auto}
+  .associacoes-box .form-group{flex:1 1 auto;min-width:0}
+  /* Sem espaçamento entre o título do detalhamento e o card Proventos */
+  .output-monthly{gap:4px}
   .title-row h2{font-size:.98rem;line-height:1.3}
   .collapse-header{padding:14px;gap:10px}
+  /* Sem espaçamento entre o Detalhamento Anual e o rodapé */
+  .container{margin-bottom:0}
   .collapse-title{font-size:.88rem}
   .collapse-total{font-size:.9rem}
   .table thead th{font-size:.7rem;padding:0 10px 4px}
@@ -979,7 +1002,7 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .annual-stat{padding:14px 14px 12px}
   .annual-stat-value{font-size:1.16rem}
   #detalhamentoAnualContent{padding:0 10px 12px}
-  .site-footer{margin:14px auto 28px}
+  .site-footer{margin:0 auto 24px}
 }
 @media (max-width:420px){
   .card{padding:16px}

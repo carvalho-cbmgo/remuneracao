@@ -104,6 +104,23 @@
   } catch (e) { /* puramente decorativo */ }
 })();
 
+(function scrollToDetalhamentoOnPosto(){
+  try {
+    var posto = document.getElementById("posto");
+    if (!posto) return;
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    posto.addEventListener("change", function () {
+      // aguarda o recálculo do app.js exibir/atualizar o resultado
+      window.setTimeout(function () {
+        var res = document.getElementById("resultado");
+        if (!res || res.hidden) return;
+        var alvo = res.querySelector(".output-monthly") || res;
+        alvo.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      }, 150);
+    });
+  } catch (e) { /* puramente decorativo */ }
+})();
+
 (function reajusteButtonState(){
   try {
     var btn = document.getElementById("simularReajuste");
