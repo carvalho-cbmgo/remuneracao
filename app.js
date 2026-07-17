@@ -26,35 +26,104 @@ const byId = (id) => document.getElementById(id);
 const tbodyProventos = byId("tbodyProventos");
 const tbodyDescontos = byId("tbodyDescontos");
 
-// ====== Tabela de Subsídio Efetivo por Posto/Graduação ======
-const SUBSIDIO = {
-  "Coronel - Nível II": 48353.02,
-  "Coronel - Nível I": 40294.18,
-  "Tenente-Coronel": 36321.51,
-  "Major": 32632.62,
-  "Capitão": 28547.01,
-  "Primeiro-Tenente": 20724.98,
-  "Segundo-Tenente": 17930.43,
-  "Aspirante a oficial": 17167.09,
-  "Cadete 3º ano": 13516.29,
-  "Cadete 2º ano": 11714.12,
-  "Cadete 1º ano": 10813.01,
-  "Subtenente": 17167.09,
-  "Primeiro-Sargento": 13516.29,
-  "Segundo-Sargento": 11714.12,
-  "Terceiro-Sargento": 10813.01,
-  "Cabo": 9861.48,
-  "Soldado de 1ª Classe": 8980.38,
-  "Soldado de 2ª Classe": 8145.38
+// ====== Tabela de Subsídio Efetivo por Posto/Graduação, por ano-base ======
+// Cada ano é a tabela vigente publicada no Diário Oficial daquele período.
+// Novos anos podem ser adicionados aqui conforme forem publicados/atualizados.
+const SUBSIDIO_POR_ANO = {
+  2026: {
+    "Coronel - Nível II": 48353.02,
+    "Coronel - Nível I": 40294.18,
+    "Tenente-Coronel": 36321.51,
+    "Major": 32632.62,
+    "Capitão": 28547.01,
+    "Primeiro-Tenente": 20724.98,
+    "Segundo-Tenente": 17930.43,
+    "Aspirante a oficial": 17167.09,
+    "Cadete 3º ano": 13516.29,
+    "Cadete 2º ano": 11714.12,
+    "Cadete 1º ano": 10813.01,
+    "Subtenente": 17167.09,
+    "Primeiro-Sargento": 13516.29,
+    "Segundo-Sargento": 11714.12,
+    "Terceiro-Sargento": 10813.01,
+    "Cabo": 9861.48,
+    "Soldado de 1ª Classe": 8980.38,
+    "Soldado de 2ª Classe": 8145.38
+  }
 };
+const ANOS_SUBSIDIO_DISPONIVEIS = Object.keys(SUBSIDIO_POR_ANO).map(Number).sort((a, b) => b - a);
+const ANO_SUBSIDIO_PADRAO = ANOS_SUBSIDIO_DISPONIVEIS[0];
+
+// Tabela do posto/graduação vigente para o ano de referência selecionado.
+// É reatribuída por aplicarTabelaSubsidioPorAno() quando o usuário troca o ano.
+let SUBSIDIO = SUBSIDIO_POR_ANO[ANO_SUBSIDIO_PADRAO];
+
+// ====== Teto constitucional (abate-teto) ======
+// Subteto estadual: 90,25% do subsídio de Ministro do STF (R$ 46.366,19).
+const TETO_CONSTITUCIONAL = 41835.39;
+
+// Aplica o teto constitucional sobre um valor de subsídio: retorna a base
+// (limitada ao teto) que deve alimentar previdência/IR, e o excedente que
+// deve aparecer como desconto "Abate-teto constitucional". Conforme
+// entendimento do STF (RE 675978, Tema 639), o excedente é subtraído da
+// remuneração bruta ANTES do cálculo de IR e contribuição previdenciária,
+// pois esses tributos não incidem sobre valor que não é efetivamente pago.
+function aplicarAbateTeto(valorSubsidio) {
+  const base = Math.min(valorSubsidio, TETO_CONSTITUCIONAL);
+  const excedente = round2(Math.max(0, valorSubsidio - TETO_CONSTITUCIONAL));
+  return { base, excedente };
+}
 
 // ====== Constantes fixas ======
 const ABONO_FARDAMENTO = 51.99;
 const FARDAMENTO = 51.99;
-const FAS = round2(SUBSIDIO["Capitão"] * 0.0035);
+// FAS – militar ativo: 0,35% do subsídio de Capitão, arredondado para cima
+// como praticado na folha oficial (R$ 99,92 na tabela de 2026).
+function calcularFas() {
+  return Math.ceil(SUBSIDIO["Capitão"] * 0.0035 * 100) / 100;
+}
+let FAS = calcularFas();
 const ALIQUOTA_PENSAO = 0.105;
 const IPASGO_TETO_BASICO = 838.71;
 const IPASGO_TETO_ESPECIAL = 1247.93;
+
+// Troca a tabela de subsídio ativa para o ano informado (usada pelo seletor #mesAno).
+function aplicarTabelaSubsidioPorAno(ano) {
+  const tabela = SUBSIDIO_POR_ANO[ano] || SUBSIDIO_POR_ANO[ANO_SUBSIDIO_PADRAO];
+  SUBSIDIO = tabela;
+  FAS = calcularFas();
+}
+
+// ====== Seletor unificado de mês/ano de referência (#mesAno) ======
+// Opções no formato "jan/2026", geradas a partir dos anos com tabela em
+// SUBSIDIO_POR_ANO. O <select id="mes"> oculto continua sendo a fonte lida
+// pelos cálculos; aqui apenas sincronizamos o mês e a tabela do ano.
+const MESES_NOMES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const MESES_ABREV = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+function setupMesAnoSelect() {
+  const unifSel = byId("mesAno");
+  const mesSel = byId("mes");
+  if (!unifSel || !mesSel) return;
+  unifSel.innerHTML = ANOS_SUBSIDIO_DISPONIVEIS.map((ano) =>
+    MESES_NOMES.map((nome, i) => `<option value="${nome}|${ano}">${MESES_ABREV[i]}/${ano}</option>`).join("")
+  ).join("");
+  const aplicarSelecao = (recalcular) => {
+    const [nomeMes, anoStr] = String(unifSel.value || "").split("|");
+    if (nomeMes) mesSel.value = nomeMes;
+    aplicarTabelaSubsidioPorAno(Number(anoStr) || ANO_SUBSIDIO_PADRAO);
+    if (!recalcular) return;
+    const modalSubs = byId("subsidiosModal");
+    if (typeof renderSubsidiosTable === "function" && modalSubs && !modalSubs.classList.contains("hidden")) {
+      renderSubsidiosTable();
+    }
+    if (typeof recomputePercentFromValor === "function") recomputePercentFromValor();
+    if (typeof computeDetalhamento === "function") computeDetalhamento();
+  };
+  unifSel.value = `Janeiro|${ANO_SUBSIDIO_PADRAO}`;
+  aplicarSelecao(false);
+  unifSel.addEventListener("change", () => aplicarSelecao(true));
+}
+setupMesAnoSelect();
 
 // ====== Parâmetros IRRF Mensal 2025 (oficiais RFB) ======
 // Fonte: gov.br/receitafederal - Tributação de 2025 (incidência mensal)
@@ -476,17 +545,23 @@ function computeDetalhamento() {
   const dependentes = Number(byId("dependentes").value || 0);
 
   if (!mes || !posto) {
+    // Resultado só fica visível com Posto/Graduação selecionado
+    const resEl = byId("resultado");
+    if (resEl) resEl.hidden = true;
     return;
   }
   // 1) Proventos
   const baseSubs = SUBSIDIO[posto];
   const subsidio = round2(baseSubs * (1 + (__reajustePercent||0)/100));
+  // Teto constitucional: valores de proventos permanecem integrais; apenas a
+  // base usada para previdência/IR é limitada, e o excedente vira desconto.
+  const { base: subsidioTetoBase, excedente: abateTeto } = aplicarAbateTeto(subsidio);
   const adicionaisCalc = getAdicionaisCalculo();
   const adicionaisTributaveis = adicionaisCalc.totalTributavel;
   const adicionaisIsentos = adicionaisCalc.totalIsento;
-  const rendimentoTributavel = round2(subsidio + adicionaisTributaveis);
+  const rendimentoTributavel = round2(subsidioTetoBase + adicionaisTributaveis);
   const proventos = [
-    { desc: `Subsídio Efetivo (${posto})` + (__reajustePercent ? ` (+${(__reajustePercent).toFixed(2).replace(".",",")}% )` : ""), valor: subsidio },
+    { desc: `Subsídio Efetivo (${posto})` + (__reajustePercent ? ` (+${(__reajustePercent).toFixed(2).replace(".",",")}% )` : ""), valor: subsidio, badge: abateTeto > 0 ? "acima do teto" : undefined },
     { desc: "Abono Fardamento", valor: ABONO_FARDAMENTO }
   ];
   adicionaisCalc.items.forEach((ad) => {
@@ -496,7 +571,7 @@ function computeDetalhamento() {
   const totalBruto = sum(proventos.map(p => p.valor));
 
   // 2) Descontos fixos + pensão
-  const pensao = round2(subsidio * ALIQUOTA_PENSAO);
+  const pensao = round2(subsidioTetoBase * ALIQUOTA_PENSAO);
   let ipasgoValor = 0;
 let ipasgoSelecionado = false;
   let ipasgoTetoApplied = false;
@@ -543,6 +618,9 @@ else if (ipasgoMode === "manual") { ipasgoValor = round2(parseMoney(valorIpasgoI
     { desc: "Contribuição Pensão e Inatividade (10,5%)", valor: pensao },
     { desc: `IRPF`, valor: irpf }
   ];
+  if (abateTeto > 0) {
+    descontos.push({ desc: "Abate teto constitucional", valor: abateTeto });
+  }
 if (ipasgoSelecionado) {
   let modeLabel = "";
   if (ipasgoMode === "basico") modeLabel = "Plano Padrão 6,81%";
@@ -568,8 +646,9 @@ if (ipasgoSelecionado) {
   if ((__reajustePercent||0) > 0){
     // Totais base (sem reajuste) para comparação
     totalBrutoBase = round2(baseSubs + ABONO_FARDAMENTO + adicionaisCalc.total);
-    const pensaoBase = round2(baseSubs * ALIQUOTA_PENSAO);
-    const rendimentoTributavelBase = round2(baseSubs + adicionaisTributaveis);
+    const { base: baseSubsTetoBase, excedente: abateTetoBase } = aplicarAbateTeto(baseSubs);
+    const pensaoBase = round2(baseSubsTetoBase * ALIQUOTA_PENSAO);
+    const rendimentoTributavelBase = round2(baseSubsTetoBase + adicionaisTributaveis);
 
     const periodoBase = ["Janeiro","Fevereiro","Março","Abril"].includes(mes) ? "jan_abr" : "mai_dez";
     const Pbase = PARAMS_IRRF[periodoBase];
@@ -587,7 +666,7 @@ if (ipasgoSelecionado) {
     if (irpfBase < 0) irpfBase = 0;
     irpfBase = round2(irpfBase);
 
-    totalDescontosBase = FARDAMENTO + FAS + pensaoBase + irpfBase;
+    totalDescontosBase = FARDAMENTO + FAS + pensaoBase + irpfBase + abateTetoBase;
     if (ipasgoSelecionado) totalDescontosBase += ipasgoValor;
     if (associacaoValor > 0) totalDescontosBase += associacaoValor;
     totalDescontosBase = round2(totalDescontosBase);
@@ -650,10 +729,10 @@ if (ipasgoSelecionado) {
     // Reaproveita P (tabela mensal) e variáveis já calculadas: pensao, irpf, dependentes, subsidio
     const dedDependentes2 = round2(P.dependente * dependentes);
     const deducoesLegais2 = round2((pensao + prevFerias) + dedDependentes2);
-    const simplificado2 = Math.min((subsidio + terco) * 0.25, P.desconto_simplificado_limite);
+    const simplificado2 = Math.min((subsidioTetoBase + terco) * 0.25, P.desconto_simplificado_limite);
     const descontoAplicado2 = Math.max(deducoesLegais2, simplificado2);
 
-    let baseCalc2 = (subsidio + terco) - descontoAplicado2;
+    let baseCalc2 = (subsidioTetoBase + terco) - descontoAplicado2;
     if (baseCalc2 < 0) baseCalc2 = 0;
 
     let aliquota2 = 0, deducao2 = 0;
@@ -665,14 +744,14 @@ if (ipasgoSelecionado) {
     irpf2 = round2(irpf2);
 
     const irFerias = round2(Math.max(0, irpf2 - irpf));
-    const descFerias = round2(prevFerias + irFerias);
+    const descFerias = round2(prevFerias + irFerias + abateTeto);
     const liquidoFerias = round2(terco - descFerias);
 
     // 13º (exclusivo na fonte) — base simplificada: subsídio atual
     const bruto13 = subsidio;
-    const prev13 = round2(bruto13 * ALIQUOTA_PENSAO);
+    const prev13 = round2(subsidioTetoBase * ALIQUOTA_PENSAO);
     const dedDependentes13 = round2(PARAMS_IRRF["jan_abr"].dependente * dependentes);
-const base13 = bruto13 - prev13 - dedDependentes13;
+let base13 = subsidioTetoBase - prev13 - dedDependentes13;
     const P13 = PARAMS_IRRF["jan_abr"]; // usa faixas de mai_dez por ser apurado em dezembro
     let aliquota13 = 0, deducao13 = 0;
     for (const faixa of P13.faixas) {
@@ -683,7 +762,7 @@ const base13 = bruto13 - prev13 - dedDependentes13;
     if (ir13 < 0) ir13 = 0;
     ir13 = round2(ir13);
 
-    const desc13 = round2(prev13 + ir13);
+    const desc13 = round2(prev13 + ir13 + abateTeto);
     const liquido13 = round2(bruto13 - desc13);
 
     // Totais
@@ -696,13 +775,13 @@ const base13 = bruto13 - prev13 - dedDependentes13;
     if (byId("feriasBruto")) {
       byId("feriasBruto").textContent = fmt(terco);
       byId("feriasDesc").textContent = fmt(descFerias);
-      byId("feriasDescBreak").textContent = `Prev: ${fmt(prevFerias)} | IR: ${fmt(irFerias)}`;
+      byId("feriasDescBreak").textContent = `Prev: ${fmt(prevFerias)} | IR: ${fmt(irFerias)}` + (abateTeto > 0 ? ` | Abate teto: ${fmt(abateTeto)}` : "");
       byId("feriasLiquido").textContent = fmt(liquidoFerias);
       if (feriasLiquidoHeaderEl) feriasLiquidoHeaderEl.textContent = fmt(liquidoFerias);
 
       byId("decimoBruto").textContent = fmt(bruto13);
       byId("decimoDesc").textContent = fmt(desc13);
-      byId("decimoDescBreak").textContent = `Prev: ${fmt(prev13)} | IR: ${fmt(ir13)}`;
+      byId("decimoDescBreak").textContent = `Prev: ${fmt(prev13)} | IR: ${fmt(ir13)}` + (abateTeto > 0 ? ` | Abate teto: ${fmt(abateTeto)}` : "");
       byId("decimoLiquido").textContent = fmt(liquido13);
       if (decimoLiquidoHeaderEl) decimoLiquidoHeaderEl.textContent = fmt(liquido13);
 
@@ -730,14 +809,15 @@ const base13 = bruto13 - prev13 - dedDependentes13;
           return;
         }
         // Base SEM reajuste
+        const { base: baseSubsTetoBase2, excedente: abateTetoBase2 } = aplicarAbateTeto(baseSubs);
         const tercoBase = round2(baseSubs / 3);
         const prevFeriasBase = 0; // sem previdência sobre o terço no simulador
         // IR férias (base) incremental
         const dedDependentesBase2 = round2(P.dependente * dependentes);
         const deducoesLegaisBase2 = round2((pensao + prevFeriasBase) + dedDependentesBase2);
-        const simplificadoBase2 = Math.min((baseSubs + tercoBase) * 0.25, P.desconto_simplificado_limite);
+        const simplificadoBase2 = Math.min((baseSubsTetoBase2 + tercoBase) * 0.25, P.desconto_simplificado_limite);
         const descontoAplicadoBase2 = Math.max(deducoesLegaisBase2, simplificadoBase2);
-        let baseCalcBase2 = (baseSubs + tercoBase) - descontoAplicadoBase2;
+        let baseCalcBase2 = (baseSubsTetoBase2 + tercoBase) - descontoAplicadoBase2;
         if (baseCalcBase2 < 0) baseCalcBase2 = 0;
         let aliquotaBase2 = 0, deducaoBase2 = 0;
         for (const faixa of P.faixas) {
@@ -747,7 +827,7 @@ const base13 = bruto13 - prev13 - dedDependentes13;
         if (irpfBase2 < 0) irpfBase2 = 0;
         irpfBase2 = round2(irpfBase2);
         // Recalcula IR mensal sem terço para achar somente o incremento do terço (base)
-        let baseCalcSemTercoBase = baseSubs - (Math.max(baseSubs * 0.25, P.desconto_simplificado_limite, pensao + round2(P.dependente * dependentes)));
+        let baseCalcSemTercoBase = baseSubsTetoBase2 - (Math.max(baseSubsTetoBase2 * 0.25, P.desconto_simplificado_limite, pensao + round2(P.dependente * dependentes)));
         if (baseCalcSemTercoBase < 0) baseCalcSemTercoBase = 0;
         let aliquotaSemTercoBase = 0, deducaoSemTercoBase = 0;
         for (const faixa of P.faixas) {
@@ -757,15 +837,15 @@ const base13 = bruto13 - prev13 - dedDependentes13;
         if (irpfSemTercoBase < 0) irpfSemTercoBase = 0;
         irpfSemTercoBase = round2(irpfSemTercoBase);
         const irFeriasBase = round2(Math.max(0, irpfBase2 - irpfSemTercoBase));
-        const descFeriasBase = round2(prevFeriasBase + irFeriasBase);
+        const descFeriasBase = round2(prevFeriasBase + irFeriasBase + abateTetoBase2);
         const liquidoFeriasBase = round2(tercoBase - descFeriasBase);
 
         // 13º base (Janeiro + dependentes)
         const bruto13Base = baseSubs;
-        const prev13Base = round2(bruto13Base * ALIQUOTA_PENSAO);
+        const prev13Base = round2(baseSubsTetoBase2 * ALIQUOTA_PENSAO);
         const P13b = PARAMS_IRRF["jan_abr"];
         const dedDependentes13b = round2(P13b.dependente * dependentes);
-        let base13b = bruto13Base - prev13Base - dedDependentes13b;
+        let base13b = baseSubsTetoBase2 - prev13Base - dedDependentes13b;
         if (base13b < 0) base13b = 0;
         let aliquota13b = 0, deducao13b = 0;
         for (const faixa of P13b.faixas) {
@@ -774,7 +854,7 @@ const base13 = bruto13 - prev13 - dedDependentes13;
         let ir13b = base13b * aliquota13b - deducao13b;
         if (ir13b < 0) ir13b = 0;
         ir13b = round2(ir13b);
-        const desc13b = round2(prev13Base + ir13b);
+        const desc13b = round2(prev13Base + ir13b + abateTetoBase2);
         const liq13b = round2(bruto13Base - desc13b);
 
         const totalBrutoBaseF13 = round2(tercoBase + bruto13Base);
@@ -962,11 +1042,12 @@ const base13 = bruto13 - prev13 - dedDependentes13;
       const _adTrib = (typeof adicionaisTributaveis !== "undefined" && isFinite(adicionaisTributaveis)) ? adicionaisTributaveis : 0;
       const _adIsentos = (typeof adicionaisIsentos !== "undefined" && isFinite(adicionaisIsentos)) ? adicionaisIsentos : 0;
       const _adTot = round2(_adTrib + _adIsentos);
+      const { base: _subsidioTetoBase, excedente: _abateTeto } = aplicarAbateTeto(_subsidio);
       function calcMensal(mi){
         const PM = mi<=3 ? PM_JA : PM_MD;
-        const rendimentoTrib = round2(_subsidio + _adTrib);
+        const rendimentoTrib = round2(_subsidioTetoBase + _adTrib);
         const bruto = round2(_subsidio + _AF + _adTot);
-        const pens = round2(_subsidio * _ALI);
+        const pens = round2(_subsidioTetoBase * _ALI);
         const dedDep = round2(PM.dependente * _dep);
         const simpl = Math.min(rendimentoTrib * 0.25, PM.desconto_simplificado_limite);
         const dedLeg = round2(pens + dedDep);
@@ -975,7 +1056,7 @@ const base13 = bruto13 - prev13 - dedDependentes13;
         let a=0,d=0;
         for (const fx of PM.faixas){ if (base <= fx.ate){ a=fx.aliquota; d=fx.deducao; break; } }
         let ir = base*a - d; if (ir < 0) ir = 0; ir = round2(ir);
-        const descontos = round2(_FARD + _FAS + pens + ir + (_ipas||0) + (_assoc||0));
+        const descontos = round2(_FARD + _FAS + pens + ir + (_ipas||0) + (_assoc||0) + _abateTeto);
         const liquido = round2(bruto - descontos);
         return {bruto, descontos, liquido};
       }
@@ -1127,8 +1208,8 @@ return true;
   } catch(_e) { /* silencioso */ }
 }
 
-// Botão limpar
-byId("limpar").addEventListener("click", () => {
+// Botão limpar (mantido apenas como hook opcional; o botão foi removido da tela)
+byId("limpar")?.addEventListener("click", () => {
   form.reset();
   valorIpasgoInput.value = "";
   byId("associacaoValor").value = "";
@@ -1360,8 +1441,8 @@ if (reajustePercentInput){
   });
 }
 
-// Reset da barra ao limpar
-byId("limpar").addEventListener("click", () => {
+// Reset da barra ao limpar (hook opcional; o botão foi removido da tela)
+byId("limpar")?.addEventListener("click", () => {
   updateReajusteRangeUI(0);
 });
 
@@ -2355,6 +2436,7 @@ byId("valorIpasgo").addEventListener("input", () => { recomputePercentFromValor(
     const dependentes = Number(document.getElementById("dependentes")?.value || 0);
     const baseSubs = SUBSIDIO[posto];
     const subsidio = round2(baseSubs * (1 + (Number(percent || 0) / 100)));
+    const { base: subsidioTetoBase, excedente: abateTeto } = aplicarAbateTeto(subsidio);
     const adicionaisCalc = typeof getAdicionaisCalculo === "function"
       ? getAdicionaisCalculo()
       : { totalTributavel: 0, totalIsento: 0, total: 0 };
@@ -2365,9 +2447,9 @@ byId("valorIpasgo").addEventListener("input", () => { recomputePercentFromValor(
 
     const calcMensal = (monthIndex) => {
       const P = PARAMS_IRRF[monthIndex <= 3 ? "jan_abr" : "mai_dez"];
-      const rendimentoTributavel = round2(subsidio + adicionaisTrib);
+      const rendimentoTributavel = round2(subsidioTetoBase + adicionaisTrib);
       const bruto = round2(subsidio + ABONO_FARDAMENTO + adicionaisTotal);
-      const pensao = round2(subsidio * ALIQUOTA_PENSAO);
+      const pensao = round2(subsidioTetoBase * ALIQUOTA_PENSAO);
       const dedDependentes = round2(P.dependente * dependentes);
       const simplificado = Math.min(rendimentoTributavel * 0.25, P.desconto_simplificado_limite);
       let baseCalc = rendimentoTributavel - Math.max(round2(pensao + dedDependentes), simplificado);
@@ -2378,7 +2460,7 @@ byId("valorIpasgo").addEventListener("input", () => { recomputePercentFromValor(
       }
       let irpf = round2(baseCalc * aliquota - deducao);
       if (irpf < 0) irpf = 0;
-      const descontos = round2(FARDAMENTO + FAS + pensao + irpf + ipasgoValor + associacaoValor);
+      const descontos = round2(FARDAMENTO + FAS + pensao + irpf + ipasgoValor + associacaoValor + abateTeto);
       return { bruto, descontos, liquido: round2(bruto - descontos), pensao, irpf };
     };
 
@@ -2396,8 +2478,8 @@ byId("valorIpasgo").addEventListener("input", () => { recomputePercentFromValor(
     const mensalSelecionado = calcMensal(periodo === "jan_abr" ? 0 : 4);
     const terco = round2(subsidio / 3);
     const dedDependentesFerias = round2(P.dependente * dependentes);
-    const simplificadoFerias = Math.min((subsidio + terco) * 0.25, P.desconto_simplificado_limite);
-    let baseFerias = (subsidio + terco) - Math.max(round2(mensalSelecionado.pensao + dedDependentesFerias), simplificadoFerias);
+    const simplificadoFerias = Math.min((subsidioTetoBase + terco) * 0.25, P.desconto_simplificado_limite);
+    let baseFerias = (subsidioTetoBase + terco) - Math.max(round2(mensalSelecionado.pensao + dedDependentesFerias), simplificadoFerias);
     if (baseFerias < 0) baseFerias = 0;
     let aliqFerias = 0, dedFerias = 0;
     for (const faixa of P.faixas) {
@@ -2405,13 +2487,13 @@ byId("valorIpasgo").addEventListener("input", () => { recomputePercentFromValor(
     }
     let irFeriasTotal = round2(baseFerias * aliqFerias - dedFerias);
     if (irFeriasTotal < 0) irFeriasTotal = 0;
-    const descFerias = round2(Math.max(0, irFeriasTotal - mensalSelecionado.irpf));
+    const descFerias = round2(Math.max(0, irFeriasTotal - mensalSelecionado.irpf) + abateTeto);
     const liqFerias = round2(terco - descFerias);
 
     const bruto13 = subsidio;
-    const prev13 = round2(bruto13 * ALIQUOTA_PENSAO);
+    const prev13 = round2(subsidioTetoBase * ALIQUOTA_PENSAO);
     const P13 = PARAMS_IRRF["jan_abr"];
-    let base13 = bruto13 - prev13 - round2(P13.dependente * dependentes);
+    let base13 = subsidioTetoBase - prev13 - round2(P13.dependente * dependentes);
     if (base13 < 0) base13 = 0;
     let aliq13 = 0, ded13 = 0;
     for (const faixa of P13.faixas) {
@@ -2419,7 +2501,7 @@ byId("valorIpasgo").addEventListener("input", () => { recomputePercentFromValor(
     }
     let ir13 = round2(base13 * aliq13 - ded13);
     if (ir13 < 0) ir13 = 0;
-    const desc13 = round2(prev13 + ir13);
+    const desc13 = round2(prev13 + ir13 + abateTeto);
     const liq13 = round2(bruto13 - desc13);
 
     proventos = round2(proventos + terco + bruto13);

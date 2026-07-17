@@ -40,6 +40,7 @@
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.2V12l3.4 2"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-history" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5V9h4.5"/><path d="M12 8v4.3l3 1.9"/></symbol>
     </defs>
   </svg>
 
@@ -54,7 +55,6 @@
   <header class="site-header">
     <div class="brand">
       <div class="brand-mark">
-        <span class="brand-mark-ring"></span>
         <img src="assets/bandeira-goias.png" alt="Bandeira do Estado de Goiás" class="brand-img">
       </div>
       <div class="brand-text">
@@ -85,18 +85,21 @@
       <form id="formRemuneracao">
         <div class="grid-2">
           <div class="form-group field">
-            <label for="mes"><svg class="field-icon" aria-hidden="true"><use href="#i-calendar"></use></svg><span>Mês</span></label>
+            <label for="mesAno"><svg class="field-icon" aria-hidden="true"><use href="#i-calendar"></use></svg><span>Mês de referência</span></label>
             <div class="select-wrap">
-              <select id="mes" required>
-                <option value="" disabled>Selecione...</option>
-                <option value="Janeiro" selected>Janeiro</option><option>Fevereiro</option><option>Março</option>
-                <option>Abril</option><option>Maio</option><option>Junho</option>
-                <option>Julho</option><option>Agosto</option><option>Setembro</option>
-                <option>Outubro</option><option>Novembro</option><option>Dezembro</option>
-              </select>
+              <select id="mesAno" required></select>
               <svg class="select-caret" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
             </div>
           </div>
+
+          <!-- Seletor interno de mês (fonte lida pelos cálculos), sincronizado pelo seletor unificado #mesAno -->
+          <select id="mes" hidden tabindex="-1" aria-hidden="true">
+            <option value="" disabled>Selecione...</option>
+            <option value="Janeiro" selected>Janeiro</option><option>Fevereiro</option><option>Março</option>
+            <option>Abril</option><option>Maio</option><option>Junho</option>
+            <option>Julho</option><option>Agosto</option><option>Setembro</option>
+            <option>Outubro</option><option>Novembro</option><option>Dezembro</option>
+          </select>
 
           <div class="form-group field">
             <label for="posto"><svg class="field-icon" aria-hidden="true"><use href="#i-rank"></use></svg><span>Posto / Graduação</span></label>
@@ -193,13 +196,14 @@
         </div>
 
         <div class="actions">
-          <button type="submit" class="btn primary"><svg class="icon" aria-hidden="true"><use href="#i-calculator"></use></svg>Calcular</button>
-          <button type="button" id="limpar" class="btn ghost"><svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>Limpar</button>
-          <button type="button" id="simularReajuste" class="btn outline"><svg class="icon" aria-hidden="true"><use href="#i-trending-up"></use></svg>Simular Reajuste</button>
+          <div class="actions-buttons">
+            <button type="submit" class="btn primary"><svg class="icon" aria-hidden="true"><use href="#i-calculator"></use></svg>Calcular</button>
+            <button type="button" id="simularReajuste" class="btn outline"><svg class="icon" aria-hidden="true"><use href="#i-trending-up"></use></svg>Simular Reajuste</button>
+          </div>
           <div id="reajusteWrap" class="reajuste-wrap hidden">
             <div class="reajuste-quick reajuste-range">
               <svg class="icon reajuste-icon" aria-hidden="true"><use href="#i-percent"></use></svg>
-              <input type="range" id="reajusteRange" min="0" max="30" step="0.01" value="0" />
+              <input type="range" id="reajusteRange" min="0" max="30" step="0.01" value="0" aria-label="Percentual de reajuste (0 a 30%)" />
               <span id="reajusteRangeVal" class="range-val" contenteditable="true">0,00%</span>
             </div>
           </div>

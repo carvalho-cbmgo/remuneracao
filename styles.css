@@ -98,6 +98,7 @@ body{
 .skip-link:focus{top:12px}
 
 .hidden{display:none !important}
+[hidden]{display:none !important}
 .sr-only{
   position:absolute;width:1px;height:1px;padding:0;margin:-1px;
   overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
@@ -191,22 +192,57 @@ body{
   display:flex;align-items:center;gap:16px;
 }
 .brand-mark{
-  position:relative;width:50px;height:50px;flex:0 0 auto;
-  display:grid;place-items:center;border-radius:14px;
-  background:linear-gradient(155deg, #16233b, #0a0f1a);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), var(--shadow-md);
+  position:relative;
+  width:clamp(88px, 9vw, 136px);
+  aspect-ratio:3 / 2;
+  flex:0 0 auto;
+  border-radius:10px;
+  overflow:hidden;
+  background:#0a0f1a;
+  box-shadow:var(--shadow-md), 0 0 0 1px rgba(255,255,255,.04) inset;
   border:1px solid var(--border-strong);
 }
-.brand-mark-ring{
-  position:absolute;inset:-4px;border-radius:16px;
-  background:conic-gradient(from 0deg, var(--primary-2), var(--primary), var(--accent), var(--primary-2));
-  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
-  mask:radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
-  animation:spin 6s linear infinite;
-  opacity:.85;
+.brand-img{
+  width:100%;height:100%;
+  object-fit:cover;object-position:center;
+  display:block;
+  animation:flagBreathe 7s ease-in-out infinite;
+  transform-origin:center;
 }
-@keyframes spin{to{transform:rotate(360deg)}}
-.brand-img{width:30px;height:30px;object-fit:contain;border-radius:4px;position:relative}
+.brand-mark::after{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(115deg, transparent 42%, rgba(255,255,255,.5) 50%, transparent 58%);
+  background-size:260% 260%;
+  mix-blend-mode:overlay;
+  opacity:0;
+  animation:flagSheen 7s ease-in-out infinite;
+  pointer-events:none;
+}
+.brand-mark::before{
+  content:"";
+  position:absolute;inset:-1px;border-radius:inherit;
+  box-shadow:0 0 0 1px rgba(59,130,246,0);
+  transition:box-shadow var(--dur) var(--ease);
+  animation:flagRimGlow 7s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes flagBreathe{
+  0%,100%{filter:brightness(1) saturate(1)}
+  50%{filter:brightness(1.16) saturate(1.1)}
+}
+@keyframes flagSheen{
+  0%,40%{background-position:-30% -30%;opacity:0}
+  55%{opacity:.55}
+  70%,100%{background-position:130% 130%;opacity:0}
+}
+@keyframes flagRimGlow{
+  0%,100%{box-shadow:0 0 0 1px rgba(59,130,246,0), 0 0 0 rgba(59,130,246,0)}
+  50%{box-shadow:0 0 0 1px rgba(59,130,246,.5), 0 0 18px rgba(59,130,246,.35)}
+}
+@media (prefers-reduced-motion: reduce){
+  .brand-img, .brand-mark::after, .brand-mark::before{animation:none}
+}
 .brand-text{min-width:0;display:flex;flex-direction:column;gap:2px;flex:1 1 auto}
 .brand-title-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .brand-text h1{margin:0;font-weight:800;letter-spacing:-.01em;line-height:1.1;font-size:1.32rem}
@@ -244,8 +280,7 @@ body{
 
 @media (max-width:640px){
   .site-header .brand{padding:13px 16px;gap:12px}
-  .brand-mark{width:42px;height:42px;border-radius:12px}
-  .brand-img{width:25px;height:25px}
+  .brand-mark{width:clamp(72px, 26vw, 96px);border-radius:8px}
   .brand-text h1{font-size:1.08rem}
   .brand-text p{font-size:.82rem}
   .live-chip{display:none}
@@ -426,7 +461,9 @@ input[type="text"]:focus-visible{border-color:var(--primary);box-shadow:0 0 0 3p
 /* =========================================================================
    Buttons
    ========================================================================= */
-.actions{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin-top:6px}
+.actions{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:10px}
+.actions-buttons{display:flex;justify-content:center;align-items:stretch;gap:12px;flex-wrap:wrap}
+.actions-buttons .btn{height:46px;padding-top:0;padding-bottom:0}
 
 .btn{
   position:relative;overflow:hidden;
@@ -480,23 +517,29 @@ input[type="text"]:focus-visible{border-color:var(--primary);box-shadow:0 0 0 3p
 .btn.primary .ripple{background:rgba(4,18,31,.35)}
 @keyframes rippleFx{to{transform:scale(2.6);opacity:0}}
 
-/* Reajuste panel */
+/* Reajuste panel — em desktop, aparece na MESMA LINHA dos botões, alinhado
+   à direita e fora do fluxo (position:absolute), para não deslocar os botões
+   "Calcular" e "Simular Reajuste". Em telas menores, desce para a linha de
+   baixo, centralizado. Altura fixa de 46px, igual à dos botões. */
 .reajuste-wrap{
-  width:100%;margin-top:6px;
-  animation:panelDrop var(--dur-slow) var(--ease-spring);
+  display:flex;align-items:stretch;justify-content:center;
+  animation:reajusteSlideIn .35s var(--ease) both;
 }
-@keyframes panelDrop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@media (min-width:1100px){
+  .reajuste-wrap{position:absolute;right:0;top:0}
+}
+@keyframes reajusteSlideIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
 .reajuste-quick{
-  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  padding:16px 18px;border-radius:var(--radius);
-  background:linear-gradient(135deg, rgba(34,211,238,.08), rgba(59,130,246,.05));
-  border:1px solid rgba(34,211,238,.25);
+  display:flex;align-items:center;gap:12px;flex-wrap:nowrap;
+  height:46px;padding:0 16px;border-radius:var(--radius-sm);
+  background:linear-gradient(135deg, rgba(34,211,238,.07), rgba(59,130,246,.04));
+  border:1px solid rgba(34,211,238,.22);
 }
-.reajuste-icon{color:var(--primary-2);width:20px;height:20px}
+.reajuste-icon{color:var(--primary-2);width:17px;height:17px}
 
 #reajusteRange{
   --fill:0%;
-  flex:1 1 200px;min-width:160px;
+  flex:0 1 180px;min-width:120px;
   -webkit-appearance:none;appearance:none;
   height:6px;border-radius:99px;cursor:pointer;
   background:linear-gradient(90deg, var(--primary-2) 0%, var(--primary) var(--fill), rgba(148,163,184,.18) var(--fill), rgba(148,163,184,.18) 100%);
@@ -518,11 +561,11 @@ input[type="text"]:focus-visible{border-color:var(--primary);box-shadow:0 0 0 3p
 }
 
 .range-val{
-  flex:0 0 auto;min-width:88px;text-align:center;
-  padding:8px 14px;border-radius:var(--radius-pill);
+  flex:0 0 auto;min-width:76px;text-align:center;
+  padding:5px 12px;border-radius:var(--radius-pill);
   background:rgba(8,12,20,.6);
   border:1px dashed rgba(34,211,238,.45);
-  font-family:var(--font-mono);font-weight:700;font-size:.95rem;
+  font-family:var(--font-mono);font-weight:700;font-size:.88rem;
   color:#a5f3fc;cursor:text;
   transition:border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
@@ -683,15 +726,32 @@ input[type="text"]:focus-visible{border-color:var(--primary);box-shadow:0 0 0 3p
   max-height:0 !important;padding-top:0;padding-bottom:0;opacity:0;
 }
 
+/* Indicadores de reajuste: sempre na linha abaixo do valor,
+   herdando a cor do valor a que se referem (azul/vermelho/verde). */
 [data-delta]::after{
   content:attr(data-delta);
-  display:inline-block;margin-left:8px;
+  display:block;margin-top:3px;
   font-family:var(--font-mono);font-weight:600;font-size:.72rem;
-  color:var(--muted);vertical-align:middle;
+  color:inherit;opacity:.85;
+  white-space:normal;overflow-wrap:anywhere;
 }
+.collapse-total[data-delta]::after{text-align:right}
 body:not(.deltas-on) [data-delta]::after,
 body:not(.deltas-on) [id$="Delta"]{display:none !important}
 .f13-delta{display:block;margin-top:2px}
+#ferias13TotBrutoDelta{color:var(--primary)}
+#ferias13TotDescDelta{color:var(--danger)}
+#ferias13TotLiquidoDelta{color:var(--accent)}
+
+/* Deltas inline gerados via <small> dentro dos totais: quebram para a
+   linha de baixo e herdam a cor do elemento pai (azul/vermelho/verde). */
+#totalBruto small,#totalDescontos small,
+#resumoBruto small,#resumoDescontos small,#resumoLiquido small{
+  display:block;margin-top:3px;
+  font-family:var(--font-mono);font-weight:600;font-size:.72rem;
+  color:inherit;opacity:.85;
+  overflow-wrap:anywhere;
+}
 
 /* =========================================================================
    Tables (Proventos / Descontos)
@@ -735,6 +795,9 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 .summary-line.grande.proventos-destaque{border-color:rgba(37,99,235,.35);background:var(--primary-soft);box-shadow:none}
 .summary-line.grande.media-liquida-destaque{font-size:1rem;border-color:rgba(250,204,21,.25);background:var(--amber-soft);box-shadow:none}
 
+/* Resumo: espaçamento vertical entre as linhas (Bruta / Descontos / Líquida)
+   para as bordas não se sobreporem ao expandir o card */
+.resumo-content{display:flex;flex-direction:column;gap:10px}
 .resumo-content .summary-line{align-items:flex-start;flex-wrap:nowrap}
 .resumo-content .summary-line > span:first-child{white-space:normal;overflow:visible;line-height:1.2;flex:1 1 auto}
 .resumo-content .summary-line > span:last-child{flex:0 0 auto;white-space:nowrap;display:flex;flex-direction:column;align-items:flex-end;justify-content:center}
@@ -883,20 +946,57 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 /* =========================================================================
    Responsive
    ========================================================================= */
+/* Proteções gerais contra corte/overflow de texto */
+.collapse-right{min-width:0}
+.collapse-total{min-width:0}
+.cell-left span{overflow-wrap:anywhere}
+.f13-item strong{overflow-wrap:anywhere;text-align:right}
+.f13-sub{overflow-wrap:anywhere}
+.annual-stat-value{overflow-wrap:anywhere}
+
 @media (max-width:840px){
   .card{padding:20px}
   .container{margin:16px auto 32px}
+  .title-row h2{font-size:1.05rem}
 }
 @media (max-width:640px){
-  .actions{flex-direction:column;align-items:stretch}
-  .btn{justify-content:center}
-  .reajuste-quick{flex-direction:column;align-items:stretch}
-  #reajusteRange{width:100%}
+  .actions-buttons{width:100%;flex-direction:column;align-items:stretch}
+  .actions-buttons .btn{width:100%;justify-content:center}
+  .reajuste-wrap{width:100%}
+  .reajuste-quick{width:100%;height:auto;min-height:46px;padding:10px 14px;flex-wrap:wrap;justify-content:center}
+  #reajusteRange{flex:1 1 100%;width:100%;min-width:0}
   .range-val{align-self:center}
-}
-@media (max-width:480px){
-  .collapse-total{font-size:.86rem}
+  .title-row h2{font-size:.98rem;line-height:1.3}
+  .collapse-header{padding:14px;gap:10px}
   .collapse-title{font-size:.88rem}
+  .collapse-total{font-size:.9rem}
+  .table thead th{font-size:.7rem;padding:0 10px 4px}
+  .table tbody td{font-size:.85rem;padding:10px}
+  .summary-line{padding:11px 12px}
+  .summary-line > span:first-child{font-size:.74rem}
+  .summary-line.grande{font-size:1.02rem}
+  .f13-collapse-content{padding:0 12px 12px}
+  .annual-stat{padding:14px 14px 12px}
+  .annual-stat-value{font-size:1.16rem}
+  #detalhamentoAnualContent{padding:0 10px 12px}
+  .site-footer{margin:14px auto 28px}
+}
+@media (max-width:420px){
+  .card{padding:16px}
+  .collapse-title{font-size:.84rem}
+  .collapse-total{font-size:.84rem}
+  .collapse-total[data-delta]::after{font-size:.66rem}
+  .summary-line > span:last-child{font-size:.92rem}
+  .annual-stat-value{font-size:1.05rem}
+  .annual-stat-label{font-size:.7rem}
+  .badge{font-size:.68rem;padding:4px 9px}
+  .card h2{font-size:1.02rem}
+  .card-subtitle{font-size:.82rem}
+  .info-icon-btn{padding:8px}
+  .f13-item span{font-size:.78rem}
+  .f13-item strong{font-size:.9rem}
+  .table tbody td strong{font-size:.86rem}
+  .empty-state{padding:32px 16px}
 }
 
 /* Value refresh micro-feedback (see enhance.js) */
