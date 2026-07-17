@@ -265,8 +265,6 @@ body{
 }
 .disclaimer-bar .icon{color:var(--gold);width:17px;height:17px;flex:0 0 auto;margin-top:2px}
 .disclaimer-bar strong{color:#fde68a;font-weight:700}
-.disclaimer-bar-text{display:flex;flex-direction:column;gap:2px}
-.disclaimer-bar-line{display:block}
 
 /* =========================================================================
    Layout / Card system
@@ -406,7 +404,10 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 /* =========================================================================
    Section boxes (Adicionais / Associações / IPASGO)
    ========================================================================= */
-.section-row{display:grid;grid-template-columns:repeat(auto-fit, minmax(230px,1fr));gap:16px;margin:4px 0 22px}
+/* Mesma base de coluna do .grid-2 (210px) para que os dois grupos de campos
+   colapsem no mesmo ponto de largura e fiquem sempre alinhados/com a mesma
+   largura de coluna entre si */
+.section-row{display:grid;grid-template-columns:repeat(auto-fit, minmax(210px,1fr));gap:16px;margin:4px 0 22px}
 .section-box{
   background:rgba(255,255,255,.025);
   border:1px solid var(--border);
