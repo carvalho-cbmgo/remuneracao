@@ -394,8 +394,14 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
   transition:background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 .spacer-6{height:6px}
-.ipasgo-label-mobile{display:none}
-@media (max-width:480px){.ipasgo-label-desktop{display:none}.ipasgo-label-mobile{display:inline}}
+
+/* Campo de valor manual do Plano de Saúde: rótulo e caixa de texto na
+   mesma linha, alinhados à esquerda; a caixa encolhe (min-width:0) para o
+   conjunto nunca exceder a largura disponível no componente. */
+.ipasgo-valor-row{display:flex;flex-wrap:nowrap;align-items:center;gap:10px}
+.ipasgo-valor-label{flex:0 0 auto;margin-bottom:0;white-space:nowrap}
+.ipasgo-valor-row .input-with-badge{flex:1 1 auto;min-width:0}
+.ipasgo-valor-row input{min-width:0}
 
 /* =========================================================================
    Section boxes (Adicionais / Associações / IPASGO)
@@ -655,7 +661,7 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 /* =========================================================================
    Results — shared collapse system
    ========================================================================= */
-.results-card{display:flex;flex-direction:column;gap:22px;margin-top:26px;scroll-margin-top:96px}
+.results-card{display:flex;flex-direction:column;gap:14px;margin-top:26px;scroll-margin-top:96px}
 
 /* Componente único que reúne o detalhamento mensal (título + Proventos/
    Descontos/Resumo) e o bloco Adicional Férias e 13º */
@@ -880,6 +886,11 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
    Detalhamento anual
    ========================================================================= */
 #detalhamentoAnualBox{margin-top:0}
+/* Cabeçalho mais compacto quando a tabela está recolhida (estado padrão),
+   reduzindo a altura do componente sem afetar os demais cards colapsáveis */
+#detalhamentoAnualBox > .collapse-header{padding:11px 16px}
+#detalhamentoAnualBox > .collapse-header .collapse-title{font-size:.92rem}
+#detalhamentoAnualBox > .collapse-header .collapse-icon{width:16px;height:16px}
 #detalhamentoAnualContent{padding:0 14px 16px}
 .table-scroll{position:relative;isolation:isolate;overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain;border-radius:var(--radius-sm);padding-bottom:2px}
 
