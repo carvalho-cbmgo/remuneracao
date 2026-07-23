@@ -166,7 +166,8 @@ const adicionaisSelect = byId("adicionaisSelect");
 const adicionaisChips = byId("adicionaisChips");
 const ac4Modal = byId("ac4Modal");
 const ac4TotalPreview = byId("ac4TotalPreview");
-const ac4BreakdownPreview = byId("ac4BreakdownPreview");
+const ac4RowsEl = byId("ac4Rows");
+const ac4AddBtn = byId("ac4AddServico");
 const ac4ConfirmBtn = byId("ac4Confirm");
 const ac4CancelBtn = byId("ac4Cancel");
 const infoSubsidiosBtn = byId("infoSubsidiosBtn");
@@ -203,6 +204,7 @@ const AC_LABELS = {
 let adicionaisSelecionados = new Set(["AC5"]);
 let ac4Config = buildAc4DefaultConfig();
 let ac4DraftConfig = buildAc4DefaultConfig();
+let ac4EntrySeq = 0;
 let __reajustePercent = 0;
 const MAX_REAJUSTE_PERCENT = 30;
 const MIN_REAJUSTE_PERCENT = 0;
@@ -213,29 +215,30 @@ ipasgoSel.addEventListener("change", () => {
   computeDetalhamento();
 });
 
+// AC4 agora é uma lista de serviços extraordinários ({ id, day, horas }),
+// um item por linha adicionada na janela de cálculo (ver renderAc4Rows).
 function buildAc4DefaultConfig(){
-  return {
-    seg: { enabled: false, qty: 0 },
-    ter: { enabled: false, qty: 0 },
-    qua: { enabled: false, qty: 0 },
-    qui: { enabled: false, qty: 0 },
-    sex: { enabled: false, qty: 0 },
-    sab: { enabled: false, qty: 0 },
-    dom: { enabled: false, qty: 0 }
-  };
+  return [];
 }
 
 function cloneAc4Config(cfg){
   return JSON.parse(JSON.stringify(cfg || buildAc4DefaultConfig()));
 }
 
+// Valor por hora do dia = valor do serviço extraordinário de 24h ÷ 24.
+function ac4ValorHora(day){
+  return (AC4_TOTAL_24H[day] || 0) / 24;
+}
+
+// Soma o valor de cada linha já arredondado (o mesmo valor exibido em
+// "R$ Serviço"), para o "R$ Total de AC4" sempre bater com a soma visível
+// das linhas.
 function calcAc4Total(cfg){
   let total = 0;
-  Object.keys(AC4_TOTAL_24H).forEach((day) => {
-    const data = cfg && cfg[day] ? cfg[day] : { enabled: false, qty: 0 };
-    if (!data.enabled) return;
-    const qty = Math.max(0, Math.min(5, Number(data.qty ?? 0)));
-    total += AC4_TOTAL_24H[day] * qty;
+  (cfg || []).forEach((item) => {
+    if (!item || !AC4_TOTAL_24H[item.day]) return;
+    const horas = Math.max(0, Math.min(24, Number(item.horas ?? 0)));
+    total += round2(ac4ValorHora(item.day) * horas);
   });
   return round2(total);
 }
@@ -269,36 +272,47 @@ function getAdicionaisCalculo(){
   };
 }
 
-function updateAc4Preview(){
-  if (!ac4TotalPreview || !ac4BreakdownPreview) return;
-  const total = calcAc4Total(ac4DraftConfig);
-  const breakdown = [];
-  Object.keys(AC4_TOTAL_24H).forEach((day) => {
-    const data = ac4DraftConfig && ac4DraftConfig[day] ? ac4DraftConfig[day] : { enabled: false, qty: 0 };
-    const qty = Math.max(0, Math.min(5, Number(data.qty ?? 0)));
-    const fator = data.enabled ? qty : 0;
-    const dayTotal = round2(AC4_TOTAL_24H[day] * fator);
-    breakdown.push(`${AC4_LABEL_DIA[day]}: ${fator}x ${fmt(AC4_TOTAL_24H[day])} = ${fmt(dayTotal)}`);
-  });
-  ac4TotalPreview.textContent = fmt(total);
-  ac4BreakdownPreview.textContent = breakdown.join(" | ");
+// Renderiza a lista de serviços extraordinários já adicionados ao rascunho
+// (ac4DraftConfig) e atualiza o total. Cada linha mostra Dia, horas e R$.
+function renderAc4Rows(){
+  if (!ac4TotalPreview) return;
+  if (ac4RowsEl){
+    if (!ac4DraftConfig.length){
+      ac4RowsEl.innerHTML = `<p class="ac4-rows-empty muted">Nenhum serviço adicionado ainda.</p>`;
+    } else {
+      ac4RowsEl.innerHTML = ac4DraftConfig.map((item) => {
+        const dia = AC4_LABEL_DIA[item.day] || item.day;
+        const valor = round2(ac4ValorHora(item.day) * item.horas);
+        return `
+          <div class="ac4-row">
+            <span class="ac4-row-day">${escapeHtml(dia)}</span>
+            <span class="ac4-row-horas">${item.horas}h de serviço extraordinário</span>
+            <strong class="ac4-row-valor">${fmt(valor)}</strong>
+            <button type="button" class="ac4-row-remove" data-ac4-remove="${item.id}" aria-label="Remover serviço de ${escapeHtml(dia)}, ${item.horas}h">
+              <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+            </button>
+          </div>`;
+      }).join("");
+    }
+  }
+  ac4TotalPreview.textContent = fmt(calcAc4Total(ac4DraftConfig));
 }
 
+// Zera os seletores de dia/horas (área de montagem de uma nova linha) e
+// redesenha a lista com os serviços já confirmados para este posto/mês.
 function syncAc4ModalInputs(){
   if (!ac4Modal) return;
   const checks = ac4Modal.querySelectorAll(".ac4-day input[type='checkbox']");
   checks.forEach((el) => {
+    el.checked = false;
     const day = el.dataset.day;
-    const data = ac4DraftConfig[day];
-    if (!data) return;
-    el.checked = !!data.enabled;
     const qtyEl = ac4Modal.querySelector(`.ac4-qty[data-day='${day}']`);
     if (qtyEl){
-      qtyEl.value = String(Math.max(0, Math.min(5, Number(data.qty ?? 0))));
-      qtyEl.disabled = !data.enabled;
+      qtyEl.value = "0";
+      qtyEl.disabled = true;
     }
   });
-  updateAc4Preview();
+  renderAc4Rows();
 }
 
 function openAc4Modal(){
@@ -402,33 +416,52 @@ function bindAdicionaisEventos(){
     });
   }
   if (ac4Modal){
-    ac4Modal.addEventListener("change", (e) => {
-      const target = e.target;
-      if (!target) return;
-      if (target.matches(".ac4-day input[type='checkbox']")){
-        const day = target.dataset.day;
-        if (!ac4DraftConfig[day]) return;
-        ac4DraftConfig[day].enabled = !!target.checked;
-        const qtyEl = ac4Modal.querySelector(`.ac4-qty[data-day='${day}']`);
-        if (qtyEl) qtyEl.disabled = !target.checked;
-        updateAc4Preview();
-        return;
-      }
-      if (target.matches(".ac4-qty")){
-        const day = target.dataset.day;
-        if (!ac4DraftConfig[day]) return;
-        let qty = Number(target.value ?? 0);
-        if (!isFinite(qty)) qty = 0;
-        qty = Math.max(0, Math.min(5, qty));
-        ac4DraftConfig[day].qty = qty;
-        updateAc4Preview();
-      }
-    });
+    // Botão "Adicionar": lê os dias marcados e as horas escolhidas para
+    // cada um, cria uma linha de serviço por dia (id sequencial, para
+    // permitir remoção individual), depois zera a área de montagem.
+    if (ac4AddBtn){
+      ac4AddBtn.addEventListener("click", () => {
+        const checks = ac4Modal.querySelectorAll(".ac4-day input[type='checkbox']");
+        let added = false;
+        checks.forEach((el) => {
+          if (!el.checked) return;
+          const day = el.dataset.day;
+          if (!AC4_TOTAL_24H[day]) return;
+          const qtyEl = ac4Modal.querySelector(`.ac4-qty[data-day='${day}']`);
+          let horas = qtyEl ? Number(qtyEl.value ?? 0) : 0;
+          if (!isFinite(horas)) horas = 0;
+          horas = Math.max(0, Math.min(24, horas));
+          if (horas <= 0) return;
+          ac4EntrySeq += 1;
+          ac4DraftConfig.push({ id: ac4EntrySeq, day, horas });
+          added = true;
+        });
+        if (!added) return;
+        checks.forEach((el) => {
+          el.checked = false;
+          const day = el.dataset.day;
+          const qtyEl = ac4Modal.querySelector(`.ac4-qty[data-day='${day}']`);
+          if (qtyEl){
+            qtyEl.value = "0";
+            qtyEl.disabled = true;
+          }
+        });
+        renderAc4Rows();
+      });
+    }
+    if (ac4RowsEl){
+      ac4RowsEl.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-ac4-remove]");
+        if (!btn) return;
+        const id = Number(btn.getAttribute("data-ac4-remove"));
+        ac4DraftConfig = ac4DraftConfig.filter((item) => item.id !== id);
+        renderAc4Rows();
+      });
+    }
     if (ac4ConfirmBtn){
       ac4ConfirmBtn.addEventListener("click", () => {
         ac4Config = cloneAc4Config(ac4DraftConfig);
-        const hasAnyDay = Object.keys(ac4Config).some((day) => ac4Config[day] && ac4Config[day].enabled);
-        if (hasAnyDay) adicionaisSelecionados.add("AC4");
+        if (ac4Config.length) adicionaisSelecionados.add("AC4");
         else adicionaisSelecionados.delete("AC4");
         renderAdicionaisChips();
         closeAc4Modal();

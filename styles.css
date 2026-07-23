@@ -644,6 +644,36 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 .ac4-qty:disabled{opacity:.4;cursor:not-allowed}
 .ac4-qty:focus-visible{border-color:var(--gold-strong)}
 
+/* Botão "Adicionar": cria uma linha de serviço a partir dos dias marcados
+   e das horas selecionadas para cada um */
+.ac4-add-btn{width:100%;justify-content:center;margin-top:14px}
+
+/* Lista de serviços extraordinários já adicionados */
+.ac4-rows{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.ac4-rows-empty{margin:6px 2px;font-size:.82rem;text-align:center}
+.ac4-row{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px 9px 12px;border-radius:var(--radius-sm);
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  animation:chipIn var(--dur-slow) var(--ease-spring);
+}
+.ac4-row-day{
+  flex:0 0 auto;min-width:38px;text-align:center;
+  padding:3px 8px;border-radius:var(--radius-pill);
+  background:rgba(251,191,36,.16);border:1px solid rgba(251,191,36,.35);
+  color:#fde68a;font-weight:700;font-size:.76rem;
+}
+.ac4-row-horas{flex:1 1 auto;min-width:0;font-size:.84rem;color:var(--text-dim)}
+.ac4-row-valor{flex:0 0 auto;font-family:var(--font-mono);font-weight:700;font-size:.88rem;color:var(--accent)}
+.ac4-row-remove{
+  display:grid;place-items:center;width:26px;height:26px;flex:0 0 auto;
+  border-radius:50%;border:1px solid var(--border-strong);
+  background:rgba(255,255,255,.04);color:var(--muted);cursor:pointer;
+  transition:background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.ac4-row-remove:hover{background:rgba(248,113,113,.18);color:#fca5a5;transform:rotate(90deg)}
+.ac4-row-remove .icon{width:13px;height:13px}
+
 .ac4-total-row{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
   margin-top:14px;padding:12px 14px;border-radius:var(--radius-sm);
@@ -651,10 +681,10 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 }
 .ac4-total-row span{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.88rem;color:var(--text-dim)}
 .ac4-total-row strong{font-family:var(--font-mono);font-size:1.05rem}
-#ac4BreakdownPreview{display:block;margin-top:8px}
-.ac4-actions{display:flex;gap:10px;margin-top:16px}
+.ac4-actions{display:flex;justify-content:center;gap:10px;margin-top:16px}
+.ac4-actions .btn{flex:0 1 200px;justify-content:center}
 .btn.ac4-btn-confirm{
-  border:none;color:#fff;background:var(--grad-cta);box-shadow:var(--glow-primary);flex:1 1 auto;justify-content:center;
+  border:none;color:#fff;background:var(--grad-cta);box-shadow:var(--glow-primary);
 }
 .btn.ac4-btn-confirm:hover{filter:brightness(1.06)}
 
