@@ -7,7 +7,7 @@
   <meta name="description" content="Simulador de remuneração, descontos e IRPF para militares do CBMGO." />
   <title>Remuneração – CBMGO</title>
   <link rel="icon" href="assets/bandeira-goias.png" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=20260723d" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -42,6 +42,8 @@
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
       <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7.5h8.5M17.8 7.5H20"/><circle cx="15.2" cy="7.5" r="2.3"/><path d="M4 16.5h2.2M9.5 16.5H20"/><circle cx="6.8" cy="16.5" r="2.3"/></symbol>
       <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3.5c.4 2.9-1 4.5-2.4 6C8.2 11 7 12.4 7 14.7a5 5 0 0 0 10 0c0-1.6-.6-2.8-1.4-4-.4.9-1 1.5-1.9 1.8.5-2.7-.3-6-1.7-9z"/><path d="M12 20.6a2.9 2.9 0 0 1-2.9-2.9c0-1.2.7-2 1.5-2.8.5-.5.9-1 1.1-1.7 1.3.9 3.2 2.3 3.2 4.5a2.9 2.9 0 0 1-2.9 2.9z"/></symbol>
+      <symbol id="i-graduation" viewBox="0 0 24 24"><path d="M12 4.2l9 4.3-9 4.3-9-4.3 9-4.3z"/><path d="M6.5 10.4v4.3c0 1.5 2.5 2.7 5.5 2.7s5.5-1.2 5.5-2.7v-4.3"/><path d="M20.5 8.9v5.6"/></symbol>
+      <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3.2v17.6"/><path d="M7.2 6.4h9.6"/><path d="M7.2 6.4l-3.4 6.6a3.4 3.4 0 0 0 6.8 0L7.2 6.4z"/><path d="M16.8 6.4l-3.4 6.6a3.4 3.4 0 0 0 6.8 0L16.8 6.4z"/><path d="M8.7 20.8h6.6"/></symbol>
       <symbol id="i-history" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5V9h4.5"/><path d="M12 8v4.3l3 1.9"/></symbol>
     </defs>
   </svg>
@@ -247,7 +249,7 @@
           <svg class="icon modal-head-icon" aria-hidden="true"><use href="#i-clock"></use></svg>
           <h3 id="ac4Titulo">AC4 (Indenização por Serviço Extraordinário)</h3>
         </div>
-        <p class="muted">Selecione o(s) dia(s) e a quantidade de horas (0 a 24) de cada um, depois clique em Adicionar.</p>
+        <p class="muted">Informe os serviços extras para simulação</p>
 
         <div class="ac4-days-grid">
           <div class="ac4-day-card">
@@ -257,7 +259,12 @@
               <span class="sr-only">Segunda-feira</span>
             </label>
             <div class="ac4-qty-wrap">
+              <span class="ac4-field-label">Qtd</span>
               <select data-day="seg" class="ac4-qty" aria-label="Quantidade de horas na segunda-feira"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option><option value="24">24h</option></select>
+            </div>
+            <div class="ac4-inicio-wrap">
+              <span class="ac4-field-label">Início</span>
+              <select data-day="seg" class="ac4-inicio" aria-label="Horário de início do serviço na segunda-feira"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option></select>
             </div>
           </div>
           <div class="ac4-day-card">
@@ -267,7 +274,12 @@
               <span class="sr-only">Terça-feira</span>
             </label>
             <div class="ac4-qty-wrap">
+              <span class="ac4-field-label">Qtd</span>
               <select data-day="ter" class="ac4-qty" aria-label="Quantidade de horas na terça-feira"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option><option value="24">24h</option></select>
+            </div>
+            <div class="ac4-inicio-wrap">
+              <span class="ac4-field-label">Início</span>
+              <select data-day="ter" class="ac4-inicio" aria-label="Horário de início do serviço na terça-feira"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option></select>
             </div>
           </div>
           <div class="ac4-day-card">
@@ -277,7 +289,12 @@
               <span class="sr-only">Quarta-feira</span>
             </label>
             <div class="ac4-qty-wrap">
+              <span class="ac4-field-label">Qtd</span>
               <select data-day="qua" class="ac4-qty" aria-label="Quantidade de horas na quarta-feira"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option><option value="24">24h</option></select>
+            </div>
+            <div class="ac4-inicio-wrap">
+              <span class="ac4-field-label">Início</span>
+              <select data-day="qua" class="ac4-inicio" aria-label="Horário de início do serviço na quarta-feira"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option></select>
             </div>
           </div>
           <div class="ac4-day-card">
@@ -287,7 +304,12 @@
               <span class="sr-only">Quinta-feira</span>
             </label>
             <div class="ac4-qty-wrap">
+              <span class="ac4-field-label">Qtd</span>
               <select data-day="qui" class="ac4-qty" aria-label="Quantidade de horas na quinta-feira"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option><option value="24">24h</option></select>
+            </div>
+            <div class="ac4-inicio-wrap">
+              <span class="ac4-field-label">Início</span>
+              <select data-day="qui" class="ac4-inicio" aria-label="Horário de início do serviço na quinta-feira"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option></select>
             </div>
           </div>
           <div class="ac4-day-card">
@@ -297,7 +319,12 @@
               <span class="sr-only">Sexta-feira</span>
             </label>
             <div class="ac4-qty-wrap">
+              <span class="ac4-field-label">Qtd</span>
               <select data-day="sex" class="ac4-qty" aria-label="Quantidade de horas na sexta-feira"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option><option value="24">24h</option></select>
+            </div>
+            <div class="ac4-inicio-wrap">
+              <span class="ac4-field-label">Início</span>
+              <select data-day="sex" class="ac4-inicio" aria-label="Horário de início do serviço na sexta-feira"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option></select>
             </div>
           </div>
           <div class="ac4-day-card">
@@ -307,7 +334,12 @@
               <span class="sr-only">Sábado</span>
             </label>
             <div class="ac4-qty-wrap">
+              <span class="ac4-field-label">Qtd</span>
               <select data-day="sab" class="ac4-qty" aria-label="Quantidade de horas no sábado"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option><option value="24">24h</option></select>
+            </div>
+            <div class="ac4-inicio-wrap">
+              <span class="ac4-field-label">Início</span>
+              <select data-day="sab" class="ac4-inicio" aria-label="Horário de início do serviço no sábado"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option></select>
             </div>
           </div>
           <div class="ac4-day-card">
@@ -317,7 +349,12 @@
               <span class="sr-only">Domingo</span>
             </label>
             <div class="ac4-qty-wrap">
+              <span class="ac4-field-label">Qtd</span>
               <select data-day="dom" class="ac4-qty" aria-label="Quantidade de horas no domingo"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option><option value="24">24h</option></select>
+            </div>
+            <div class="ac4-inicio-wrap">
+              <span class="ac4-field-label">Início</span>
+              <select data-day="dom" class="ac4-inicio" aria-label="Horário de início do serviço no domingo"><option value="0" selected>0h</option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option><option value="23">23h</option></select>
             </div>
           </div>
         </div>
@@ -550,6 +587,96 @@
           </div>
         </div>
       </section>
+
+      <section class="output-section output-irpf-sim">
+        <div class="resume-box destaque detail-collapse is-collapsed" id="irpfSimBox" data-collapse-section="irpf-sim">
+          <button type="button" class="collapse-header" data-collapse-toggle="irpf-sim" aria-expanded="false" aria-controls="irpfSimContent">
+            <span class="collapse-title"><svg class="icon collapse-title-icon icon-verde" aria-hidden="true"><use href="#i-scale"></use></svg>Simulador Restituição IRPF</span>
+            <span class="collapse-right">
+              <span class="collapse-total verde" id="irpfResultadoHeader">R$ 0,00</span>
+              <svg class="collapse-icon" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
+            </span>
+          </button>
+          <div class="collapse-content" id="irpfSimContent">
+            <p class="muted irpf-sim-disclaimer">Estimativa baseada nas regras da Receita Federal para o ano-calendário 2025 (Declaração de Ajuste Anual, exercício 2026). Não substitui o cálculo oficial da RFB nem a declaração completa, que pode incluir outras deduções.</p>
+
+            <div class="irpf-sim-table">
+              <div class="irpf-row">
+                <label class="irpf-row-label"><svg class="icon" aria-hidden="true"><use href="#i-users"></use></svg>Dependentes</label>
+                <div class="irpf-row-field"><div class="irpf-field-readonly" id="irpfDependentesInfo">0 dependente(s) · dedução R$ 0,00</div></div>
+                <div class="irpf-row-note"></div>
+              </div>
+
+              <div class="irpf-row">
+                <label class="irpf-row-label" for="irpfDespesasMedicas"><svg class="icon" aria-hidden="true"><use href="#i-heart-pulse"></use></svg>Despesas médicas e odontológicas (R$/ano)</label>
+                <div class="irpf-row-field">
+                  <div class="input-with-prefix">
+                    <span class="input-prefix">R$</span>
+                    <input type="text" id="irpfDespesasMedicas" inputmode="decimal" placeholder="0,00" disabled />
+                  </div>
+                </div>
+                <div class="irpf-row-note"><small class="muted">Carregado automaticamente do Plano de Saúde; sem limite legal.</small></div>
+              </div>
+
+              <div class="irpf-row">
+                <label class="irpf-row-label" for="irpfOutrasDespesasMedicas"><svg class="icon" aria-hidden="true"><use href="#i-heart-pulse"></use></svg>Outras Despesas médicas e odontológicas (R$/ano)</label>
+                <div class="irpf-row-field">
+                  <div class="input-with-prefix">
+                    <span class="input-prefix">R$</span>
+                    <input type="text" id="irpfOutrasDespesasMedicas" inputmode="decimal" placeholder="0,00" />
+                  </div>
+                </div>
+                <div class="irpf-row-note"><small class="muted">Sem limite legal — informe gastos médicos/odontológicos não cobertos pelo Plano de Saúde.</small></div>
+              </div>
+
+              <div class="irpf-row">
+                <label class="irpf-row-label" for="irpfDespesasEducacao"><svg class="icon" aria-hidden="true"><use href="#i-graduation"></use></svg>Despesas com educação (R$/ano)</label>
+                <div class="irpf-row-field">
+                  <div class="input-with-prefix">
+                    <span class="input-prefix">R$</span>
+                    <input type="text" id="irpfDespesasEducacao" inputmode="decimal" placeholder="0,00" />
+                  </div>
+                </div>
+                <div class="irpf-row-note"><small class="muted" id="irpfEducacaoLimiteInfo">Limite dedutível: R$ 3.561,50 por declarante/dependente</small></div>
+              </div>
+
+              <div class="irpf-row">
+                <label class="irpf-row-label" for="irpfPensaoAlimenticia"><svg class="icon" aria-hidden="true"><use href="#i-scale"></use></svg>Pensão alimentícia judicial (R$/ano)</label>
+                <div class="irpf-row-field">
+                  <div class="input-with-prefix">
+                    <span class="input-prefix">R$</span>
+                    <input type="text" id="irpfPensaoAlimenticia" inputmode="decimal" placeholder="0,00" />
+                  </div>
+                </div>
+                <div class="irpf-row-note"><small class="muted">Sem limite (decisão ou acordo homologado judicialmente)</small></div>
+              </div>
+
+              <div class="irpf-row">
+                <label class="irpf-row-label" for="irpfPGBL"><svg class="icon" aria-hidden="true"><use href="#i-trending-up"></use></svg>Previdência privada — PGBL (R$/ano)</label>
+                <div class="irpf-row-field">
+                  <div class="input-with-prefix">
+                    <span class="input-prefix">R$</span>
+                    <input type="text" id="irpfPGBL" inputmode="decimal" placeholder="0,00" />
+                  </div>
+                </div>
+                <div class="irpf-row-note"><small class="muted" id="irpfPgblLimiteInfo">Limite dedutível: 12% do rendimento tributável anual (exige contribuição ao INSS/RPPS)</small></div>
+              </div>
+            </div>
+
+            <div class="irpf-sim-results">
+              <div class="summary-line"><span>Rendimento tributável anual</span><span id="irpfRendimentoAnual">R$ 0,00</span></div>
+              <div class="summary-line"><span>Método de dedução utilizado</span><span id="irpfMetodo">—</span></div>
+              <div class="summary-line"><span>Base de cálculo anual</span><span id="irpfBaseCalculo">R$ 0,00</span></div>
+              <div class="summary-line"><span>Imposto devido (ano)</span><span id="irpfDevido">R$ 0,00</span></div>
+              <div class="summary-line"><span>IRPF já retido no ano</span><span id="irpfRetido">R$ 0,00</span></div>
+              <div class="summary-line grande" id="irpfResultadoLine">
+                <span id="irpfResultadoLabel">IRPF a restituir</span>
+                <span id="irpfResultadoValor">R$ 0,00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </section>
   </main>
 
@@ -558,7 +685,7 @@
     <p class="update-line"><small>Última atualização: <strong><a class="official-link" href="https://diariooficial.abc.go.gov.br/portal/edicoes/download/7247" target="_blank" rel="noopener noreferrer"><span>DOE/GO N° 24.809 - 29/6/2026</span><img class="official-link-img" src="assets/icone-diario-oficial.svg" alt="" aria-hidden="true"></a></strong></small></p>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=20260723d"></script>
 
   <script>
   (function(){
@@ -650,6 +777,6 @@
   })();
   </script>
 
-  <script src="enhance.js"></script>
+  <script src="enhance.js?v=20260723"></script>
 </body>
 </html>

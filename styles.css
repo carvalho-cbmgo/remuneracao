@@ -583,13 +583,14 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 }
 @keyframes modalIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 .subsidios-modal-card{max-width:560px}
-.ac4-modal-card{max-width:640px}
+.ac4-modal-card{max-width:min(900px, 94vw)}
 
 .subsidios-modal-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
 .subsidios-modal-head-text{display:flex;align-items:center;gap:10px}
 .modal-head-icon{color:var(--gold);width:22px;height:22px}
 .subsidios-modal-head h3,.ac4-modal-card h3{margin:0;font-size:1.08rem;font-weight:800}
 .ac4-modal-head{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.ac4-modal-card > p.muted{margin:0 0 14px}
 
 .modal-close-btn{
   display:grid;place-items:center;width:34px;height:34px;flex:0 0 auto;
@@ -603,10 +604,17 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 .subsidios-table-scroll{max-height:60vh;overflow-y:auto;border-radius:var(--radius-sm)}
 .subsidios-table th{position:sticky;top:0;background:#18161b;z-index:1}
 
-.ac4-days-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(120px,1fr));gap:10px;margin:16px 0}
+/* Os 7 dias ficam sempre numa única linha, dividindo igualmente a largura
+   disponível (nunca quebram para nova linha nem precisam de rolagem);
+   campos compactos e rótulos empilhados acima dos seletores garantem que
+   nenhuma informação fique cortada mesmo com cards estreitos. */
+.ac4-days-grid{
+  display:flex;flex-wrap:nowrap;gap:6px;margin:14px 0;
+}
 .ac4-day-card{
-  display:flex;flex-direction:column;gap:8px;
-  padding:10px;border-radius:var(--radius);
+  flex:1 1 0;min-width:0;
+  display:flex;flex-direction:column;gap:6px;
+  padding:7px 5px;border-radius:var(--radius);
   background:rgba(255,255,255,.025);border:1px solid var(--border);
   transition:border-color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
@@ -618,10 +626,10 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 .ac4-day{display:block;cursor:pointer}
 .ac4-check{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
 .ac4-pill{
-  display:flex;align-items:center;justify-content:space-between;gap:6px;
-  padding:8px 10px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;gap:4px;
+  padding:6px 4px;border-radius:var(--radius-sm);
   background:rgba(255,255,255,.04);border:1px solid var(--border-strong);
-  font-weight:700;font-size:.85rem;color:var(--text-dim);
+  font-weight:700;font-size:.78rem;color:var(--text-dim);
   transition:background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
 }
 .ac4-check:focus-visible ~ .ac4-pill{outline:2px solid var(--gold);outline-offset:2px}
@@ -629,24 +637,29 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
   background:linear-gradient(135deg, rgba(251,191,36,.28), rgba(220,38,38,.2));
   border-color:rgba(251,191,36,.55);color:#fef3c7;
 }
-.ac4-pill-check{width:14px;height:14px;opacity:0;transform:scale(.5);transition:opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);color:var(--gold)}
+.ac4-pill-check{width:12px;height:12px;flex:0 0 auto;opacity:0;transform:scale(.5);transition:opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);color:var(--gold)}
 .ac4-check:checked ~ .ac4-pill .ac4-pill-check{opacity:1;transform:scale(1)}
 
-.ac4-qty-wrap{display:flex;align-items:center;gap:6px}
-.ac4-qty{
+/* "Qtd" (quantidade de horas) e, logo abaixo, "Início" (horário de início
+   do serviço): rótulo empilhado acima do seletor, que ocupa toda a
+   largura do card — mais compacto que rótulo e seletor lado a lado. */
+.ac4-qty-wrap,.ac4-inicio-wrap{display:flex;flex-direction:column;gap:2px}
+.ac4-inicio-wrap{margin-top:1px}
+.ac4-field-label{font-size:.62rem;font-weight:700;color:var(--muted);letter-spacing:.02em;text-align:center}
+.ac4-qty,.ac4-inicio{
   width:100%;text-align:center;
   appearance:none;-webkit-appearance:none;
   background:rgba(255,255,255,.03);border:1px solid var(--border);
-  border-radius:8px;padding:7px 8px;color:var(--text);
-  font-family:var(--font-mono);font-weight:600;font-size:.85rem;cursor:pointer;
+  border-radius:7px;padding:5px 2px;color:var(--text);
+  font-family:var(--font-mono);font-weight:600;font-size:.76rem;cursor:pointer;
   transition:border-color var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
 }
-.ac4-qty:disabled{opacity:.4;cursor:not-allowed}
-.ac4-qty:focus-visible{border-color:var(--gold-strong)}
+.ac4-qty:disabled,.ac4-inicio:disabled{opacity:.4;cursor:not-allowed}
+.ac4-qty:focus-visible,.ac4-inicio:focus-visible{border-color:var(--gold-strong)}
 
 /* Botão "Adicionar": cria uma linha de serviço a partir dos dias marcados
    e das horas selecionadas para cada um */
-.ac4-add-btn{width:100%;justify-content:center;margin-top:14px}
+.ac4-add-btn{width:100%;justify-content:center;margin-top:6px}
 
 /* Lista de serviços extraordinários já adicionados */
 .ac4-rows{display:flex;flex-direction:column;gap:8px;margin-top:14px}
@@ -657,13 +670,20 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
   background:rgba(255,255,255,.03);border:1px solid var(--border);
   animation:chipIn var(--dur-slow) var(--ease-spring);
 }
+.ac4-row-num{
+  flex:0 0 auto;display:grid;place-items:center;width:22px;height:22px;
+  border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--border-strong);
+  font-family:var(--font-mono);font-weight:700;font-size:.72rem;color:var(--muted);
+}
 .ac4-row-day{
   flex:0 0 auto;min-width:38px;text-align:center;
   padding:3px 8px;border-radius:var(--radius-pill);
   background:rgba(251,191,36,.16);border:1px solid rgba(251,191,36,.35);
   color:#fde68a;font-weight:700;font-size:.76rem;
 }
-.ac4-row-horas{flex:1 1 auto;min-width:0;font-size:.84rem;color:var(--text-dim)}
+.ac4-row-info{flex:1 1 140px;min-width:0;display:flex;flex-direction:column;gap:1px}
+.ac4-row-horas{font-size:.84rem;color:var(--text-dim)}
+.ac4-row-split{font-size:.7rem;color:var(--muted)}
 .ac4-row-valor{flex:0 0 auto;font-family:var(--font-mono);font-weight:700;font-size:.88rem;color:var(--accent)}
 .ac4-row-remove{
   display:grid;place-items:center;width:26px;height:26px;flex:0 0 auto;
@@ -945,6 +965,62 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 #tabelaDetalhamentoAnual tbody tr.f13-row-proventos td:not(:first-child){color:#fcd34d !important}
 #tabelaDetalhamentoAnual tbody tr.f13-row-descontos td:not(:first-child){color:#fca5a5 !important}
 #tabelaDetalhamentoAnual tbody tr.f13-row-liquido td:not(:first-child){color:#86efac !important}
+
+/* =========================================================================
+   Simulador Restituição IRPF
+   ========================================================================= */
+.irpf-sim-disclaimer{
+  font-size:.8rem;line-height:1.5;margin:0 0 18px;padding:10px 12px;
+  border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);
+  color:var(--muted);
+}
+/* Layout "tabela": 3 colunas (rótulo | campo | observação) alinhadas entre
+   todas as linhas. Cada .irpf-row vira "transparente" para o grid
+   (display:contents), então seus 3 filhos são posicionados diretamente
+   nas colunas de .irpf-sim-table — garante alinhamento horizontal preciso
+   entre linhas com pouquíssimo espaçamento vertical entre elas. */
+.irpf-sim-table{
+  display:grid;
+  grid-template-columns:minmax(190px,260px) minmax(150px,200px) 1fr;
+  column-gap:16px;row-gap:6px;
+  align-items:center;
+  margin-bottom:22px;
+}
+.irpf-row{display:contents}
+.irpf-row-label{
+  display:flex;align-items:center;gap:8px;
+  font-size:.82rem;font-weight:600;color:var(--text-dim);margin-bottom:0;
+  padding:6px 0;
+}
+.irpf-row-label .icon{color:var(--gold);width:16px;height:16px;flex:0 0 auto}
+.irpf-row-field{min-width:0}
+.irpf-row-note{min-width:0}
+.irpf-row-note small{font-size:.72rem;line-height:1.4;color:var(--muted)}
+.irpf-field-readonly{
+  padding:11px 14px;border-radius:var(--radius-sm);
+  background:rgba(255,255,255,.03);border:1px solid var(--border-strong);
+  font-family:var(--font-mono);font-size:.9rem;color:var(--text);
+}
+#irpfDespesasMedicas:disabled{
+  opacity:.75;cursor:not-allowed;color:var(--text-dim);
+  background:rgba(255,255,255,.015);
+}
+
+@media (max-width:760px){
+  .irpf-sim-table{display:block}
+  .irpf-row{
+    display:flex;flex-direction:column;gap:5px;
+    padding:10px 0;border-bottom:1px solid var(--border);
+  }
+  .irpf-row:first-child{padding-top:0}
+  .irpf-row:last-child{border-bottom:none;padding-bottom:0}
+}
+
+.irpf-sim-results{display:flex;flex-direction:column;gap:10px}
+#irpfResultadoLine.irpf-a-restituir{border-color:rgba(34,197,94,.35);background:var(--accent-soft)}
+#irpfResultadoLine.irpf-a-restituir span:last-child{color:var(--accent)}
+#irpfResultadoLine.irpf-a-pagar{border-color:rgba(239,68,68,.35);background:var(--danger-soft)}
+#irpfResultadoLine.irpf-a-pagar span:last-child{color:var(--danger)}
 
 /* =========================================================================
    Footer

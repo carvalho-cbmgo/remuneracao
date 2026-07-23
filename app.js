@@ -152,6 +152,129 @@ const PARAMS_IRRF = {
   }
 };
 
+// ====== Parâmetros IRPF Anual 2025 (Declaração de Ajuste Anual, exercício
+// 2026) — oficiais RFB. Fonte: gov.br/receitafederal, Tributação de 2025/
+// tabela anual (Lei nº 15.191/2025). Distinto da tabela mensal: o desconto
+// simplificado anual é 20% (não 25%) do rendimento tributável, limitado a
+// R$ 16.754,34; a dedução por dependente e o limite de instrução anuais
+// batem exatamente com 12x os valores mensais já usados acima.
+const PARAMS_IRRF_ANUAL = {
+  dependente: 2275.08,
+  educacao_limite: 3561.50,
+  desconto_simplificado_aliquota: 0.20,
+  desconto_simplificado_limite: 16754.34,
+  pgbl_aliquota_limite: 0.12,
+  faixas: [
+    { ate: 28467.20, aliquota: 0.00, deducao: 0.00 },
+    { ate: 33919.80, aliquota: 0.075, deducao: 2135.04 },
+    { ate: 45012.60, aliquota: 0.15, deducao: 4679.03 },
+    { ate: 55976.16, aliquota: 0.225, deducao: 8054.97 },
+    { ate: Infinity, aliquota: 0.275, deducao: 10853.78 },
+  ]
+};
+
+// ====== Simulador de Restituição IRPF ======
+// Reconciliação anual (Declaração de Ajuste Anual): recalcula o imposto
+// devido no ano inteiro usando as deduções informadas pelo usuário (regime
+// completo) ou o desconto simplificado anual — o que for maior — e compara
+// com o IRPF já retido mês a mês (calculado em computeDetalhamento). A
+// diferença é a restituição (retido > devido) ou o imposto a pagar
+// (devido > retido).
+function simularRestituicaoIRPF(){
+  const box = byId("irpfSimBox");
+  if (!box || !__irpfAnualDados) return;
+
+  const { rendimentoTributavelAnual, irpfRetidoAnual, pensaoOficialAnual, dependentes, ipasgoAnual } = __irpfAnualDados;
+
+  // Despesas Médicas: campo desabilitado, sempre sincronizado com o Plano
+  // de Saúde informado em "Informações de Entrada" (não é editável pelo
+  // usuário — gastos médicos adicionais entram no campo "Outras Despesas
+  // médicas e odontológicas", logo abaixo).
+  const campoMedicas = byId("irpfDespesasMedicas");
+  if (campoMedicas) {
+    campoMedicas.value = ipasgoAnual > 0 ? fmtSemMoeda(ipasgoAnual) : "";
+  }
+
+  const lerCampo = (id) => { const el = byId(id); return el ? parseMoney(el.value) : 0; };
+  const despesasMedicas = round2(lerCampo("irpfDespesasMedicas") + lerCampo("irpfOutrasDespesasMedicas"));
+  const educacaoInformada = lerCampo("irpfDespesasEducacao");
+  const pensaoAlimenticia = lerCampo("irpfPensaoAlimenticia");
+  const pgblInformado = lerCampo("irpfPGBL");
+
+  const dependentesAnualDeducao = round2(PARAMS_IRRF_ANUAL.dependente * dependentes);
+  const educacaoLimiteTotal = round2(PARAMS_IRRF_ANUAL.educacao_limite * (1 + dependentes));
+  const educacaoDeduzida = Math.min(educacaoInformada, educacaoLimiteTotal);
+  const pgblLimite = round2(rendimentoTributavelAnual * PARAMS_IRRF_ANUAL.pgbl_aliquota_limite);
+  const pgblDeduzido = Math.min(pgblInformado, pgblLimite);
+
+  const deducoesLegaisAnuais = round2(
+    pensaoOficialAnual + dependentesAnualDeducao + despesasMedicas + educacaoDeduzida + pensaoAlimenticia + pgblDeduzido
+  );
+  const descontoSimplificadoAnual = Math.min(
+    round2(rendimentoTributavelAnual * PARAMS_IRRF_ANUAL.desconto_simplificado_aliquota),
+    PARAMS_IRRF_ANUAL.desconto_simplificado_limite
+  );
+  const usaSimplificado = descontoSimplificadoAnual > deducoesLegaisAnuais;
+  const descontoAplicadoAnual = Math.max(deducoesLegaisAnuais, descontoSimplificadoAnual);
+
+  let baseCalcAnual = round2(rendimentoTributavelAnual - descontoAplicadoAnual);
+  if (baseCalcAnual < 0) baseCalcAnual = 0;
+
+  let aliquotaAnual = 0, deducaoAnual = 0;
+  for (const faixa of PARAMS_IRRF_ANUAL.faixas) {
+    if (baseCalcAnual <= faixa.ate) { aliquotaAnual = faixa.aliquota; deducaoAnual = faixa.deducao; break; }
+  }
+  let impostoDevidoAnual = round2(baseCalcAnual * aliquotaAnual - deducaoAnual);
+  if (impostoDevidoAnual < 0) impostoDevidoAnual = 0;
+
+  const resultado = round2(irpfRetidoAnual - impostoDevidoAnual);
+
+  const set = (id, txt) => { const el = byId(id); if (el) el.textContent = txt; };
+  set("irpfDependentesInfo", `${dependentes} dependente(s) · dedução ${fmt(dependentesAnualDeducao)}`);
+  set("irpfEducacaoLimiteInfo", `Limite dedutível: ${fmt(educacaoLimiteTotal)} (R$ 3.561,50 × ${1 + dependentes} declarante/dependente${dependentes ? "s" : ""})`);
+  set("irpfPgblLimiteInfo", `Limite dedutível: ${fmt(pgblLimite)} (12% do rendimento tributável anual)`);
+  set("irpfRendimentoAnual", fmt(rendimentoTributavelAnual));
+  set("irpfMetodo", usaSimplificado
+    ? `Desconto simplificado (${fmt(descontoSimplificadoAnual)})`
+    : `Deduções legais (${fmt(deducoesLegaisAnuais)})`);
+  set("irpfBaseCalculo", fmt(baseCalcAnual));
+  set("irpfDevido", fmt(impostoDevidoAnual));
+  set("irpfRetido", fmt(irpfRetidoAnual));
+
+  const labelEl = byId("irpfResultadoLabel");
+  const valorEl = byId("irpfResultadoValor");
+  const lineEl = byId("irpfResultadoLine");
+  const headerEl = byId("irpfResultadoHeader");
+  if (labelEl && valorEl) {
+    if (resultado >= 0) {
+      labelEl.textContent = "IRPF a restituir";
+      valorEl.textContent = fmt(resultado);
+      if (lineEl) { lineEl.classList.remove("irpf-a-pagar"); lineEl.classList.add("irpf-a-restituir"); }
+      if (headerEl) { headerEl.textContent = fmt(resultado); headerEl.classList.remove("vermelho"); headerEl.classList.add("verde"); }
+    } else {
+      labelEl.textContent = "IRPF a pagar";
+      valorEl.textContent = fmt(Math.abs(resultado));
+      if (lineEl) { lineEl.classList.remove("irpf-a-restituir"); lineEl.classList.add("irpf-a-pagar"); }
+      if (headerEl) { headerEl.textContent = fmt(Math.abs(resultado)); headerEl.classList.remove("verde"); headerEl.classList.add("vermelho"); }
+    }
+  }
+}
+
+// Máscara monetária + recálculo ao digitar nos campos do simulador de IRPF
+// ("irpfDespesasMedicas" fica de fora: é desabilitado, sempre carregado a
+// partir do Plano de Saúde — ver simularRestituicaoIRPF).
+["irpfOutrasDespesasMedicas", "irpfDespesasEducacao", "irpfPensaoAlimenticia", "irpfPGBL"].forEach((id) => {
+  const el = byId(id);
+  if (!el) return;
+  el.addEventListener("input", (e) => {
+    let v = e.target.value.replace(/[^\d,\.]/g, "");
+    const parts = v.split(",");
+    if (parts.length > 2) v = parts[0] + "," + parts.slice(1).join("");
+    e.target.value = v;
+    simularRestituicaoIRPF();
+  });
+});
+
 // ====== Dinâmica de campos ======
 const ipasgoSel = byId("ipasgo");
 const ipasgoManualInfo = byId("ipasgoManualInfo");
@@ -178,13 +301,13 @@ const AC2_VALOR = 1050.00;
 const AC3_VALOR = 828.00;
 const AC5_VALOR = 1000.00;
 const AC4_TOTAL_24H = {
-  seg: 658.59,
-  ter: 658.59,
-  qua: 658.59,
-  qui: 658.59,
-  sex: 908.63,
-  sab: 908.63,
-  dom: 888.75
+  seg: 729.03,
+  ter: 729.03,
+  qua: 729.03,
+  qui: 762.06,
+  sex: 1005.94,
+  sab: 1005.94,
+  dom: 972.91
 };
 const AC4_LABEL_DIA = {
   seg: "Seg",
@@ -195,6 +318,11 @@ const AC4_LABEL_DIA = {
   sab: "Sab",
   dom: "Dom"
 };
+// Dia seguinte no ciclo da semana, usado para ratear um serviço que
+// ultrapassa a meia-noite entre o dia de início e o dia seguinte.
+const AC4_PROXIMO_DIA = {
+  seg: "ter", ter: "qua", qua: "qui", qui: "sex", sex: "sab", sab: "dom", dom: "seg"
+};
 const AC_LABELS = {
   AC2: "AC2 (Horas-Aulas Ministradas)",
   AC3: "AC3 (Indenização por localidade)",
@@ -202,6 +330,9 @@ const AC_LABELS = {
   AC5: "AC5 (Auxílio Alimentação)"
 };
 let adicionaisSelecionados = new Set(["AC5"]);
+// Insumos anuais (rendimento tributável, IRPF já retido etc.) capturados ao
+// final de computeDetalhamento(), usados pelo Simulador de Restituição IRPF.
+let __irpfAnualDados = null;
 let ac4Config = buildAc4DefaultConfig();
 let ac4DraftConfig = buildAc4DefaultConfig();
 let ac4EntrySeq = 0;
@@ -215,8 +346,9 @@ ipasgoSel.addEventListener("change", () => {
   computeDetalhamento();
 });
 
-// AC4 agora é uma lista de serviços extraordinários ({ id, day, horas }),
-// um item por linha adicionada na janela de cálculo (ver renderAc4Rows).
+// AC4 agora é uma lista de serviços extraordinários
+// ({ id, day, inicio, horas }), um item por linha adicionada na janela de
+// cálculo (ver renderAc4Rows).
 function buildAc4DefaultConfig(){
   return [];
 }
@@ -230,6 +362,26 @@ function ac4ValorHora(day){
   return (AC4_TOTAL_24H[day] || 0) / 24;
 }
 
+// Calcula o valor de um serviço que começa em "day" às "inicio"h e dura
+// "horas"h. Se ultrapassar a meia-noite, rateia proporcionalmente entre o
+// dia de início e o dia seguinte (ex.: quarta 24h iniciando às 12h = 12h
+// pelo valor-hora de quarta + 12h pelo valor-hora de quinta).
+function calcAc4Servico(day, inicio, horas){
+  const partes = [];
+  if (AC4_TOTAL_24H[day]) {
+    const horasNoDia = Math.max(0, Math.min(horas, 24 - inicio));
+    if (horasNoDia > 0) partes.push({ day, horas: horasNoDia });
+    const restante = round2(horas - horasNoDia) > 0 ? horas - horasNoDia : 0;
+    if (restante > 0) {
+      const proximo = AC4_PROXIMO_DIA[day];
+      if (AC4_TOTAL_24H[proximo]) partes.push({ day: proximo, horas: restante });
+    }
+  }
+  let valor = 0;
+  partes.forEach((p) => { valor += ac4ValorHora(p.day) * p.horas; });
+  return { valor: round2(valor), partes };
+}
+
 // Soma o valor de cada linha já arredondado (o mesmo valor exibido em
 // "R$ Serviço"), para o "R$ Total de AC4" sempre bater com a soma visível
 // das linhas.
@@ -238,7 +390,8 @@ function calcAc4Total(cfg){
   (cfg || []).forEach((item) => {
     if (!item || !AC4_TOTAL_24H[item.day]) return;
     const horas = Math.max(0, Math.min(24, Number(item.horas ?? 0)));
-    total += round2(ac4ValorHora(item.day) * horas);
+    const inicio = Math.max(0, Math.min(23, Number(item.inicio ?? 0)));
+    total += calcAc4Servico(item.day, inicio, horas).valor;
   });
   return round2(total);
 }
@@ -273,22 +426,31 @@ function getAdicionaisCalculo(){
 }
 
 // Renderiza a lista de serviços extraordinários já adicionados ao rascunho
-// (ac4DraftConfig) e atualiza o total. Cada linha mostra Dia, horas e R$.
+// (ac4DraftConfig) e atualiza o total. Cada linha mostra, da esquerda para
+// a direita: número da linha, Dia, horário/duração (com o rateio entre
+// dias quando o serviço ultrapassa a meia-noite) e o valor em R$.
 function renderAc4Rows(){
   if (!ac4TotalPreview) return;
   if (ac4RowsEl){
     if (!ac4DraftConfig.length){
       ac4RowsEl.innerHTML = `<p class="ac4-rows-empty muted">Nenhum serviço adicionado ainda.</p>`;
     } else {
-      ac4RowsEl.innerHTML = ac4DraftConfig.map((item) => {
+      ac4RowsEl.innerHTML = ac4DraftConfig.map((item, idx) => {
         const dia = AC4_LABEL_DIA[item.day] || item.day;
-        const valor = round2(ac4ValorHora(item.day) * item.horas);
+        const { valor, partes } = calcAc4Servico(item.day, item.inicio, item.horas);
+        const splitNote = partes.length > 1
+          ? `<span class="ac4-row-split">${partes.map((p) => `${p.horas}h em ${escapeHtml(AC4_LABEL_DIA[p.day] || p.day)}`).join(" + ")}</span>`
+          : "";
         return `
           <div class="ac4-row">
+            <span class="ac4-row-num">${idx + 1}</span>
             <span class="ac4-row-day">${escapeHtml(dia)}</span>
-            <span class="ac4-row-horas">${item.horas}h de serviço extraordinário</span>
+            <span class="ac4-row-info">
+              <span class="ac4-row-horas">${item.horas}h a partir das ${item.inicio}h</span>
+              ${splitNote}
+            </span>
             <strong class="ac4-row-valor">${fmt(valor)}</strong>
-            <button type="button" class="ac4-row-remove" data-ac4-remove="${item.id}" aria-label="Remover serviço de ${escapeHtml(dia)}, ${item.horas}h">
+            <button type="button" class="ac4-row-remove" data-ac4-remove="${item.id}" aria-label="Remover serviço ${idx + 1}, ${escapeHtml(dia)}, ${item.horas}h a partir das ${item.inicio}h">
               <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
             </button>
           </div>`;
@@ -298,8 +460,9 @@ function renderAc4Rows(){
   ac4TotalPreview.textContent = fmt(calcAc4Total(ac4DraftConfig));
 }
 
-// Zera os seletores de dia/horas (área de montagem de uma nova linha) e
-// redesenha a lista com os serviços já confirmados para este posto/mês.
+// Zera os seletores de dia/horas/início (área de montagem de uma nova
+// linha) e redesenha a lista com os serviços já confirmados para este
+// posto/mês.
 function syncAc4ModalInputs(){
   if (!ac4Modal) return;
   const checks = ac4Modal.querySelectorAll(".ac4-day input[type='checkbox']");
@@ -310,6 +473,11 @@ function syncAc4ModalInputs(){
     if (qtyEl){
       qtyEl.value = "0";
       qtyEl.disabled = true;
+    }
+    const inicioEl = ac4Modal.querySelector(`.ac4-inicio[data-day='${day}']`);
+    if (inicioEl){
+      inicioEl.value = "0";
+      inicioEl.disabled = true;
     }
   });
   renderAc4Rows();
@@ -432,8 +600,12 @@ function bindAdicionaisEventos(){
           if (!isFinite(horas)) horas = 0;
           horas = Math.max(0, Math.min(24, horas));
           if (horas <= 0) return;
+          const inicioEl = ac4Modal.querySelector(`.ac4-inicio[data-day='${day}']`);
+          let inicio = inicioEl ? Number(inicioEl.value ?? 0) : 0;
+          if (!isFinite(inicio)) inicio = 0;
+          inicio = Math.max(0, Math.min(23, inicio));
           ac4EntrySeq += 1;
-          ac4DraftConfig.push({ id: ac4EntrySeq, day, horas });
+          ac4DraftConfig.push({ id: ac4EntrySeq, day, inicio, horas });
           added = true;
         });
         if (!added) return;
@@ -444,6 +616,11 @@ function bindAdicionaisEventos(){
           if (qtyEl){
             qtyEl.value = "0";
             qtyEl.disabled = true;
+          }
+          const inicioEl = ac4Modal.querySelector(`.ac4-inicio[data-day='${day}']`);
+          if (inicioEl){
+            inicioEl.value = "0";
+            inicioEl.disabled = true;
           }
         });
         renderAc4Rows();
@@ -797,6 +974,25 @@ let base13 = subsidioTetoBase - prev13 - dedDependentes13;
 
     const desc13 = round2(prev13 + ir13 + abateTeto);
     const liquido13 = round2(bruto13 - desc13);
+
+    // ====== Insumos anuais para o Simulador de Restituição IRPF ======
+    // Rendimento tributável do ano = 12 meses do mês corrente (projetado)
+    // + o terço de férias + o 13º (mesma lógica de "mês atual repetido"
+    // já usada no Detalhamento Anual). IRPF já retido no ano = 12x o IRPF
+    // mensal + o incremento de IR pago sobre férias + o IR do 13º.
+    try {
+      const rendimentoTributavelAnual = round2(rendimentoTributavel * 12 + terco + subsidioTetoBase);
+      const irpfRetidoAnual = round2(irpf * 12 + irFerias + ir13);
+      const pensaoOficialAnual = round2(pensao * 12 + prev13);
+      __irpfAnualDados = {
+        rendimentoTributavelAnual,
+        irpfRetidoAnual,
+        pensaoOficialAnual,
+        dependentes,
+        ipasgoAnual: round2((ipasgoSelecionado ? ipasgoValor : 0) * 12)
+      };
+      if (typeof simularRestituicaoIRPF === "function") simularRestituicaoIRPF();
+    } catch(_e) { /* silencioso */ }
 
     // Totais
     const totalBrutoFerias13 = round2(terco + bruto13);
@@ -1283,6 +1479,11 @@ byId("limpar")?.addEventListener("click", () => {
   ]);
   document.body.classList.remove("deltas-on");
   metodoIrpfEl.textContent = "";
+  ["irpfOutrasDespesasMedicas", "irpfDespesasEducacao", "irpfPensaoAlimenticia", "irpfPGBL"].forEach((id) => {
+    const el = byId(id);
+    if (!el) return;
+    el.value = "";
+  });
 });
 
 // Helpers

@@ -142,9 +142,11 @@
 
     function syncQty(day){
       var cb = modal.querySelector('.ac4-check[data-day="' + day + '"]');
+      if (!cb) return;
       var sel = modal.querySelector('.ac4-qty[data-day="' + day + '"]');
-      if (!cb || !sel) return;
-      sel.disabled = !cb.checked;
+      if (sel) sel.disabled = !cb.checked;
+      var inicio = modal.querySelector('.ac4-inicio[data-day="' + day + '"]');
+      if (inicio) inicio.disabled = !cb.checked;
     }
     function syncAll(){ days.forEach(syncQty); }
 
