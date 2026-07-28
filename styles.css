@@ -974,11 +974,6 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 /* =========================================================================
    Simulador Restituição IRPF
    ========================================================================= */
-.irpf-sim-disclaimer{
-  font-size:.8rem;line-height:1.5;margin:0 0 18px;padding:10px 12px;
-  border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);
-  color:var(--muted);
-}
 /* Layout "tabela": 3 colunas (rótulo | campo | observação) alinhadas entre
    todas as linhas. Cada .irpf-row vira "transparente" para o grid
    (display:contents), então seus 3 filhos são posicionados diretamente

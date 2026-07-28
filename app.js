@@ -26,37 +26,75 @@ const byId = (id) => document.getElementById(id);
 const tbodyProventos = byId("tbodyProventos");
 const tbodyDescontos = byId("tbodyDescontos");
 
-// ====== Tabela de Subsídio Efetivo por Posto/Graduação, por ano-base ======
-// Cada ano é a tabela vigente publicada no Diário Oficial daquele período.
-// Novos anos podem ser adicionados aqui conforme forem publicados/atualizados.
-const SUBSIDIO_POR_ANO = {
-  2026: {
-    "Coronel - Nível II": 48353.02,
-    "Coronel - Nível I": 40294.18,
-    "Tenente-Coronel": 36321.51,
-    "Major": 32632.62,
-    "Capitão": 28547.01,
-    "Primeiro-Tenente": 20724.98,
-    "Segundo-Tenente": 17930.43,
-    "Aspirante a oficial": 17167.09,
-    "Cadete 3º ano": 13516.29,
-    "Cadete 2º ano": 11714.12,
-    "Cadete 1º ano": 10813.01,
-    "Subtenente": 17167.09,
-    "Primeiro-Sargento": 13516.29,
-    "Segundo-Sargento": 11714.12,
-    "Terceiro-Sargento": 10813.01,
-    "Cabo": 9861.48,
-    "Soldado de 1ª Classe": 8980.38,
-    "Soldado de 2ª Classe": 8145.38
+// ====== Tabela de Subsídio Efetivo por Posto/Graduação, por período vigente ======
+// Cada item cobre um intervalo de meses/anos (inclusive) com a tabela oficial
+// publicada no Diário Oficial para aquele intervalo. Postos/graduações com
+// subsídio idêntico foram unificados numa única opção (Subtenente = Aspirante
+// a oficial; 1º/2º/3º Sargento = Cadete de 3º/2º/1º ano, respectivamente).
+// Novos períodos podem ser adicionados aqui conforme forem publicados.
+const SUBSIDIO_PERIODOS = [
+  {
+    // mai/2025 a jun/2026 — "Coronel - Nível II" ainda não existia neste
+    // período, por isso não consta nesta tabela.
+    inicio: { ano: 2025, mes: 5 },
+    fim: { ano: 2026, mes: 6 },
+    tabela: {
+      "Coronel - Nível I": 38703.09,
+      "Tenente-Coronel": 34887.28,
+      "Major": 31344.05,
+      "Capitão": 27419.78,
+      "1º Tenente": 19906.60,
+      "2º Tenente": 17119.67,
+      "Subtenente / Aspirante": 14843.14,
+      "1º Sargento / Cadete 3º ano": 12982.57,
+      "2º Sargento / Cadete 2º ano": 11251.56,
+      "3º Sargento / Cadete 1º ano": 10386.05,
+      "Cabo": 9472.08,
+      "Soldado 1ª Classe": 8625.76,
+      "Soldado 2ª Classe": 7823.09
+    }
+  },
+  {
+    // jul/2026 em diante — tabela vigente (DOE/GO N° 24.809, 29/6/2026),
+    // já com a criação de "Coronel - Nível II".
+    inicio: { ano: 2026, mes: 7 },
+    fim: { ano: 2026, mes: 12 },
+    tabela: {
+      "Coronel - Nível II": 48353.02,
+      "Coronel - Nível I": 40294.18,
+      "Tenente-Coronel": 36321.51,
+      "Major": 32632.62,
+      "Capitão": 28547.01,
+      "1º Tenente": 20724.98,
+      "2º Tenente": 17930.43,
+      "Subtenente / Aspirante": 17167.09,
+      "1º Sargento / Cadete 3º ano": 13516.29,
+      "2º Sargento / Cadete 2º ano": 11714.12,
+      "3º Sargento / Cadete 1º ano": 10813.01,
+      "Cabo": 9861.48,
+      "Soldado 1ª Classe": 8980.38,
+      "Soldado 2ª Classe": 8145.38
+    }
   }
-};
-const ANOS_SUBSIDIO_DISPONIVEIS = Object.keys(SUBSIDIO_POR_ANO).map(Number).sort((a, b) => b - a);
-const ANO_SUBSIDIO_PADRAO = ANOS_SUBSIDIO_DISPONIVEIS[0];
+];
 
-// Tabela do posto/graduação vigente para o ano de referência selecionado.
-// É reatribuída por aplicarTabelaSubsidioPorAno() quando o usuário troca o ano.
-let SUBSIDIO = SUBSIDIO_POR_ANO[ANO_SUBSIDIO_PADRAO];
+const chaveAnoMes = (ano, mes) => ano * 12 + mes;
+
+// Retorna a tabela vigente para o (ano, mês) informado. Datas fora de todos
+// os períodos cadastrados usam a tabela do período mais recente (projeção
+// para o futuro), consistente com o restante do simulador.
+function tabelaSubsidioPara(ano, mes) {
+  const chave = chaveAnoMes(ano, mes);
+  const periodo = SUBSIDIO_PERIODOS.find((p) =>
+    chave >= chaveAnoMes(p.inicio.ano, p.inicio.mes) && chave <= chaveAnoMes(p.fim.ano, p.fim.mes)
+  );
+  return (periodo || SUBSIDIO_PERIODOS[SUBSIDIO_PERIODOS.length - 1]).tabela;
+}
+
+// Tabela do posto/graduação vigente para o período de referência selecionado.
+// É reatribuída por aplicarTabelaSubsidioPorPeriodo() quando o usuário troca
+// a data de referência.
+let SUBSIDIO = SUBSIDIO_PERIODOS[SUBSIDIO_PERIODOS.length - 1].tabela;
 
 // ====== Teto constitucional (abate-teto) ======
 // Subteto estadual: 90,25% do subsídio de Ministro do STF (R$ 46.366,19).
@@ -87,31 +125,76 @@ const ALIQUOTA_PENSAO = 0.105;
 const IPASGO_TETO_BASICO = 838.71;
 const IPASGO_TETO_ESPECIAL = 1247.93;
 
-// Troca a tabela de subsídio ativa para o ano informado (usada pelo seletor #mesAno).
-function aplicarTabelaSubsidioPorAno(ano) {
-  const tabela = SUBSIDIO_POR_ANO[ano] || SUBSIDIO_POR_ANO[ANO_SUBSIDIO_PADRAO];
-  SUBSIDIO = tabela;
+// Troca a tabela de subsídio ativa para o (ano, mês) informado (usada pelo
+// seletor #mesAno) e atualiza as opções de "Posto / Graduação" de acordo.
+function aplicarTabelaSubsidioPorPeriodo(ano, mes) {
+  SUBSIDIO = tabelaSubsidioPara(ano, mes);
   FAS = calcularFas();
 }
 
+// Reconstrói as opções de "Posto / Graduação" a partir dos postos existentes
+// na tabela de subsídio atualmente ativa (ex.: "Coronel - Nível II" só
+// aparece a partir de jul/2026). Mantém o posto selecionado se ele ainda
+// existir na nova tabela; caso contrário, volta ao placeholder.
+function renderPostoOptions() {
+  const postoSel = byId("posto");
+  if (!postoSel) return;
+  const valorAtual = postoSel.value;
+  const opcoes = Object.keys(SUBSIDIO);
+  const mantemSelecao = opcoes.includes(valorAtual);
+  postoSel.innerHTML =
+    `<option value="" disabled${mantemSelecao ? "" : " selected"}>Selecione...</option>` +
+    opcoes.map((p) => `<option value="${escapeHtml(p)}"${p === valorAtual ? " selected" : ""}>${escapeHtml(p)}</option>`).join("");
+}
+
 // ====== Seletor unificado de mês/ano de referência (#mesAno) ======
-// Opções no formato "jan/2026", geradas a partir dos anos com tabela em
-// SUBSIDIO_POR_ANO. O <select id="mes"> oculto continua sendo a fonte lida
-// pelos cálculos; aqui apenas sincronizamos o mês e a tabela do ano.
+// Opções no formato "jan/2025", geradas a partir do intervalo coberto por
+// SUBSIDIO_PERIODOS (do início do primeiro período ao fim do último). O
+// <select id="mes"> oculto continua sendo a fonte lida pelos cálculos; aqui
+// apenas sincronizamos o mês e a tabela do período vigente.
 const MESES_NOMES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 const MESES_ABREV = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+
+// Enumera todos os pares {ano, mes} entre "inicio" e "fim" (inclusive).
+function enumerarMesesEntre(inicio, fim) {
+  const lista = [];
+  let ano = inicio.ano, mes = inicio.mes;
+  while (chaveAnoMes(ano, mes) <= chaveAnoMes(fim.ano, fim.mes)) {
+    lista.push({ ano, mes });
+    mes += 1;
+    if (mes > 12) { mes = 1; ano += 1; }
+  }
+  return lista;
+}
+
 function setupMesAnoSelect() {
   const unifSel = byId("mesAno");
   const mesSel = byId("mes");
   if (!unifSel || !mesSel) return;
-  unifSel.innerHTML = ANOS_SUBSIDIO_DISPONIVEIS.map((ano) =>
-    MESES_NOMES.map((nome, i) => `<option value="${nome}|${ano}">${MESES_ABREV[i]}/${ano}</option>`).join("")
+
+  const primeiroPeriodo = SUBSIDIO_PERIODOS[0];
+  const ultimoPeriodo = SUBSIDIO_PERIODOS[SUBSIDIO_PERIODOS.length - 1];
+  const meses = enumerarMesesEntre(primeiroPeriodo.inicio, ultimoPeriodo.fim);
+
+  unifSel.innerHTML = meses.map(({ ano, mes }) =>
+    `<option value="${MESES_NOMES[mes - 1]}|${ano}">${MESES_ABREV[mes - 1]}/${ano}</option>`
   ).join("");
+
   const aplicarSelecao = (recalcular) => {
     const [nomeMes, anoStr] = String(unifSel.value || "").split("|");
+    const mesIdx = MESES_NOMES.indexOf(nomeMes);
+    const ano = Number(anoStr) || ultimoPeriodo.inicio.ano;
+    const mes = mesIdx >= 0 ? mesIdx + 1 : ultimoPeriodo.inicio.mes;
     if (nomeMes) mesSel.value = nomeMes;
-    aplicarTabelaSubsidioPorAno(Number(anoStr) || ANO_SUBSIDIO_PADRAO);
+    aplicarTabelaSubsidioPorPeriodo(ano, mes);
+    renderPostoOptions();
     if (!recalcular) return;
+    // A partir daqui é seguro referenciar bindings declaradas mais abaixo no
+    // arquivo (ex.: adicionaisSelect/adicionaisSelecionados): este trecho só
+    // roda em resposta à troca do usuário no seletor, ou seja, depois que o
+    // script inteiro já terminou de ser avaliado.
+    if (typeof atualizarDisponibilidadeAC5 === "function") atualizarDisponibilidadeAC5(ano, mes);
+    if (typeof atualizarValoresAC2AC3 === "function") atualizarValoresAC2AC3(ano, mes);
     const modalSubs = byId("subsidiosModal");
     if (typeof renderSubsidiosTable === "function" && modalSubs && !modalSubs.classList.contains("hidden")) {
       renderSubsidiosTable();
@@ -119,7 +202,9 @@ function setupMesAnoSelect() {
     if (typeof recomputePercentFromValor === "function") recomputePercentFromValor();
     if (typeof computeDetalhamento === "function") computeDetalhamento();
   };
-  unifSel.value = `Janeiro|${ANO_SUBSIDIO_PADRAO}`;
+  // Referência inicial: início do período mais recente (jul/2026), que é a
+  // tabela em vigor mais atual conhecida pelo simulador.
+  unifSel.value = `${MESES_NOMES[ultimoPeriodo.inicio.mes - 1]}|${ultimoPeriodo.inicio.ano}`;
   aplicarSelecao(false);
   unifSel.addEventListener("change", () => aplicarSelecao(true));
 }
@@ -263,12 +348,12 @@ function simularRestituicaoIRPF(){
       labelEl.textContent = "IRPF a restituir";
       valorEl.textContent = fmt(resultado);
       if (lineEl) { lineEl.classList.remove("irpf-a-pagar"); lineEl.classList.add("irpf-a-restituir"); }
-      if (headerEl) { headerEl.textContent = fmt(resultado); headerEl.classList.remove("vermelho"); headerEl.classList.add("verde"); }
+      if (headerEl) { headerEl.textContent = `A restituir ${fmt(resultado)}`; headerEl.classList.remove("vermelho"); headerEl.classList.add("verde"); }
     } else {
       labelEl.textContent = "IRPF a pagar";
       valorEl.textContent = fmt(Math.abs(resultado));
       if (lineEl) { lineEl.classList.remove("irpf-a-restituir"); lineEl.classList.add("irpf-a-pagar"); }
-      if (headerEl) { headerEl.textContent = fmt(Math.abs(resultado)); headerEl.classList.remove("verde"); headerEl.classList.add("vermelho"); }
+      if (headerEl) { headerEl.textContent = `A pagar ${fmt(Math.abs(resultado))}`; headerEl.classList.remove("verde"); headerEl.classList.add("vermelho"); }
     }
   }
 }
@@ -311,8 +396,11 @@ const infoSubsidiosBtn = byId("infoSubsidiosBtn");
 const subsidiosModal = byId("subsidiosModal");
 const tbodySubsidios = byId("tbodySubsidios");
 const subsidiosCloseBtn = byId("subsidiosClose");
-const AC2_VALOR = 1050.00;
-const AC3_VALOR = 828.00;
+// AC2 e AC3 têm valores diferentes conforme a data de referência: de
+// mai/2025 a jun/2026 valem R$ 700,00 e R$ 552,00; a partir de jul/2026,
+// R$ 1.050,00 e R$ 828,00. Reatribuídos por atualizarValoresAC2AC3().
+let AC2_VALOR = 1050.00;
+let AC3_VALOR = 828.00;
 const AC5_VALOR = 1000.00;
 const AC4_TOTAL_24H = {
   seg: 729.03,
@@ -344,6 +432,44 @@ const AC_LABELS = {
   AC5: "AC5 (Auxílio Alimentação)"
 };
 let adicionaisSelecionados = new Set(["AC5"]);
+
+// AC5 (Auxílio Alimentação) só passou a existir a partir de jul/2026. Em
+// datas de referência anteriores, a opção fica indisponível no seletor de
+// Adicionais e é removida da simulação, se estiver presente. A partir de
+// jul/2026 (inclusive), o AC5 é incluído automaticamente na simulação toda
+// vez que essa data de referência for selecionada.
+const AC5_DISPONIVEL_DESDE = { ano: 2026, mes: 7 };
+function atualizarDisponibilidadeAC5(ano, mes) {
+  const disponivel = chaveAnoMes(ano, mes) >= chaveAnoMes(AC5_DISPONIVEL_DESDE.ano, AC5_DISPONIVEL_DESDE.mes);
+  if (adicionaisSelect) {
+    const opt = adicionaisSelect.querySelector('option[value="AC5"]');
+    if (disponivel && !opt) {
+      adicionaisSelect.insertAdjacentHTML("beforeend", `<option value="AC5">${AC_LABELS.AC5}</option>`);
+    } else if (!disponivel && opt) {
+      opt.remove();
+    }
+  }
+  if (disponivel && !adicionaisSelecionados.has("AC5")) {
+    adicionaisSelecionados.add("AC5");
+    renderAdicionaisChips();
+  } else if (!disponivel && adicionaisSelecionados.has("AC5")) {
+    adicionaisSelecionados.delete("AC5");
+    renderAdicionaisChips();
+  }
+  return disponivel;
+}
+
+// AC2 e AC3: valores vigentes de mai/2025 a jun/2026 eram menores; a partir
+// de jul/2026 passam a valer R$ 1.050,00 e R$ 828,00 (mesmo corte de
+// AC5_DISPONIVEL_DESDE).
+const AC2_AC3_VALOR_ANTIGO = { AC2: 700.00, AC3: 552.00 };
+const AC2_AC3_VALOR_ATUAL = { AC2: 1050.00, AC3: 828.00 };
+function atualizarValoresAC2AC3(ano, mes) {
+  const vigenteAtual = chaveAnoMes(ano, mes) >= chaveAnoMes(AC5_DISPONIVEL_DESDE.ano, AC5_DISPONIVEL_DESDE.mes);
+  const tabela = vigenteAtual ? AC2_AC3_VALOR_ATUAL : AC2_AC3_VALOR_ANTIGO;
+  AC2_VALOR = tabela.AC2;
+  AC3_VALOR = tabela.AC3;
+}
 // Insumos anuais (rendimento tributável, IRPF já retido etc.) capturados ao
 // final de computeDetalhamento(), usados pelo Simulador de Restituição IRPF.
 let __irpfAnualDados = null;
@@ -1456,7 +1582,13 @@ byId("limpar")?.addEventListener("click", () => {
   form.reset();
   valorIpasgoInput.value = "";
   byId("associacaoValor").value = "";
-  adicionaisSelecionados = new Set(["AC5"]);
+  // AC5 só entra no padrão se a data de referência atual já o suportar
+  // (disponível a partir de jul/2026).
+  const [nomeMesReset, anoResetStr] = String(byId("mesAno")?.value || "").split("|");
+  const mesResetIdx = MESES_NOMES.indexOf(nomeMesReset);
+  const ac5DisponivelReset = mesResetIdx >= 0 && anoResetStr &&
+    chaveAnoMes(Number(anoResetStr), mesResetIdx + 1) >= chaveAnoMes(AC5_DISPONIVEL_DESDE.ano, AC5_DISPONIVEL_DESDE.mes);
+  adicionaisSelecionados = new Set(ac5DisponivelReset ? ["AC5"] : []);
   ac4Config = buildAc4DefaultConfig();
   ac4DraftConfig = buildAc4DefaultConfig();
   if (adicionaisSelect) adicionaisSelect.value = "";

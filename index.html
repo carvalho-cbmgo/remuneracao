@@ -7,7 +7,7 @@
   <meta name="description" content="Simulador de remuneração, descontos e IRPF para militares do CBMGO." />
   <title>Remuneração – CBMGO</title>
   <link rel="icon" href="assets/bandeira-goias.png" />
-  <link rel="stylesheet" href="styles.css?v=20260723f" />
+  <link rel="stylesheet" href="styles.css?v=20260723g" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -112,27 +112,11 @@
           <div class="form-group field">
             <label for="posto"><svg class="field-icon" aria-hidden="true"><use href="#i-rank"></use></svg><span>Posto / Graduação</span></label>
             <div class="select-wrap">
-              <select id="posto" required>
-                <option value="" disabled selected>Selecione...</option>
-                <option value="Coronel - Nível II">Coronel - Nível II</option>
-                <option value="Coronel - Nível I">Coronel - Nível I</option>
-                <option value="Tenente-Coronel">Tenente-Coronel</option>
-                <option value="Major">Major</option>
-                <option value="Capitão">Capitão</option>
-                <option value="Primeiro-Tenente">Primeiro-Tenente</option>
-                <option value="Segundo-Tenente">Segundo-Tenente</option>
-                <option value="Aspirante a oficial">Aspirante a oficial</option>
-                <option value="Cadete 3º ano">Cadete 3º ano</option>
-                <option value="Cadete 2º ano">Cadete 2º ano</option>
-                <option value="Cadete 1º ano">Cadete 1º ano</option>
-                <option value="Subtenente">Subtenente</option>
-                <option value="Primeiro-Sargento">Primeiro-Sargento</option>
-                <option value="Segundo-Sargento">Segundo-Sargento</option>
-                <option value="Terceiro-Sargento">Terceiro-Sargento</option>
-                <option value="Cabo">Cabo</option>
-                <option value="Soldado de 1ª Classe">Soldado de 1ª Classe</option>
-                <option value="Soldado de 2ª Classe">Soldado de 2ª Classe</option>
-              </select>
+              <!-- Opções geradas dinamicamente por renderPostoOptions() a partir da
+                   tabela de subsídio vigente na data de referência selecionada
+                   (alguns postos, como "Coronel - Nível II", só existem a partir
+                   de determinado período). -->
+              <select id="posto" required></select>
               <svg class="select-caret" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
             </div>
           </div>
@@ -588,15 +572,13 @@
       <section class="output-section output-irpf-sim">
         <div class="resume-box destaque detail-collapse is-collapsed" id="irpfSimBox" data-collapse-section="irpf-sim">
           <button type="button" class="collapse-header" data-collapse-toggle="irpf-sim" aria-expanded="false" aria-controls="irpfSimContent">
-            <span class="collapse-title"><svg class="icon collapse-title-icon icon-verde" aria-hidden="true"><use href="#i-scale"></use></svg>Simulador Restituição IRPF</span>
+            <span class="collapse-title"><svg class="icon collapse-title-icon icon-verde" aria-hidden="true"><use href="#i-scale"></use></svg>Simulador Restituição IRPF<span class="f13-info-wrap"><svg class="icon f13-info-icon" aria-hidden="true"><use href="#i-info"></use></svg><span class="f13-tooltip" role="tooltip">Estimativa baseada nas regras da Receita Federal para o ano-calendário 2025 (Declaração de Ajuste Anual, exercício 2026), portanto não substitui o cálculo oficial da RFB nem a declaração completa, que pode incluir outras deduções.</span></span></span>
             <span class="collapse-right">
               <span class="collapse-total verde" id="irpfResultadoHeader">R$ 0,00</span>
               <svg class="collapse-icon" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
             </span>
           </button>
           <div class="collapse-content" id="irpfSimContent">
-            <p class="muted irpf-sim-disclaimer">Estimativa baseada nas regras da Receita Federal para o ano-calendário 2025 (Declaração de Ajuste Anual, exercício 2026). Não substitui o cálculo oficial da RFB nem a declaração completa, que pode incluir outras deduções.</p>
-
             <div class="irpf-sim-table">
               <div class="irpf-row">
                 <label class="irpf-row-label" for="irpfMetodoDeducao"><svg class="icon" aria-hidden="true"><use href="#i-calculator"></use></svg>Método de Dedução</label>
@@ -696,7 +678,7 @@
     <p class="update-line"><small>Última atualização: <strong><a class="official-link" href="https://diariooficial.abc.go.gov.br/portal/edicoes/download/7247" target="_blank" rel="noopener noreferrer"><span>DOE/GO N° 24.809 - 29/6/2026</span><img class="official-link-img" src="assets/icone-diario-oficial.svg" alt="" aria-hidden="true"></a></strong></small></p>
   </footer>
 
-  <script src="app.js?v=20260723f"></script>
+  <script src="app.js?v=20260723k"></script>
 
   <script>
   (function(){
