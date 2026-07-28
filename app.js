@@ -396,6 +396,14 @@ const infoSubsidiosBtn = byId("infoSubsidiosBtn");
 const subsidiosModal = byId("subsidiosModal");
 const tbodySubsidios = byId("tbodySubsidios");
 const subsidiosCloseBtn = byId("subsidiosClose");
+const btnComparar = byId("btnComparar");
+const compararModal = byId("compararModal");
+const compararPostoSelect = byId("compararPostoSelect");
+const compararCloseBtn = byId("compararClose");
+const compararCancelarBtn = byId("compararCancelar");
+const compararExecutarBtn = byId("compararExecutar");
+const compararResultadoModal = byId("compararResultadoModal");
+const compararResultadoCloseBtn = byId("compararResultadoClose");
 // AC2 e AC3 têm valores diferentes conforme a data de referência: de
 // mai/2025 a jun/2026 valem R$ 700,00 e R$ 552,00; a partir de jul/2026,
 // R$ 1.050,00 e R$ 828,00. Reatribuídos por atualizarValoresAC2AC3().
@@ -681,6 +689,169 @@ function bindSubsidiosModal(){
   });
 }
 
+// ====== Comparação entre dois Postos/Graduações ======
+// Reaproveita o mesmo motor de cálculo (computeDetalhamento) já usado pelo
+// formulário principal: troca temporariamente o valor de #posto, recalcula,
+// captura os totais (mensais via window.__ULTIMO_CALC_MENSAL__, anuais via
+// lerTotaisAnuaisAtual()) e, ao final, restaura o posto originalmente
+// selecionado. Como os dois modais usados aqui cobrem a tela inteira com um
+// fundo opaco (mesmo padrão de .subsidios-modal/.ac4-modal), a troca
+// temporária de posto durante o cálculo não fica visível ao usuário.
+function renderCompararPostoOptions(){
+  if (!compararPostoSelect) return;
+  const postoAtual = byId("posto") ? byId("posto").value : "";
+  const opcoes = Object.keys(SUBSIDIO).filter((p) => p !== postoAtual);
+  compararPostoSelect.innerHTML =
+    `<option value="" disabled selected>Selecione...</option>` +
+    opcoes.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+}
+
+function openCompararModal(){
+  const postoSel = byId("posto");
+  if (!postoSel || !postoSel.value) {
+    if (postoSel) {
+      postoSel.focus();
+      if (typeof postoSel.reportValidity === "function") postoSel.reportValidity();
+    }
+    return;
+  }
+  if (!compararModal) return;
+  const label = byId("compararPostoAtualLabel");
+  if (label) label.textContent = postoSel.value;
+  renderCompararPostoOptions();
+  compararModal.classList.remove("hidden");
+  if (compararCloseBtn) compararCloseBtn.focus();
+}
+
+function closeCompararModal(){
+  if (!compararModal) return;
+  compararModal.classList.add("hidden");
+  if (btnComparar) btnComparar.focus();
+}
+
+function openCompararResultadoModal(){
+  if (!compararResultadoModal) return;
+  compararResultadoModal.classList.remove("hidden");
+  if (compararResultadoCloseBtn) compararResultadoCloseBtn.focus();
+}
+
+function closeCompararResultadoModal(){
+  if (!compararResultadoModal) return;
+  compararResultadoModal.classList.add("hidden");
+  if (btnComparar) btnComparar.focus();
+}
+
+// Aplica um posto ao formulário, recalcula e devolve um retrato (mensal +
+// anual) dos totais resultantes. O pequeno atraso antes de ler os totais
+// anuais dá tempo à sincronização (RAF/timeout) das colunas de Férias e 13º
+// dentro de #tbodyDetalhamentoAnual, no raro caso de ela não terminar de
+// forma síncrona dentro do próprio computeDetalhamento().
+function snapshotComparacaoParaPosto(postoValor){
+  return new Promise((resolve) => {
+    const postoSel = byId("posto");
+    postoSel.value = postoValor;
+    if (typeof recomputePercentFromValor === "function") recomputePercentFromValor();
+    if (typeof recomputeIpasgoFromPercent === "function") recomputeIpasgoFromPercent();
+    computeDetalhamento();
+    setTimeout(() => {
+      const mensal = window.__ULTIMO_CALC_MENSAL__ || { posto: postoValor, subsidio: 0, totalBruto: 0, totalDescontos: 0, liquido: 0 };
+      const anual = lerTotaisAnuaisAtual();
+      resolve({
+        posto: postoValor,
+        subsidio: mensal.subsidio,
+        mensal: { bruto: mensal.totalBruto, descontos: mensal.totalDescontos, liquido: mensal.liquido },
+        anual,
+      });
+    }, 120);
+  });
+}
+
+function renderComparacaoResultado(snapA, snapB){
+  const colAM = byId("compararColAMensal"), colBM = byId("compararColBMensal");
+  const colAA = byId("compararColAAnual"), colBA = byId("compararColBAnual");
+  if (colAM) colAM.textContent = snapA.posto;
+  if (colBM) colBM.textContent = snapB.posto;
+  if (colAA) colAA.textContent = snapA.posto;
+  if (colBA) colBA.textContent = snapB.posto;
+
+  const linha = (desc, a, b, cls) => {
+    const d = round2(b - a);
+    const sinal = d > 0 ? "+" : "";
+    return `
+      <tr>
+        <td class="cell-left"><span>${escapeHtml(desc)}</span></td>
+        <td class="right ${cls}"><strong>${fmt(a)}</strong></td>
+        <td class="right ${cls}"><strong>${fmt(b)}</strong></td>
+        <td class="right muted"><strong>${sinal}${fmt(d)}</strong></td>
+      </tr>`;
+  };
+
+  const tbodyMensal = byId("tbodyCompararMensal");
+  if (tbodyMensal) {
+    tbodyMensal.innerHTML =
+      linha("Subsídio Efetivo", snapA.subsidio, snapB.subsidio, "azul") +
+      linha("Somatório Remuneração Bruta", snapA.mensal.bruto, snapB.mensal.bruto, "azul") +
+      linha("Somatório Descontos", snapA.mensal.descontos, snapB.mensal.descontos, "vermelho") +
+      linha("Remuneração Líquida", snapA.mensal.liquido, snapB.mensal.liquido, "verde");
+  }
+  const tbodyAnual = byId("tbodyCompararAnual");
+  if (tbodyAnual) {
+    tbodyAnual.innerHTML =
+      linha("Proventos (ano)", snapA.anual.proventos, snapB.anual.proventos, "azul") +
+      linha("Descontos (ano)", snapA.anual.descontos, snapB.anual.descontos, "vermelho") +
+      linha("Remuneração Líquida (ano)", snapA.anual.liquido, snapB.anual.liquido, "verde") +
+      linha("Média Mensal Líquida (ano)", round2(snapA.anual.liquido / 12), round2(snapB.anual.liquido / 12), "amarelo");
+  }
+}
+
+async function executarComparacao(){
+  const postoSel = byId("posto");
+  const postoA = postoSel ? postoSel.value : "";
+  const postoB = compararPostoSelect ? compararPostoSelect.value : "";
+  if (!postoA) return;
+  if (!postoB) {
+    if (compararPostoSelect) {
+      compararPostoSelect.focus();
+      if (typeof compararPostoSelect.reportValidity === "function") compararPostoSelect.reportValidity();
+    }
+    return;
+  }
+  if (compararExecutarBtn) compararExecutarBtn.disabled = true;
+  try {
+    const snapA = await snapshotComparacaoParaPosto(postoA);
+    const snapB = await snapshotComparacaoParaPosto(postoB);
+    // Restaura o posto originalmente selecionado no formulário principal
+    postoSel.value = postoA;
+    if (typeof recomputePercentFromValor === "function") recomputePercentFromValor();
+    if (typeof recomputeIpasgoFromPercent === "function") recomputeIpasgoFromPercent();
+    computeDetalhamento();
+    closeCompararModal();
+    renderComparacaoResultado(snapA, snapB);
+    openCompararResultadoModal();
+  } finally {
+    if (compararExecutarBtn) compararExecutarBtn.disabled = false;
+  }
+}
+
+function bindCompararModal(){
+  if (btnComparar) btnComparar.addEventListener("click", openCompararModal);
+  if (compararCloseBtn) compararCloseBtn.addEventListener("click", closeCompararModal);
+  if (compararCancelarBtn) compararCancelarBtn.addEventListener("click", closeCompararModal);
+  if (compararModal) {
+    compararModal.addEventListener("click", (e) => { if (e.target === compararModal) closeCompararModal(); });
+  }
+  if (compararExecutarBtn) compararExecutarBtn.addEventListener("click", executarComparacao);
+  if (compararResultadoCloseBtn) compararResultadoCloseBtn.addEventListener("click", closeCompararResultadoModal);
+  if (compararResultadoModal) {
+    compararResultadoModal.addEventListener("click", (e) => { if (e.target === compararResultadoModal) closeCompararResultadoModal(); });
+  }
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (compararResultadoModal && !compararResultadoModal.classList.contains("hidden")) { closeCompararResultadoModal(); return; }
+    if (compararModal && !compararModal.classList.contains("hidden")) { closeCompararModal(); }
+  });
+}
+
 function renderAdicionaisChips(){
   if (!adicionaisChips) return;
   const ordem = ["AC2", "AC3", "AC4", "AC5"];
@@ -798,6 +969,7 @@ function bindAdicionaisEventos(){
 
 bindAdicionaisEventos();
 bindSubsidiosModal();
+bindCompararModal();
 renderAdicionaisChips();
 
 
@@ -988,7 +1160,12 @@ if (ipasgoSelecionado) {
   const totalDescontos = sum(descontos.map(d => d.valor));
   const liquido = totalBruto - totalDescontos;
 
-  
+  // Snapshot mensal do posto/graduação recém-calculado, usado pela
+  // funcionalidade "Comparar" para ler os totais sem depender do texto
+  // formatado no DOM (que pode incluir sufixo de delta de reajuste).
+  window.__ULTIMO_CALC_MENSAL__ = { posto, subsidio, totalBruto: round2(totalBruto), totalDescontos: round2(totalDescontos), liquido: round2(liquido) };
+
+
   // ====== Deltas por Reajuste (comparativo com base sem reajuste) ======
   let deltaBruto = 0, deltaDesc = 0, deltaLiq = 0;
   // Totais base (sem reajuste) — declarados fora do if para uso seguro no pós-cálculo
@@ -1638,6 +1815,33 @@ byId("limpar")?.addEventListener("click", () => {
 // Helpers
 function sum(arr){ return arr.reduce((a,b)=> a + (Number(b)||0), 0); }
 function round2(n){ return Math.round(n * 100) / 100; }
+
+// Lê os totais anuais (Proventos, Descontos, Remuneração Líquida) a partir
+// das linhas já renderizadas em #tbodyDetalhamentoAnual — mesma lógica de
+// soma usada pela caixa "LEVANTAMENTO ANUAL" — para reaproveitar na
+// funcionalidade "Comparar" sem duplicar as fórmulas de cálculo anual.
+function lerTotaisAnuaisAtual(){
+  const tbody = byId("tbodyDetalhamentoAnual");
+  const vazio = { proventos: 0, descontos: 0, liquido: 0 };
+  if (!tbody) return vazio;
+  const rows = tbody.querySelectorAll("tr");
+  if (!rows || rows.length < 3) return vazio;
+  const sumRow = (row) => {
+    let total = 0;
+    for (let i = 1; i < row.cells.length; i++) {
+      const txt = (row.cells[i].textContent || "").replace(/ /g, " ").trim();
+      if (!txt || txt === "—" || txt === "-") continue;
+      const v = parseMoney(txt);
+      if (Number.isFinite(v)) total += v;
+    }
+    return round2(total);
+  };
+  return {
+    proventos: sumRow(rows[0]),
+    descontos: sumRow(rows[1]),
+    liquido: sumRow(rows[2]),
+  };
+}
 
 function renderRows(tbody, items, colorClass){
   tbody.innerHTML = items.map(it => `

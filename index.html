@@ -7,7 +7,7 @@
   <meta name="description" content="Simulador de remuneração, descontos e IRPF para militares do CBMGO." />
   <title>Remuneração – CBMGO</title>
   <link rel="icon" href="assets/bandeira-goias.png" />
-  <link rel="stylesheet" href="styles.css?v=20260723g" />
+  <link rel="stylesheet" href="styles.css?v=20260723h" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -194,6 +194,7 @@
         <div class="actions">
           <div class="actions-buttons">
             <button type="submit" class="btn primary"><svg class="icon" aria-hidden="true"><use href="#i-calculator"></use></svg>Calcular</button>
+            <button type="button" id="btnComparar" class="btn compare" aria-haspopup="dialog" aria-controls="compararModal"><svg class="icon" aria-hidden="true"><use href="#i-scale"></use></svg>Comparar</button>
             <button type="button" id="simularReajuste" class="btn outline"><svg class="icon" aria-hidden="true"><use href="#i-trending-up"></use></svg>Simular Reajuste</button>
           </div>
           <div id="reajusteWrap" class="reajuste-wrap hidden">
@@ -356,6 +357,69 @@
         <div class="ac4-actions">
           <button type="button" id="ac4Confirm" class="btn ac4-btn-confirm"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>Confirmar</button>
           <button type="button" id="ac4Cancel" class="btn ghost">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="compararModal" class="compare-modal hidden" role="dialog" aria-modal="true" aria-labelledby="compararTitulo">
+      <div class="compare-modal-card">
+        <div class="subsidios-modal-head">
+          <div class="subsidios-modal-head-text">
+            <svg class="icon modal-head-icon" aria-hidden="true"><use href="#i-scale"></use></svg>
+            <h3 id="compararTitulo">Comparar Posto / Graduação</h3>
+          </div>
+          <button type="button" id="compararClose" class="modal-close-btn" aria-label="Fechar comparação"><svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg></button>
+        </div>
+        <p class="muted compare-modal-intro">Selecione outro posto/graduação para comparar com <strong id="compararPostoAtualLabel">—</strong>.</p>
+        <div class="form-group field">
+          <label for="compararPostoSelect"><svg class="field-icon" aria-hidden="true"><use href="#i-rank"></use></svg><span>Posto / Graduação</span></label>
+          <div class="select-wrap">
+            <select id="compararPostoSelect" required></select>
+            <svg class="select-caret" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
+          </div>
+        </div>
+        <div class="compare-modal-actions">
+          <button type="button" id="compararExecutar" class="btn compare"><svg class="icon" aria-hidden="true"><use href="#i-scale"></use></svg>Realizar Comparação</button>
+          <button type="button" id="compararCancelar" class="btn ghost">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="compararResultadoModal" class="compare-result-modal hidden" role="dialog" aria-modal="true" aria-labelledby="compararResultadoTitulo">
+      <div class="compare-result-modal-card">
+        <div class="subsidios-modal-head">
+          <div class="subsidios-modal-head-text">
+            <svg class="icon modal-head-icon" aria-hidden="true"><use href="#i-scale"></use></svg>
+            <h3 id="compararResultadoTitulo">Comparação entre Postos / Graduações</h3>
+          </div>
+          <button type="button" id="compararResultadoClose" class="modal-close-btn" aria-label="Fechar tabela comparativa"><svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg></button>
+        </div>
+        <div class="compare-result-scroll">
+          <h4 class="compare-result-subtitle"><svg class="icon" aria-hidden="true"><use href="#i-bar-chart"></use></svg>Comparação no Mês Selecionado</h4>
+          <table class="table compare-result-table" aria-label="Tabela comparativa mensal de remuneração entre dois postos/graduações">
+            <thead>
+              <tr>
+                <th>Descrição</th>
+                <th class="right" id="compararColAMensal">Posto A</th>
+                <th class="right" id="compararColBMensal">Posto B</th>
+                <th class="right">Diferença</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyCompararMensal"></tbody>
+          </table>
+
+          <h4 class="compare-result-subtitle"><svg class="icon" aria-hidden="true"><use href="#i-bar-chart"></use></svg>Comparação Anual</h4>
+          <table class="table compare-result-table" aria-label="Tabela comparativa anual de remuneração entre dois postos/graduações">
+            <thead>
+              <tr>
+                <th>Descrição</th>
+                <th class="right" id="compararColAAnual">Posto A</th>
+                <th class="right" id="compararColBAnual">Posto B</th>
+                <th class="right">Diferença</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyCompararAnual"></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -678,7 +742,7 @@
     <p class="update-line"><small>Última atualização: <strong><a class="official-link" href="https://diariooficial.abc.go.gov.br/portal/edicoes/download/7247" target="_blank" rel="noopener noreferrer"><span>DOE/GO N° 24.809 - 29/6/2026</span><img class="official-link-img" src="assets/icone-diario-oficial.svg" alt="" aria-hidden="true"></a></strong></small></p>
   </footer>
 
-  <script src="app.js?v=20260723k"></script>
+  <script src="app.js?v=20260723l"></script>
 
   <script>
   (function(){

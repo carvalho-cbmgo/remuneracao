@@ -489,6 +489,16 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
   background:rgba(251,191,36,.2);box-shadow:0 0 0 1px rgba(251,191,36,.42);
 }
 
+/* Botão "Comparar": cor de fundo (verde) propositalmente distinta da do
+   "Calcular" (vermelho/gradiente) e da do "Simular Reajuste" (dourado). */
+.btn.compare{
+  background:rgba(34,197,94,.1);
+  border-color:rgba(34,197,94,.4);
+  color:#bbf7d0;
+}
+.btn.compare:hover{background:rgba(34,197,94,.18);box-shadow:0 0 0 1px rgba(34,197,94,.3)}
+.btn.compare:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
 .icon-btn{
   display:inline-grid;place-items:center;width:40px;height:40px;flex:0 0 auto;
   border-radius:50%;border:1px solid var(--border-strong);
@@ -563,7 +573,7 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 /* =========================================================================
    Modals
    ========================================================================= */
-.subsidios-modal,.ac4-modal{
+.subsidios-modal,.ac4-modal,.compare-modal,.compare-result-modal{
   position:fixed;inset:0;z-index:100;
   display:flex;align-items:center;justify-content:center;
   padding:20px;
@@ -572,7 +582,7 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
   animation:overlayIn var(--dur) var(--ease);
 }
 @keyframes overlayIn{from{opacity:0}to{opacity:1}}
-.subsidios-modal-card,.ac4-modal-card{
+.subsidios-modal-card,.ac4-modal-card,.compare-modal-card,.compare-result-modal-card{
   width:100%;max-height:86vh;overflow-y:auto;
   background:linear-gradient(180deg, rgba(28,26,31,.96), rgba(16,15,19,.98));
   border:1px solid var(--border-strong);
@@ -584,6 +594,8 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 @keyframes modalIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 .subsidios-modal-card{max-width:560px}
 .ac4-modal-card{max-width:min(900px, 94vw)}
+.compare-modal-card{max-width:480px}
+.compare-result-modal-card{max-width:min(760px, 94vw)}
 
 .subsidios-modal-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
 .subsidios-modal-head-text{display:flex;align-items:center;gap:10px}
@@ -603,6 +615,23 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 
 .subsidios-table-scroll{max-height:60vh;overflow-y:auto;border-radius:var(--radius-sm)}
 .subsidios-table th{position:sticky;top:0;background:#18161b;z-index:1}
+
+/* Mini-modal de seleção do segundo posto/graduação (botão "Comparar") */
+.compare-modal-intro{margin:0 0 16px;font-size:.86rem}
+.compare-modal-intro strong{color:var(--text)}
+.compare-modal-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.compare-modal-actions .btn{flex:1 1 auto;justify-content:center}
+
+/* Janela com a tabela comparativa (mensal + anual) entre os dois postos */
+.compare-result-scroll{max-height:74vh;overflow-y:auto;border-radius:var(--radius-sm)}
+.compare-result-subtitle{
+  display:flex;align-items:center;gap:8px;
+  margin:18px 0 8px;font-size:.86rem;font-weight:800;
+  color:var(--text-dim);text-transform:uppercase;letter-spacing:.02em;
+}
+.compare-result-subtitle:first-child{margin-top:0}
+.compare-result-subtitle .icon{width:16px;height:16px;color:var(--gold)}
+.compare-result-table th{position:sticky;top:0;background:#18161b;z-index:1}
 
 /* Os 7 dias ficam sempre numa única linha, dividindo igualmente a largura
    disponível (nunca quebram para nova linha nem precisam de rolagem);
