@@ -859,6 +859,10 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 /* =========================================================================
    Férias / 13º
    ========================================================================= */
+/* Pequeno respiro entre o cabeçalho "Adicional Férias e 13º" e os cards
+   abaixo, garantindo que nenhum componente fique encostado/sobreposto */
+#ferias13Content{padding-top:10px}
+.is-collapsed > #ferias13Content{padding-top:0}
 .f13-row{display:grid;grid-template-columns:repeat(auto-fit, minmax(230px,1fr));gap:14px}
 .f13-card{
   background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:var(--radius);
@@ -866,22 +870,23 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 }
 .f13-card .collapse-header{padding:14px 15px}
 .f13-collapse-content{padding:0 15px 15px;display:flex;flex-direction:column;gap:8px}
-.f13-title{position:relative;display:flex;align-items:center;gap:6px;font-weight:700;font-size:.85rem;color:var(--text-dim);margin-bottom:4px}
-.f13-info{
-  display:grid;place-items:center;width:20px;height:20px;border-radius:50%;
-  border:1px solid var(--border-strong);background:rgba(255,255,255,.04);color:var(--muted);
-  cursor:help;flex:0 0 auto;
-}
-.f13-info .icon{width:12px;height:12px}
+
+/* Ícone de observação ao final de "Adicional Férias (1/3)", dentro do
+   próprio cabeçalho do card (o texto duplicado que antes aparecia acima de
+   "Bruto" foi removido). */
+.f13-info-wrap{position:relative;display:inline-flex;align-items:center;margin-left:4px}
+.f13-info-icon{width:14px;height:14px;color:var(--muted);flex:0 0 auto}
 .f13-tooltip{
-  position:absolute;left:0;top:calc(100% + 8px);z-index:5;width:min(280px,80vw);
+  position:absolute;left:0;top:calc(100% + 10px);z-index:5;width:min(280px,80vw);
   background:#161519;border:1px solid var(--border-strong);border-radius:10px;
   padding:10px 12px;font-size:.76rem;line-height:1.4;color:var(--text-dim);
+  font-weight:400;letter-spacing:normal;text-transform:none;
   box-shadow:var(--shadow-md);
   opacity:0;visibility:hidden;transform:translateY(-4px);
   transition:opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), visibility var(--dur-fast);
 }
-.f13-info:hover + .f13-tooltip,.f13-info:focus-visible + .f13-tooltip{opacity:1;visibility:visible;transform:translateY(0)}
+.f13-info-wrap:hover .f13-tooltip,
+.collapse-header:focus-visible .f13-tooltip{opacity:1;visibility:visible;transform:translateY(0)}
 
 .f13-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--border)}
 .f13-item.no-divider{border-bottom:none;padding:4px 0}
@@ -1001,8 +1006,11 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   background:rgba(255,255,255,.03);border:1px solid var(--border-strong);
   font-family:var(--font-mono);font-size:.9rem;color:var(--text);
 }
-#irpfDespesasMedicas:disabled{
-  opacity:.75;cursor:not-allowed;color:var(--text-dim);
+/* Campos desabilitados dentro da tabela do simulador: tanto o campo fixo
+   "Despesas médicas" (sempre auto) quanto os demais quando o método
+   "Simplificado" está selecionado (ele os substitui por completo) */
+.irpf-sim-table input:disabled{
+  opacity:.55;cursor:not-allowed;color:var(--text-dim);
   background:rgba(255,255,255,.015);
 }
 
@@ -1016,11 +1024,16 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .irpf-row:last-child{border-bottom:none;padding-bottom:0}
 }
 
-.irpf-sim-results{display:flex;flex-direction:column;gap:10px}
+/* Componentes de resultado: metade da largura do card, centralizados */
+.irpf-sim-results{display:flex;flex-direction:column;gap:10px;width:50%;margin:0 auto}
 #irpfResultadoLine.irpf-a-restituir{border-color:rgba(34,197,94,.35);background:var(--accent-soft)}
 #irpfResultadoLine.irpf-a-restituir span:last-child{color:var(--accent)}
 #irpfResultadoLine.irpf-a-pagar{border-color:rgba(239,68,68,.35);background:var(--danger-soft)}
 #irpfResultadoLine.irpf-a-pagar span:last-child{color:var(--danger)}
+
+@media (max-width:640px){
+  .irpf-sim-results{width:100%}
+}
 
 /* =========================================================================
    Footer

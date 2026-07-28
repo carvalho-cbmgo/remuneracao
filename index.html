@@ -7,7 +7,7 @@
   <meta name="description" content="Simulador de remuneração, descontos e IRPF para militares do CBMGO." />
   <title>Remuneração – CBMGO</title>
   <link rel="icon" href="assets/bandeira-goias.png" />
-  <link rel="stylesheet" href="styles.css?v=20260723d" />
+  <link rel="stylesheet" href="styles.css?v=20260723f" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -472,14 +472,13 @@
               <div class="f13-row">
                 <div class="f13-card f13-card-ferias detail-collapse is-collapsed" data-collapse-section="ferias">
                   <button type="button" class="collapse-header" data-collapse-toggle="ferias" aria-expanded="false" aria-controls="feriasContent">
-                    <span class="collapse-title"><svg class="icon collapse-title-icon icon-verde" aria-hidden="true"><use href="#i-sun"></use></svg>Adicional Férias (1/3)</span>
+                    <span class="collapse-title"><svg class="icon collapse-title-icon icon-verde" aria-hidden="true"><use href="#i-sun"></use></svg>Adicional Férias (1/3)<span class="f13-info-wrap"><svg class="icon f13-info-icon" aria-hidden="true"><use href="#i-info"></use></svg><span class="f13-tooltip" role="tooltip">Neste simulador, não incide contribuição previdenciária (10,5%) sobre o terço de férias.</span></span></span>
                     <span class="collapse-right">
                       <span class="collapse-total verde" id="feriasLiquidoHeader">R$ 0,00</span>
                       <svg class="collapse-icon" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
                     </span>
                   </button>
                   <div class="collapse-content f13-collapse-content" id="feriasContent">
-                    <div class="f13-title">Adicional Férias (1/3) <button class="f13-info" type="button" aria-label="Informação sobre o terço de férias" title="Informação"><svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg></button><div class="f13-tooltip" role="tooltip">Neste simulador, não incide contribuição previdenciária (10,5%) sobre o terço de férias.</div></div>
                     <div class="f13-item"><span>Bruto</span><strong class="azul" id="feriasBruto">R$ 0,00</strong></div>
                     <div class="f13-item">
                       <span>Descontos</span><strong class="vermelho" id="feriasDesc">R$ 0,00</strong>
@@ -498,7 +497,6 @@
                     </span>
                   </button>
                   <div class="collapse-content f13-collapse-content" id="decimoContent">
-                    <div class="f13-title">13º</div>
                     <div class="f13-item"><span>Bruto</span><strong class="azul" id="decimoBruto">R$ 0,00</strong></div>
                     <div class="f13-item">
                       <span>Descontos</span><strong class="vermelho" id="decimoDesc">R$ 0,00</strong>
@@ -517,7 +515,6 @@
                     </span>
                   </button>
                   <div class="collapse-content f13-collapse-content" id="ferias13ResumoContent">
-                    <div class="f13-title">Resumo</div>
                     <div class="f13-item f13-item--stack no-divider"><span>Total Bruto</span><div class="f13-right-col"><strong class="azul" id="ferias13TotBruto">R$ 0,00</strong><small class="muted f13-delta" id="ferias13TotBrutoDelta"></small></div></div>
 
                     <div class="f13-item f13-item--stack no-divider"><span>Total Descontos</span><div class="f13-right-col"><strong class="vermelho" id="ferias13TotDesc">R$ 0,00</strong><small class="muted f13-delta" id="ferias13TotDescDelta"></small></div></div>
@@ -602,6 +599,20 @@
 
             <div class="irpf-sim-table">
               <div class="irpf-row">
+                <label class="irpf-row-label" for="irpfMetodoDeducao"><svg class="icon" aria-hidden="true"><use href="#i-calculator"></use></svg>Método de Dedução</label>
+                <div class="irpf-row-field">
+                  <div class="select-wrap">
+                    <select id="irpfMetodoDeducao">
+                      <option value="legais" selected>Deduções Legais</option>
+                      <option value="simplificado">Simplificado</option>
+                    </select>
+                    <svg class="select-caret" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
+                  </div>
+                </div>
+                <div class="irpf-row-note"><small class="muted">"Simplificado" aplica 20% do rendimento tributável (limitado a R$ 16.754,34) no lugar de todas as deduções abaixo.</small></div>
+              </div>
+
+              <div class="irpf-row">
                 <label class="irpf-row-label"><svg class="icon" aria-hidden="true"><use href="#i-users"></use></svg>Dependentes</label>
                 <div class="irpf-row-field"><div class="irpf-field-readonly" id="irpfDependentesInfo">0 dependente(s) · dedução R$ 0,00</div></div>
                 <div class="irpf-row-note"></div>
@@ -685,7 +696,7 @@
     <p class="update-line"><small>Última atualização: <strong><a class="official-link" href="https://diariooficial.abc.go.gov.br/portal/edicoes/download/7247" target="_blank" rel="noopener noreferrer"><span>DOE/GO N° 24.809 - 29/6/2026</span><img class="official-link-img" src="assets/icone-diario-oficial.svg" alt="" aria-hidden="true"></a></strong></small></p>
   </footer>
 
-  <script src="app.js?v=20260723d"></script>
+  <script src="app.js?v=20260723f"></script>
 
   <script>
   (function(){

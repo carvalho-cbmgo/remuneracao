@@ -214,8 +214,21 @@ function simularRestituicaoIRPF(){
     round2(rendimentoTributavelAnual * PARAMS_IRRF_ANUAL.desconto_simplificado_aliquota),
     PARAMS_IRRF_ANUAL.desconto_simplificado_limite
   );
-  const usaSimplificado = descontoSimplificadoAnual > deducoesLegaisAnuais;
-  const descontoAplicadoAnual = Math.max(deducoesLegaisAnuais, descontoSimplificadoAnual);
+
+  // Método de dedução escolhido explicitamente pelo usuário — o desconto
+  // simplificado SUBSTITUI todas as demais deduções (inclusive a
+  // previdência oficial), não se soma a elas; por isso as duas opções são
+  // mutuamente exclusivas, nunca combinadas.
+  const metodoSel = byId("irpfMetodoDeducao");
+  const usaSimplificado = metodoSel ? metodoSel.value === "simplificado" : false;
+  const descontoAplicadoAnual = usaSimplificado ? descontoSimplificadoAnual : deducoesLegaisAnuais;
+
+  // Desabilita visualmente os campos de dedução que não contam quando o
+  // desconto simplificado está selecionado (ele os substitui por completo).
+  ["irpfOutrasDespesasMedicas", "irpfDespesasEducacao", "irpfPensaoAlimenticia", "irpfPGBL"].forEach((id) => {
+    const el = byId(id);
+    if (el) el.disabled = usaSimplificado;
+  });
 
   let baseCalcAnual = round2(rendimentoTributavelAnual - descontoAplicadoAnual);
   if (baseCalcAnual < 0) baseCalcAnual = 0;
@@ -274,6 +287,7 @@ function simularRestituicaoIRPF(){
     simularRestituicaoIRPF();
   });
 });
+byId("irpfMetodoDeducao")?.addEventListener("change", () => simularRestituicaoIRPF());
 
 // ====== Dinâmica de campos ======
 const ipasgoSel = byId("ipasgo");
@@ -1483,7 +1497,10 @@ byId("limpar")?.addEventListener("click", () => {
     const el = byId(id);
     if (!el) return;
     el.value = "";
+    el.disabled = false;
   });
+  const metodoDeducaoEl = byId("irpfMetodoDeducao");
+  if (metodoDeducaoEl) metodoDeducaoEl.value = "legais";
 });
 
 // Helpers
