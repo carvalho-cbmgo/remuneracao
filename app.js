@@ -170,6 +170,8 @@ function enumerarMesesEntre(inicio, fim) {
 function setupMesAnoSelect() {
   const unifSel = byId("mesAno");
   const mesSel = byId("mes");
+  const prevBtn = byId("mesAnoPrev");
+  const nextBtn = byId("mesAnoNext");
   if (!unifSel || !mesSel) return;
 
   const primeiroPeriodo = SUBSIDIO_PERIODOS[0];
@@ -180,6 +182,14 @@ function setupMesAnoSelect() {
     `<option value="${MESES_NOMES[mes - 1]}|${ano}">${MESES_ABREV[mes - 1]}/${ano}</option>`
   ).join("");
 
+  // Habilita/desabilita os botões de navegação "◀"/"▶" ao lado do seletor
+  // conforme a posição atual (não é possível ir antes de mai/2025 nem
+  // depois de dez/2026, os limites de SUBSIDIO_PERIODOS).
+  const atualizarBotoesNav = () => {
+    if (prevBtn) prevBtn.disabled = unifSel.selectedIndex <= 0;
+    if (nextBtn) nextBtn.disabled = unifSel.selectedIndex >= unifSel.options.length - 1;
+  };
+
   const aplicarSelecao = (recalcular) => {
     const [nomeMes, anoStr] = String(unifSel.value || "").split("|");
     const mesIdx = MESES_NOMES.indexOf(nomeMes);
@@ -188,6 +198,7 @@ function setupMesAnoSelect() {
     if (nomeMes) mesSel.value = nomeMes;
     aplicarTabelaSubsidioPorPeriodo(ano, mes);
     renderPostoOptions();
+    atualizarBotoesNav();
     if (!recalcular) return;
     // A partir daqui é seguro referenciar bindings declaradas mais abaixo no
     // arquivo (ex.: adicionaisSelect/adicionaisSelecionados): este trecho só
@@ -207,6 +218,15 @@ function setupMesAnoSelect() {
   unifSel.value = `${MESES_NOMES[ultimoPeriodo.inicio.mes - 1]}|${ultimoPeriodo.inicio.ano}`;
   aplicarSelecao(false);
   unifSel.addEventListener("change", () => aplicarSelecao(true));
+
+  const irParaMes = (delta) => {
+    const novoIndice = unifSel.selectedIndex + delta;
+    if (novoIndice < 0 || novoIndice >= unifSel.options.length) return;
+    unifSel.selectedIndex = novoIndice;
+    aplicarSelecao(true);
+  };
+  if (prevBtn) prevBtn.addEventListener("click", () => irParaMes(-1));
+  if (nextBtn) nextBtn.addEventListener("click", () => irParaMes(1));
 }
 setupMesAnoSelect();
 
@@ -766,41 +786,60 @@ function snapshotComparacaoParaPosto(postoValor){
   });
 }
 
+// Quebra nomes de posto/graduação compostos (ex.: "1º Sargento / Cadete 3º
+// ano") em duas linhas — uma para cada lado da " / " — para caber melhor
+// nas colunas estreitas da janela de comparação. O bloco resultante fica
+// centralizado na coluna, mas o início das duas linhas internas permanece
+// alinhado entre si (ver .cmp-nome-quebrado em styles.css).
+function quebrarNomePostoLongo(nome){
+  const texto = String(nome || "");
+  const partes = texto.split(" / ");
+  if (partes.length !== 2) return escapeHtml(texto);
+  return `<span class="cmp-nome-quebrado">${escapeHtml(partes[0])} /<br>${escapeHtml(partes[1])}</span>`;
+}
+
 function renderComparacaoResultado(snapA, snapB){
   const colAM = byId("compararColAMensal"), colBM = byId("compararColBMensal");
   const colAA = byId("compararColAAnual"), colBA = byId("compararColBAnual");
-  if (colAM) colAM.textContent = snapA.posto;
-  if (colBM) colBM.textContent = snapB.posto;
-  if (colAA) colAA.textContent = snapA.posto;
-  if (colBA) colBA.textContent = snapB.posto;
+  if (colAM) colAM.innerHTML = quebrarNomePostoLongo(snapA.posto);
+  if (colBM) colBM.innerHTML = quebrarNomePostoLongo(snapB.posto);
+  if (colAA) colAA.innerHTML = quebrarNomePostoLongo(snapA.posto);
+  if (colBA) colBA.innerHTML = quebrarNomePostoLongo(snapB.posto);
+  const nomeA = byId("compararNomeA"), nomeB = byId("compararNomeB");
+  if (nomeA) nomeA.innerHTML = quebrarNomePostoLongo(snapA.posto);
+  if (nomeB) nomeB.innerHTML = quebrarNomePostoLongo(snapB.posto);
 
-  const linha = (desc, a, b, cls) => {
+  // Diferença (B − A): azul quando positiva, laranja quando negativa.
+  const linha = (icone, desc, a, b, cls, destaque) => {
     const d = round2(b - a);
     const sinal = d > 0 ? "+" : "";
+    const diffCls = d > 0.004 ? "diff-positivo" : (d < -0.004 ? "diff-negativo" : "diff-zero");
     return `
-      <tr>
-        <td class="cell-left"><span>${escapeHtml(desc)}</span></td>
-        <td class="right ${cls}"><strong>${fmt(a)}</strong></td>
-        <td class="right ${cls}"><strong>${fmt(b)}</strong></td>
-        <td class="right muted"><strong>${sinal}${fmt(d)}</strong></td>
-      </tr>`;
+      <div class="cmp-row${destaque ? " cmp-row--destaque" : ""}">
+        <span class="cmp-row-label"><svg class="icon" aria-hidden="true"><use href="#${icone}"></use></svg><span>${escapeHtml(desc)}</span></span>
+        <span class="cmp-row-values">
+          <span class="cmp-row-val cmp-col-a ${cls}">${fmt(a)}</span>
+          <span class="cmp-row-val cmp-col-b ${cls}">${fmt(b)}</span>
+          <span class="cmp-diff-badge ${diffCls}">${sinal}${fmt(d)}</span>
+        </span>
+      </div>`;
   };
 
-  const tbodyMensal = byId("tbodyCompararMensal");
-  if (tbodyMensal) {
-    tbodyMensal.innerHTML =
-      linha("Subsídio Efetivo", snapA.subsidio, snapB.subsidio, "azul") +
-      linha("Somatório Remuneração Bruta", snapA.mensal.bruto, snapB.mensal.bruto, "azul") +
-      linha("Somatório Descontos", snapA.mensal.descontos, snapB.mensal.descontos, "vermelho") +
-      linha("Remuneração Líquida", snapA.mensal.liquido, snapB.mensal.liquido, "verde");
+  const cmpMensal = byId("cmpTabelaMensal");
+  if (cmpMensal) {
+    cmpMensal.innerHTML =
+      linha("i-rank", "Subsídio Efetivo", snapA.subsidio, snapB.subsidio, "azul") +
+      linha("i-wallet", "Somatório Remuneração Bruta", snapA.mensal.bruto, snapB.mensal.bruto, "azul") +
+      linha("i-trend-down", "Somatório Descontos", snapA.mensal.descontos, snapB.mensal.descontos, "vermelho") +
+      linha("i-shield-check", "Remuneração Líquida", snapA.mensal.liquido, snapB.mensal.liquido, "verde", true);
   }
-  const tbodyAnual = byId("tbodyCompararAnual");
-  if (tbodyAnual) {
-    tbodyAnual.innerHTML =
-      linha("Proventos (ano)", snapA.anual.proventos, snapB.anual.proventos, "azul") +
-      linha("Descontos (ano)", snapA.anual.descontos, snapB.anual.descontos, "vermelho") +
-      linha("Remuneração Líquida (ano)", snapA.anual.liquido, snapB.anual.liquido, "verde") +
-      linha("Média Mensal Líquida (ano)", round2(snapA.anual.liquido / 12), round2(snapB.anual.liquido / 12), "amarelo");
+  const cmpAnual = byId("cmpTabelaAnual");
+  if (cmpAnual) {
+    cmpAnual.innerHTML =
+      linha("i-wallet", "Proventos (ano)", snapA.anual.proventos, snapB.anual.proventos, "azul") +
+      linha("i-trend-down", "Descontos (ano)", snapA.anual.descontos, snapB.anual.descontos, "vermelho") +
+      linha("i-shield-check", "Remuneração Líquida (ano)", snapA.anual.liquido, snapB.anual.liquido, "verde", true) +
+      linha("i-bar-chart", "Média Mensal Líquida (ano)", round2(snapA.anual.liquido / 12), round2(snapB.anual.liquido / 12), "amarelo");
   }
 }
 

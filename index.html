@@ -7,7 +7,7 @@
   <meta name="description" content="Simulador de remuneração, descontos e IRPF para militares do CBMGO." />
   <title>Remuneração – CBMGO</title>
   <link rel="icon" href="assets/bandeira-goias.png" />
-  <link rel="stylesheet" href="styles.css?v=20260723h" />
+  <link rel="stylesheet" href="styles.css?v=20260723j" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -34,6 +34,8 @@
       <symbol id="i-gift" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="1.4"/><path d="M4 13.5h16"/><path d="M12 10v10"/><path d="M12 10c-1.6 0-4-1-4-3.2A2.3 2.3 0 0 1 12 5.4 2.3 2.3 0 0 1 16 6.8c0 2.2-2.4 3.2-4 3.2z"/></symbol>
       <symbol id="i-bar-chart" viewBox="0 0 24 24"><path d="M4.5 19.5V11M10 19.5V5M15.5 19.5v-8M4.5 19.5H20"/></symbol>
       <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="M5.5 8.5l6.5 7 6.5-7"/></symbol>
+      <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="M15.5 5.5l-6.5 6.5 6.5 6.5"/></symbol>
+      <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="M8.5 5.5l6.5 6.5-6.5 6.5"/></symbol>
       <symbol id="i-percent" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11"/><circle cx="7.6" cy="7.6" r="2.1"/><circle cx="16.4" cy="16.4" r="2.1"/></symbol>
       <symbol id="i-calculator" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2.2"/><rect x="7.3" y="5.3" width="9.4" height="3.6" rx="0.8"/><path d="M7.6 12.4h.01M11.9 12.4h.01M16.2 12.4h.01M7.6 15.6h.01M11.9 15.6h.01M16.2 15.6h.01M7.6 18.8h.01M11.9 18.8h.01M16.2 18.8h.01"/></symbol>
       <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 0 1 12.6-5.5L19 8.3"/><path d="M19 4.5v4h-4"/><path d="M19.5 12a7.5 7.5 0 0 1-12.6 5.5L5 15.7"/><path d="M5 19.5v-4h4"/></symbol>
@@ -94,9 +96,17 @@
         <div class="grid-2">
           <div class="form-group field">
             <label for="mesAno"><svg class="field-icon" aria-hidden="true"><use href="#i-calendar"></use></svg><span>Data de referência</span></label>
-            <div class="select-wrap">
-              <select id="mesAno" required></select>
-              <svg class="select-caret" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
+            <div class="mesano-row">
+              <button type="button" id="mesAnoPrev" class="mesano-nav-btn" aria-label="Mês anterior">
+                <svg class="icon" aria-hidden="true"><use href="#i-chevron-left"></use></svg>
+              </button>
+              <div class="select-wrap">
+                <select id="mesAno" required></select>
+                <svg class="select-caret" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
+              </div>
+              <button type="button" id="mesAnoNext" class="mesano-nav-btn" aria-label="Mês seguinte">
+                <svg class="icon" aria-hidden="true"><use href="#i-chevron-right"></use></svg>
+              </button>
             </div>
           </div>
 
@@ -394,32 +404,47 @@
           </div>
           <button type="button" id="compararResultadoClose" class="modal-close-btn" aria-label="Fechar tabela comparativa"><svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg></button>
         </div>
-        <div class="compare-result-scroll">
-          <h4 class="compare-result-subtitle"><svg class="icon" aria-hidden="true"><use href="#i-bar-chart"></use></svg>Comparação no Mês Selecionado</h4>
-          <table class="table compare-result-table" aria-label="Tabela comparativa mensal de remuneração entre dois postos/graduações">
-            <thead>
-              <tr>
-                <th>Descrição</th>
-                <th class="right" id="compararColAMensal">Posto A</th>
-                <th class="right" id="compararColBMensal">Posto B</th>
-                <th class="right">Diferença</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyCompararMensal"></tbody>
-          </table>
 
-          <h4 class="compare-result-subtitle"><svg class="icon" aria-hidden="true"><use href="#i-bar-chart"></use></svg>Comparação Anual</h4>
-          <table class="table compare-result-table" aria-label="Tabela comparativa anual de remuneração entre dois postos/graduações">
-            <thead>
-              <tr>
-                <th>Descrição</th>
-                <th class="right" id="compararColAAnual">Posto A</th>
-                <th class="right" id="compararColBAnual">Posto B</th>
-                <th class="right">Diferença</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyCompararAnual"></tbody>
-          </table>
+        <div class="cmp-vs-banner">
+          <div class="cmp-vs-side">
+            <span class="cmp-vs-tag">A</span>
+            <strong id="compararNomeA">—</strong>
+          </div>
+          <div class="cmp-vs-divider"><span>VS</span></div>
+          <div class="cmp-vs-side">
+            <span class="cmp-vs-tag">B</span>
+            <strong id="compararNomeB">—</strong>
+          </div>
+        </div>
+
+        <div class="compare-result-scroll">
+          <section class="cmp-section">
+            <h4 class="compare-result-subtitle"><svg class="icon" aria-hidden="true"><use href="#i-bar-chart"></use></svg>Comparação no Mês Selecionado</h4>
+            <div class="cmp-section-head">
+              <span></span>
+              <span class="cmp-section-head-values">
+                <span id="compararColAMensal">Posto A</span>
+                <span id="compararColBMensal">Posto B</span>
+                <span>Diferença</span>
+              </span>
+            </div>
+            <div id="cmpTabelaMensal" class="cmp-table" aria-label="Comparação mensal de remuneração entre dois postos/graduações"></div>
+          </section>
+
+          <hr class="cmp-divider" />
+
+          <section class="cmp-section">
+            <h4 class="compare-result-subtitle"><svg class="icon" aria-hidden="true"><use href="#i-bar-chart"></use></svg>Comparação Anual</h4>
+            <div class="cmp-section-head">
+              <span></span>
+              <span class="cmp-section-head-values">
+                <span id="compararColAAnual">Posto A</span>
+                <span id="compararColBAnual">Posto B</span>
+                <span>Diferença</span>
+              </span>
+            </div>
+            <div id="cmpTabelaAnual" class="cmp-table" aria-label="Comparação anual de remuneração entre dois postos/graduações"></div>
+          </section>
         </div>
       </div>
     </div>
@@ -742,7 +767,7 @@
     <p class="update-line"><small>Última atualização: <strong><a class="official-link" href="https://diariooficial.abc.go.gov.br/portal/edicoes/download/7247" target="_blank" rel="noopener noreferrer"><span>DOE/GO N° 24.809 - 29/6/2026</span><img class="official-link-img" src="assets/icone-diario-oficial.svg" alt="" aria-hidden="true"></a></strong></small></p>
   </footer>
 
-  <script src="app.js?v=20260723l"></script>
+  <script src="app.js?v=20260723n"></script>
 
   <script>
   (function(){

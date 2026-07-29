@@ -33,6 +33,8 @@
   --amber:#fbbf24;
   --amber-soft: rgba(251,191,36,.12);
   --branco:#e7e5e4;           /* branco/cinza claro: média mensal */
+  --diff-azul:#60a5fa;        /* comparação de postos: diferença positiva */
+  --diff-laranja:#fb923c;     /* comparação de postos: diferença negativa */
 
   --grad-primary: linear-gradient(135deg, #fbbf24, #f97316 45%, #dc2626);
   --grad-cta: linear-gradient(135deg, #ea580c, #dc2626 55%, #b91c1c);
@@ -120,6 +122,9 @@ body{
 .vermelho{color:var(--danger)}    /* descontos → vermelho */
 .verde{color:var(--accent)}       /* líquido → verde */
 .amarelo{color:var(--branco)}     /* média mensal → branco/cinza claro */
+.diff-positivo{color:var(--diff-azul)}    /* comparação de postos: diferença positiva */
+.diff-negativo{color:var(--diff-laranja)} /* comparação de postos: diferença negativa */
+.diff-zero{color:var(--muted)}
 
 .icon{
   width:1em;height:1em;flex:0 0 auto;
@@ -327,6 +332,27 @@ body{
 label{display:block;font-size:.82rem;font-weight:600;color:var(--text-dim);margin-bottom:2px}
 
 .select-wrap{position:relative;display:flex;align-items:center}
+
+/* "Data de referência": botões "mês anterior"/"mês seguinte" ao lado do
+   seletor. O select-wrap flexiona para ocupar o espaço restante, então a
+   largura total (botões + seletor) é igual à largura antes ocupada só pelo
+   seletor — nenhuma coluna do grid muda de tamanho. */
+.mesano-row{display:flex;align-items:stretch;gap:6px}
+.mesano-row .select-wrap{flex:1 1 auto;min-width:0}
+.mesano-nav-btn{
+  flex:0 0 auto;width:38px;
+  display:grid;place-items:center;
+  border-radius:var(--radius-sm);
+  border:1px solid var(--border-strong);
+  background:rgba(255,255,255,.03);
+  color:var(--gold);cursor:pointer;
+  transition:background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
+}
+.mesano-nav-btn:hover:not(:disabled){background:rgba(251,191,36,.14);border-color:rgba(251,191,36,.4);transform:translateY(-1px)}
+.mesano-nav-btn:active:not(:disabled){transform:translateY(0)}
+.mesano-nav-btn:disabled{opacity:.3;cursor:not-allowed}
+.mesano-nav-btn:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 0 3px rgba(245,158,11,.22)}
+.mesano-nav-btn .icon{width:15px;height:15px}
 select{
   appearance:none;-webkit-appearance:none;
   width:100%;
@@ -622,7 +648,7 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 .compare-modal-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
 .compare-modal-actions .btn{flex:1 1 auto;justify-content:center}
 
-/* Janela com a tabela comparativa (mensal + anual) entre os dois postos */
+/* Janela com a comparação (mensal + anual) entre os dois postos */
 .compare-result-scroll{max-height:74vh;overflow-y:auto;border-radius:var(--radius-sm)}
 .compare-result-subtitle{
   display:flex;align-items:center;gap:8px;
@@ -631,7 +657,113 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 }
 .compare-result-subtitle:first-child{margin-top:0}
 .compare-result-subtitle .icon{width:16px;height:16px;color:var(--gold)}
-.compare-result-table th{position:sticky;top:0;background:#18161b;z-index:1}
+
+/* Faixa "A vs B" no topo da janela de resultado: reforça de forma imediata
+   quais são os dois postos comparados, sem precisar ler os cabeçalhos das
+   seções mais abaixo. */
+.cmp-vs-banner{
+  display:flex;align-items:center;gap:16px;
+  margin:2px 0 20px;padding:14px 18px;border-radius:var(--radius);
+  background:linear-gradient(135deg, rgba(251,191,36,.09), rgba(96,165,250,.07));
+  border:1px solid var(--border-strong);
+}
+.cmp-vs-side{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.cmp-vs-side strong{font-size:1rem;font-weight:800;line-height:1.3;overflow-wrap:anywhere}
+.cmp-vs-tag{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(251,191,36,.16);border:1px solid rgba(251,191,36,.4);
+  font-size:.68rem;font-weight:800;color:#fde68a;
+}
+.cmp-vs-divider{
+  flex:0 0 auto;display:grid;place-items:center;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--grad-cta);color:#fff;
+  font-size:.68rem;font-weight:800;letter-spacing:.02em;
+  box-shadow:var(--glow-primary);
+}
+
+/* Nome de posto/graduação composto (ex.: "1º Sargento / Cadete 3º ano"):
+   quebrado em duas linhas na barra "A vs B" e nos cabeçalhos das tabelas
+   (ver quebrarNomePostoLongo em app.js). O <span> é inline-block para que
+   o bloco inteiro continue centralizado dentro da coluna/coluna do cabeçalho,
+   mas as duas linhas internas fiquem com o início alinhado entre si. */
+.cmp-nome-quebrado{display:inline-block;text-align:left;line-height:1.3}
+
+/* Linha divisória estilizada entre o bloco "Mês Selecionado" e o bloco
+   "Comparação Anual", com pequenos respiros verticais antes/depois. */
+.cmp-divider{
+  height:1px;margin:22px 6px 20px;border:0;
+  background:linear-gradient(90deg, transparent, var(--border-strong) 12%, var(--border-strong) 88%, transparent);
+}
+
+.cmp-section + .cmp-section{margin-top:0}
+
+/* Colunas compartilhadas pelo cabeçalho e por cada linha: rótulo flexível +
+   3 colunas de largura fixa (A, B, Diferença), garantindo que os valores —
+   e os centavos — fiquem alinhados verticalmente entre todas as linhas. */
+.cmp-section-head,.cmp-row{grid-template-columns:minmax(0,1fr) 128px 128px 160px}
+
+/* Cabeçalho enxuto acima de cada bloco de linhas: usa as mesmas colunas das
+   linhas de dados, com os rótulos "A/B/Diferença" centralizados sobre os
+   respectivos valores. */
+.cmp-section-head{
+  display:grid;align-items:end;column-gap:14px;
+  padding:0 14px 8px;
+  font-size:.68rem;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.03em;
+}
+.cmp-section-head-values{display:contents}
+.cmp-section-head-values span{text-align:center;overflow-wrap:anywhere}
+.cmp-section-head-values span:nth-child(2){border-left:1px solid var(--border-strong);padding-left:10px}
+
+.cmp-table{display:flex;flex-direction:column;gap:6px}
+.cmp-row{
+  display:grid;align-items:center;column-gap:14px;
+  padding:11px 14px;border-radius:var(--radius-sm);
+  background:rgba(255,255,255,.025);border:1px solid var(--border);
+  transition:background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.cmp-row:hover{background:rgba(255,255,255,.05)}
+.cmp-row-label{display:flex;align-items:center;gap:8px;min-width:0;font-size:.85rem;font-weight:600;color:var(--text-dim)}
+.cmp-row-label .icon{width:16px;height:16px;flex:0 0 auto;color:var(--gold)}
+.cmp-row-values{display:contents}
+.cmp-row-val{text-align:right;font-family:var(--font-mono);font-weight:700;font-size:.88rem;font-variant-numeric:tabular-nums}
+/* Separação vertical entre a coluna do 1º posto (A) e a do 2º posto (B),
+   contínua do cabeçalho até a última linha de cada tabela. */
+.cmp-col-b{border-left:1px solid var(--border-strong);padding-left:10px}
+.cmp-diff-badge{
+  justify-self:end;
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:4px 10px;border-radius:var(--radius-pill);
+  font-family:var(--font-mono);font-weight:700;font-size:.78rem;font-variant-numeric:tabular-nums;
+  border:1px solid transparent;white-space:nowrap;
+}
+
+/* Linha em destaque (Remuneração Líquida): maior ênfase visual, igual ao
+   tratamento dado à linha "grande" do card Resumo principal. */
+.cmp-row--destaque{
+  background:linear-gradient(135deg, rgba(34,197,94,.09), rgba(96,165,250,.05));
+  border-color:rgba(34,197,94,.3);
+}
+.cmp-row--destaque .cmp-row-label{font-size:.92rem;font-weight:800;color:var(--text)}
+.cmp-row--destaque .cmp-row-val{font-size:1.02rem}
+
+@media (max-width:560px){
+  .cmp-vs-banner{padding:12px 10px;gap:10px}
+  .cmp-vs-divider{width:34px;height:34px}
+  .cmp-divider{margin:18px 4px}
+  /* Rótulo ocupa a linha inteira; A/B/Diferença passam a dividir 3 colunas
+     iguais logo abaixo, tanto no cabeçalho quanto em cada linha de dados. */
+  .cmp-section-head,.cmp-row{grid-template-columns:repeat(3, 1fr)}
+  .cmp-section-head{padding:0 2px 6px;row-gap:4px}
+  .cmp-section-head > span:first-child{display:none}
+  .cmp-row{row-gap:6px}
+  .cmp-row-label{grid-column:1 / -1}
+  .cmp-row-val,.cmp-section-head-values span{text-align:center}
+  .cmp-col-b,.cmp-section-head-values span:nth-child(2){border-left:1px solid var(--border-strong);padding-left:0}
+  .cmp-diff-badge{justify-self:center}
+}
 
 /* Os 7 dias ficam sempre numa única linha, dividindo igualmente a largura
    disponível (nunca quebram para nova linha nem precisam de rolagem);
@@ -1111,6 +1243,8 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .grid-2 .field .select-wrap{flex:1 1 58%;min-width:0}
   .grid-2 .field select{width:100%;font-size:.88rem;padding:10px 28px 10px 10px}
   .grid-2 .field .select-caret{right:10px}
+  .grid-2 .field .mesano-row{flex:1 1 58%;min-width:0;gap:4px}
+  .mesano-nav-btn{width:32px}
   /* Título e seletor SEMPRE na mesma linha (nowrap): o seletor encolhe
      o quanto for preciso; conteúdo complementar (chips, campo manual do
      plano) fica em linha própria, fora da linha flex, sem disputar espaço. */
