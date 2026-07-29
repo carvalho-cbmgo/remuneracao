@@ -262,13 +262,13 @@ body{
    Aviso de ferramenta independente
    ========================================================================= */
 .disclaimer-bar{
-  display:flex;align-items:flex-start;gap:10px;
-  margin:0 0 10px;padding:12px 16px;
+  display:flex;align-items:center;gap:10px;
+  margin:0 0 10px;padding:5px 16px;
   border:1px solid rgba(251,191,36,.28);border-left:3px solid var(--gold-strong);
   border-radius:12px;background:rgba(251,191,36,.055);
   color:#efe6cf;font-size:.84rem;line-height:1.5;
 }
-.disclaimer-bar .icon{color:var(--gold);width:17px;height:17px;flex:0 0 auto;margin-top:2px}
+.disclaimer-bar .icon{color:var(--gold);width:17px;height:17px;flex:0 0 auto}
 .disclaimer-bar strong{color:#fde68a;font-weight:700}
 
 /* =========================================================================
@@ -659,7 +659,14 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 .historico-table-scroll{max-height:68vh;overflow-y:auto;border-radius:var(--radius-sm)}
 .historico-table{table-layout:fixed}
 .historico-table th{position:sticky;top:0;background:#18161b;z-index:1}
+/* Especificidade elevada (table.historico-table thead th) para vencer a
+   regra genérica .table thead th{text-align:left}, que tem prioridade por
+   ter mais seletores de tipo (definida mais abaixo no arquivo). */
+table.historico-table thead th{text-align:center}
 .historico-table td{vertical-align:top;font-size:.86rem}
+/* Conteúdo de Referência e DOE alinhado (centralizado) com seus índices;
+   Descrição e Alterações permanecem à esquerda por serem texto corrido. */
+.historico-table td.historico-col-ref,.historico-table td.historico-col-doe{text-align:center}
 /* Larguras definidas via <colgroup> (funciona com table-layout:fixed,
    diferente de largura só nas células do corpo): Referência/DOE/Descrição
    ficam compactas — sem ocultar texto, apenas permitindo quebra de linha
@@ -671,10 +678,9 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 .historico-table td.historico-col-ref{white-space:nowrap}
 .historico-table td a{
   display:inline-flex;align-items:center;color:#fcd34d;text-decoration:none;
-  border-bottom:1px dashed rgba(252,211,77,.4);
-  transition:color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+  transition:color var(--dur-fast) var(--ease);
 }
-.historico-table td a:hover{color:#fde68a;border-color:#fde68a}
+.historico-table td a:hover{color:#fde68a;text-decoration:underline}
 .historico-alteracoes-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
 .historico-alteracoes-list li{line-height:1.4}
 .historico-obs{display:block;margin-top:8px;font-style:italic}
@@ -1341,7 +1347,7 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .annual-stat{padding:14px 14px 12px}
   .annual-stat-value{font-size:1.16rem}
   #detalhamentoAnualContent{padding:0 10px 12px}
-  .disclaimer-bar{font-size:.78rem;padding:10px 12px;margin-bottom:8px}
+  .disclaimer-bar{font-size:.78rem;padding:5px 12px;margin-bottom:8px}
   .site-footer{margin:0 auto 24px}
 }
 @media (max-width:420px){
