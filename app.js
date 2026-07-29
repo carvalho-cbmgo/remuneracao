@@ -416,6 +416,10 @@ const infoSubsidiosBtn = byId("infoSubsidiosBtn");
 const subsidiosModal = byId("subsidiosModal");
 const tbodySubsidios = byId("tbodySubsidios");
 const subsidiosCloseBtn = byId("subsidiosClose");
+const historicoBtn = byId("historicoBtn");
+const historicoModal = byId("historicoModal");
+const tbodyHistorico = byId("tbodyHistorico");
+const historicoCloseBtn = byId("historicoClose");
 const btnComparar = byId("btnComparar");
 const compararModal = byId("compararModal");
 const compararPostoSelect = byId("compararPostoSelect");
@@ -705,6 +709,93 @@ function bindSubsidiosModal(){
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && subsidiosModal && !subsidiosModal.classList.contains("hidden")){
       closeSubsidiosModal();
+    }
+  });
+}
+
+// ====== Histórico de alterações de subsídios e adicionais (CBMGO) ======
+// Registro manual das mudanças normativas (DOE) que alteraram os valores
+// usados neste simulador. Cada item deve trazer o DOE que fundamenta as
+// alterações listadas. Ordenado do mais recente para o mais antigo.
+const HISTORICO_ALTERACOES = [
+  {
+    referencia: "Julho/2026",
+    doeNumero: "24.809",
+    doeData: "29/6/2026",
+    doeSuplemento: false,
+    doeUrl: "https://diariooficial.abc.go.gov.br/portal/edicoes/download/7247",
+    descricao: "Pacote de valorização da Segurança Pública",
+    alteracoes: [
+      "Criação do posto \"Coronel - Nível II\"",
+      "Alteração na remuneração do Subtenente e do Aspirante a Oficial: +15,66% (de R$ 14.843,14 para R$ 17.167,09)",
+      "AC2 (Horas-Aulas Ministradas): reajuste do valor máximo, de R$ 700,00 para R$ 1.050,00",
+      "AC3 (Indenização por localidade): aumento de R$ 552,00 para R$ 828,00",
+      "AC4 (Indenização por Serviço Extraordinário): aumento dos valores",
+      "AC5 (Auxílio Alimentação): criação do adicional, no valor de R$ 1.000,00",
+    ],
+  },
+  {
+    referencia: "Abril/2026",
+    doeNumero: "24.746",
+    doeData: "26/3/2026",
+    doeSuplemento: true,
+    doeUrl: "https://diariooficial.abc.go.gov.br/portal/edicoes/download/7112",
+    descricao: "Database",
+    alteracoes: [
+      "Database: 4,26% (revisão geral anual dos vencimentos, dos subsídios e dos proventos do pessoal civil e militar)",
+    ],
+    observacao: "Também trouxe outras alterações não relacionadas a subsídios/adicionais deste simulador.",
+  },
+];
+
+function renderHistoricoTable(){
+  if (!tbodyHistorico) return;
+  tbodyHistorico.innerHTML = HISTORICO_ALTERACOES.map((item) => {
+    const doeLabel = `N° ${item.doeNumero} de ${item.doeData}` + (item.doeSuplemento ? " (Suplemento)" : "");
+    const listaHtml = `<ul class="historico-alteracoes-list">${item.alteracoes.map((a) => `<li>${escapeHtml(a)}</li>`).join("")}</ul>`;
+    const obsHtml = item.observacao ? `<small class="muted historico-obs">${escapeHtml(item.observacao)}</small>` : "";
+    return `
+      <tr>
+        <td class="historico-col-ref" data-label="Referência"><strong>${escapeHtml(item.referencia)}</strong></td>
+        <td class="historico-col-doe" data-label="DOE"><a href="${escapeHtml(item.doeUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(doeLabel)}</a></td>
+        <td class="historico-col-desc" data-label="Descrição">${escapeHtml(item.descricao)}</td>
+        <td class="historico-col-alt" data-label="Alterações">${listaHtml}${obsHtml}</td>
+      </tr>`;
+  }).join("");
+}
+
+function openHistoricoModal(){
+  if (!historicoModal) return;
+  renderHistoricoTable();
+  historicoModal.classList.remove("hidden");
+  if (historicoBtn) historicoBtn.setAttribute("aria-expanded", "true");
+  if (historicoCloseBtn) historicoCloseBtn.focus();
+}
+
+function closeHistoricoModal(){
+  if (!historicoModal) return;
+  historicoModal.classList.add("hidden");
+  if (historicoBtn) {
+    historicoBtn.setAttribute("aria-expanded", "false");
+    historicoBtn.focus();
+  }
+}
+
+function bindHistoricoModal(){
+  if (historicoBtn){
+    historicoBtn.addEventListener("click", openHistoricoModal);
+  }
+  if (historicoCloseBtn){
+    historicoCloseBtn.addEventListener("click", closeHistoricoModal);
+  }
+  if (historicoModal){
+    historicoModal.addEventListener("click", (e) => {
+      if (e.target === historicoModal) closeHistoricoModal();
+    });
+  }
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && historicoModal && !historicoModal.classList.contains("hidden")){
+      closeHistoricoModal();
     }
   });
 }
@@ -1008,6 +1099,7 @@ function bindAdicionaisEventos(){
 
 bindAdicionaisEventos();
 bindSubsidiosModal();
+bindHistoricoModal();
 bindCompararModal();
 renderAdicionaisChips();
 

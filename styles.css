@@ -301,20 +301,31 @@ body{
   display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
   margin-bottom:20px;flex-wrap:wrap;
 }
-.input-card-title-text{min-width:0}
+.input-card-title-text{min-width:0;padding-right:88px}
+
+/* "Histórico" e "Subsídios": pequenos botões circulares ancorados no canto
+   superior direito do card "Informações de Entrada" (fora do fluxo normal,
+   próximos das bordas superior/direita). */
+.input-card-title-actions{
+  position:absolute;top:16px;right:18px;z-index:2;
+  display:flex;align-items:center;gap:8px;
+}
 
 .info-icon-btn{
-  display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;
-  padding:8px 14px 8px 10px;border-radius:var(--radius-pill);
-  border:1px solid rgba(239,68,68,.42);
-  background:rgba(239,68,68,.1);
-  color:#fca5a5;cursor:pointer;font-size:.82rem;font-weight:700;
-  transition:background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  width:34px;height:34px;padding:0;border-radius:50%;
+  border:1px solid var(--border-strong);
+  background:rgba(255,255,255,.045);
+  color:var(--gold);cursor:pointer;
+  transition:background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
 }
-.info-icon-btn:hover{background:rgba(239,68,68,.2);box-shadow:var(--glow-primary);transform:translateY(-1px)}
+.info-icon-btn:hover{background:rgba(251,191,36,.16);border-color:rgba(251,191,36,.42);box-shadow:var(--glow-gold);transform:translateY(-1px)}
 .info-icon-btn:active{transform:translateY(0)}
 .info-icon-btn .icon{width:16px;height:16px}
-@media (max-width:520px){.info-icon-btn-label{display:none}.info-icon-btn{padding:9px}}
+.info-icon-btn-label{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
 
 /* =========================================================================
    Form fields
@@ -599,7 +610,7 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 /* =========================================================================
    Modals
    ========================================================================= */
-.subsidios-modal,.ac4-modal,.compare-modal,.compare-result-modal{
+.subsidios-modal,.ac4-modal,.compare-modal,.compare-result-modal,.historico-modal{
   position:fixed;inset:0;z-index:100;
   display:flex;align-items:center;justify-content:center;
   padding:20px;
@@ -608,7 +619,7 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
   animation:overlayIn var(--dur) var(--ease);
 }
 @keyframes overlayIn{from{opacity:0}to{opacity:1}}
-.subsidios-modal-card,.ac4-modal-card,.compare-modal-card,.compare-result-modal-card{
+.subsidios-modal-card,.ac4-modal-card,.compare-modal-card,.compare-result-modal-card,.historico-modal-card{
   width:100%;max-height:86vh;overflow-y:auto;
   background:linear-gradient(180deg, rgba(28,26,31,.96), rgba(16,15,19,.98));
   border:1px solid var(--border-strong);
@@ -622,6 +633,7 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 .ac4-modal-card{max-width:min(900px, 94vw)}
 .compare-modal-card{max-width:480px}
 .compare-result-modal-card{max-width:min(760px, 94vw)}
+.historico-modal-card{max-width:min(960px, 94vw)}
 
 .subsidios-modal-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
 .subsidios-modal-head-text{display:flex;align-items:center;gap:10px}
@@ -641,6 +653,46 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 
 .subsidios-table-scroll{max-height:60vh;overflow-y:auto;border-radius:var(--radius-sm)}
 .subsidios-table th{position:sticky;top:0;background:#18161b;z-index:1}
+
+/* Janela "Histórico de Alterações" (subsídios e adicionais do CBMGO) */
+.historico-intro{margin:0 0 16px;font-size:.86rem}
+.historico-table-scroll{max-height:68vh;overflow-y:auto;border-radius:var(--radius-sm)}
+.historico-table{table-layout:fixed}
+.historico-table th{position:sticky;top:0;background:#18161b;z-index:1}
+.historico-table td{vertical-align:top;font-size:.86rem}
+/* Larguras definidas via <colgroup> (funciona com table-layout:fixed,
+   diferente de largura só nas células do corpo): Referência/DOE/Descrição
+   ficam compactas — sem ocultar texto, apenas permitindo quebra de linha
+   nas duas últimas — sobrando bem mais espaço para "Alterações". */
+.historico-table col.historico-col-ref{width:10%}
+.historico-table col.historico-col-doe{width:14%}
+.historico-table col.historico-col-desc{width:13%}
+.historico-table col.historico-col-alt{width:63%}
+.historico-table td.historico-col-ref{white-space:nowrap}
+.historico-table td a{
+  display:inline-flex;align-items:center;color:#fcd34d;text-decoration:none;
+  border-bottom:1px dashed rgba(252,211,77,.4);
+  transition:color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.historico-table td a:hover{color:#fde68a;border-color:#fde68a}
+.historico-alteracoes-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.historico-alteracoes-list li{line-height:1.4}
+.historico-obs{display:block;margin-top:8px;font-style:italic}
+
+@media (max-width:720px){
+  .historico-table,.historico-table thead,.historico-table tbody,.historico-table th,.historico-table td,.historico-table tr{display:block}
+  .historico-table thead{display:none}
+  .historico-table tbody tr{
+    margin-bottom:12px;padding:12px;border-radius:var(--radius-sm);
+    background:rgba(255,255,255,.03);border:1px solid var(--border);
+  }
+  .historico-table td{padding:4px 0;border:0 !important;border-radius:0 !important}
+  .historico-table td::before{
+    content:attr(data-label);display:block;
+    font-size:.68rem;font-weight:700;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.03em;margin-bottom:2px;
+  }
+}
 
 /* Mini-modal de seleção do segundo posto/graduação (botão "Comparar") */
 .compare-modal-intro{margin:0 0 16px;font-size:.86rem}
@@ -1230,9 +1282,12 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .reajuste-quick{width:100%;height:auto;min-height:46px;padding:8px 12px;flex-wrap:nowrap;justify-content:space-between;gap:10px}
   #reajusteRange{flex:1 1 auto;width:auto;min-width:0}
   .range-val{flex:0 0 auto;align-self:center}
-  /* Botão "Subsídios" na mesma linha do título "Informações de Entrada" */
+  /* Botões "Histórico"/"Subsídios" um pouco mais próximos do canto em telas estreitas */
   .input-card-title{flex-wrap:nowrap;align-items:flex-start;gap:10px;margin-bottom:10px}
-  .info-icon-btn{margin-left:auto;flex:0 0 auto}
+  .input-card-title-text{padding-right:76px}
+  .input-card-title-actions{top:12px;right:14px;gap:6px}
+  .info-icon-btn{width:30px;height:30px}
+  .info-icon-btn .icon{width:14px;height:14px}
   /* Menos distância entre o fim de "Informações de Entrada" e o rodapé
      (quando o resultado ainda não está visível) */
   .inputs-card{margin-bottom:10px}
@@ -1299,7 +1354,7 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .annual-stat-label{font-size:.7rem}
   .badge{font-size:.68rem;padding:4px 9px}
   .card h2{font-size:1.02rem}
-  .info-icon-btn{padding:8px}
+  .input-card-title-actions{top:10px;right:10px}
   .f13-item span{font-size:.78rem}
   .f13-item strong{font-size:.9rem}
   .table tbody td strong{font-size:.86rem}

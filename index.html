@@ -7,7 +7,7 @@
   <meta name="description" content="Simulador de remuneração, descontos e IRPF para militares do CBMGO." />
   <title>Remuneração – CBMGO</title>
   <link rel="icon" href="assets/bandeira-goias.png" />
-  <link rel="stylesheet" href="styles.css?v=20260723j" />
+  <link rel="stylesheet" href="styles.css?v=20260723l" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -86,10 +86,16 @@
         <div class="input-card-title-text">
           <h2><svg class="icon" aria-hidden="true"><use href="#i-calculator"></use></svg>Informações de Entrada</h2>
         </div>
-        <button type="button" id="infoSubsidiosBtn" class="info-icon-btn" aria-label="Exibir tabela de subsídios utilizados nos cálculos" aria-controls="subsidiosModal" aria-expanded="false" title="Subsídios utilizados nos cálculos">
-          <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
-          <span class="info-icon-btn-label">Subsídios</span>
-        </button>
+        <div class="input-card-title-actions">
+          <button type="button" id="historicoBtn" class="info-icon-btn" aria-label="Exibir histórico de alterações de subsídios e adicionais" aria-controls="historicoModal" aria-expanded="false" title="Histórico de alterações">
+            <svg class="icon" aria-hidden="true"><use href="#i-history"></use></svg>
+            <span class="info-icon-btn-label">Histórico</span>
+          </button>
+          <button type="button" id="infoSubsidiosBtn" class="info-icon-btn" aria-label="Exibir tabela de subsídios utilizados nos cálculos" aria-controls="subsidiosModal" aria-expanded="false" title="Subsídios utilizados nos cálculos">
+            <svg class="icon" aria-hidden="true"><use href="#i-wallet"></use></svg>
+            <span class="info-icon-btn-label">Subsídios</span>
+          </button>
+        </div>
       </div>
 
       <form id="formRemuneracao">
@@ -233,6 +239,33 @@
               <tr><th>Posto / Graduação</th><th class="right">Subsídio (R$)</th></tr>
             </thead>
             <tbody id="tbodySubsidios"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="historicoModal" class="historico-modal hidden" role="dialog" aria-modal="true" aria-labelledby="historicoTitulo">
+      <div class="historico-modal-card">
+        <div class="subsidios-modal-head">
+          <div class="subsidios-modal-head-text">
+            <svg class="icon modal-head-icon" aria-hidden="true"><use href="#i-history"></use></svg>
+            <h3 id="historicoTitulo">Histórico de Alterações</h3>
+          </div>
+          <button type="button" id="historicoClose" class="modal-close-btn" aria-label="Fechar histórico de alterações"><svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg></button>
+        </div>
+        <p class="muted historico-intro">Alterações de subsídios e adicionais aplicadas ao CBMGO, com base nos Diários Oficiais do Estado de Goiás (DOE/GO) que fundamentam os valores usados neste simulador.</p>
+        <div class="historico-table-scroll">
+          <table class="table historico-table" aria-label="Histórico de alterações de subsídios e adicionais do CBMGO">
+            <colgroup>
+              <col class="historico-col-ref" />
+              <col class="historico-col-doe" />
+              <col class="historico-col-desc" />
+              <col class="historico-col-alt" />
+            </colgroup>
+            <thead>
+              <tr><th>Referência</th><th>DOE</th><th>Descrição</th><th>Alterações</th></tr>
+            </thead>
+            <tbody id="tbodyHistorico"></tbody>
           </table>
         </div>
       </div>
@@ -767,7 +800,7 @@
     <p class="update-line"><small>Última atualização: <strong><a class="official-link" href="https://diariooficial.abc.go.gov.br/portal/edicoes/download/7247" target="_blank" rel="noopener noreferrer"><span>DOE/GO N° 24.809 - 29/6/2026</span><img class="official-link-img" src="assets/icone-diario-oficial.svg" alt="" aria-hidden="true"></a></strong></small></p>
   </footer>
 
-  <script src="app.js?v=20260723n"></script>
+  <script src="app.js?v=20260723p"></script>
 
   <script>
   (function(){
