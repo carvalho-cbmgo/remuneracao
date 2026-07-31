@@ -865,12 +865,17 @@ function snapshotComparacaoParaPosto(postoValor){
     if (typeof recomputeIpasgoFromPercent === "function") recomputeIpasgoFromPercent();
     computeDetalhamento();
     setTimeout(() => {
-      const mensal = window.__ULTIMO_CALC_MENSAL__ || { posto: postoValor, subsidio: 0, totalBruto: 0, totalDescontos: 0, liquido: 0 };
+      const mensal = window.__ULTIMO_CALC_MENSAL__ || { posto: postoValor, subsidio: 0, totalBruto: 0, totalDescontos: 0, liquido: 0, feriasLiquido: 0, decimoLiquido: 0, feriasDecimoLiquido: 0 };
       const anual = lerTotaisAnuaisAtual();
       resolve({
         posto: postoValor,
         subsidio: mensal.subsidio,
         mensal: { bruto: mensal.totalBruto, descontos: mensal.totalDescontos, liquido: mensal.liquido },
+        feriasDecimo: {
+          total: mensal.feriasDecimoLiquido || 0,
+          ferias: mensal.feriasLiquido || 0,
+          decimo: mensal.decimoLiquido || 0,
+        },
         anual,
       });
     }, 120);
@@ -891,9 +896,12 @@ function quebrarNomePostoLongo(nome){
 
 function renderComparacaoResultado(snapA, snapB){
   const colAM = byId("compararColAMensal"), colBM = byId("compararColBMensal");
+  const colAF = byId("compararColAFerias13"), colBF = byId("compararColBFerias13");
   const colAA = byId("compararColAAnual"), colBA = byId("compararColBAnual");
   if (colAM) colAM.innerHTML = quebrarNomePostoLongo(snapA.posto);
   if (colBM) colBM.innerHTML = quebrarNomePostoLongo(snapB.posto);
+  if (colAF) colAF.innerHTML = quebrarNomePostoLongo(snapA.posto);
+  if (colBF) colBF.innerHTML = quebrarNomePostoLongo(snapB.posto);
   if (colAA) colAA.innerHTML = quebrarNomePostoLongo(snapA.posto);
   if (colBA) colBA.innerHTML = quebrarNomePostoLongo(snapB.posto);
   const nomeA = byId("compararNomeA"), nomeB = byId("compararNomeB");
@@ -923,6 +931,13 @@ function renderComparacaoResultado(snapA, snapB){
       linha("i-wallet", "Somatório Remuneração Bruta", snapA.mensal.bruto, snapB.mensal.bruto, "azul") +
       linha("i-trend-down", "Somatório Descontos", snapA.mensal.descontos, snapB.mensal.descontos, "vermelho") +
       linha("i-shield-check", "Remuneração Líquida", snapA.mensal.liquido, snapB.mensal.liquido, "verde", true);
+  }
+  const cmpFerias13 = byId("cmpTabelaFerias13");
+  if (cmpFerias13) {
+    cmpFerias13.innerHTML =
+      linha("i-gift", "Adicional Férias e 13º", snapA.feriasDecimo.total, snapB.feriasDecimo.total, "verde", true) +
+      linha("i-sun", "Adicional Férias (1/3)", snapA.feriasDecimo.ferias, snapB.feriasDecimo.ferias, "verde") +
+      linha("i-gift", "13º", snapA.feriasDecimo.decimo, snapB.feriasDecimo.decimo, "verde");
   }
   const cmpAnual = byId("cmpTabelaAnual");
   if (cmpAnual) {
@@ -1467,7 +1482,16 @@ let base13 = subsidioTetoBase - prev13 - dedDependentes13;
       byId("ferias13TotLiquido").textContent = fmt(totalLiqFerias13);
       if (ferias13TotLiquidoHeaderEl) ferias13TotLiquidoHeaderEl.textContent = fmt(totalLiqFerias13);
       if (ferias13BoxLiquidoHeaderEl) ferias13BoxLiquidoHeaderEl.textContent = fmt(totalLiqFerias13);
-    
+
+      // Complementa o snapshot mensal (ver window.__ULTIMO_CALC_MENSAL__ mais
+      // acima) com os líquidos de Férias/13º, usados pela comparação entre
+      // postos/graduações.
+      if (window.__ULTIMO_CALC_MENSAL__) {
+        window.__ULTIMO_CALC_MENSAL__.feriasLiquido = liquidoFerias;
+        window.__ULTIMO_CALC_MENSAL__.decimoLiquido = liquido13;
+        window.__ULTIMO_CALC_MENSAL__.feriasDecimoLiquido = totalLiqFerias13;
+      }
+
     // ===== Deltas do Resumo Adicional Férias e 13º (comparado à base sem reajuste) =====
     (function(){
       try {
