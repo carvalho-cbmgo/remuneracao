@@ -7,7 +7,7 @@
   <meta name="description" content="Simulador de remuneração, descontos e IRPF para militares do CBMGO." />
   <title>Remuneração – CBMGO</title>
   <link rel="icon" href="assets/bandeira-goias.png" />
-  <link rel="stylesheet" href="styles.css?v=20260723m" />
+  <link rel="stylesheet" href="styles.css?v=20260723o" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -433,7 +433,7 @@
         <div class="subsidios-modal-head">
           <div class="subsidios-modal-head-text">
             <svg class="icon modal-head-icon" aria-hidden="true"><use href="#i-scale"></use></svg>
-            <h3 id="compararResultadoTitulo">Comparação entre Postos / Graduações</h3>
+            <h3 id="compararResultadoTitulo">Comparativo de Remunerações</h3>
           </div>
           <button type="button" id="compararResultadoClose" class="modal-close-btn" aria-label="Fechar tabela comparativa"><svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg></button>
         </div>
@@ -494,6 +494,13 @@
             <div id="cmpTabelaAnual" class="cmp-table" aria-label="Comparação anual de remuneração entre dois postos/graduações"></div>
           </section>
         </div>
+      </div>
+    </div>
+
+    <div id="carregandoBadge" class="carregando-overlay hidden" role="status" aria-live="polite">
+      <div class="carregando-card">
+        <span class="carregando-spinner" aria-hidden="true"></span>
+        <span>Carregando<span class="carregando-dots" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span></span>
       </div>
     </div>
 
@@ -815,7 +822,7 @@
     <p class="update-line"><small>Última atualização: <strong><a class="official-link" href="https://diariooficial.abc.go.gov.br/portal/edicoes/download/7247" target="_blank" rel="noopener noreferrer"><span>DOE/GO N° 24.809 - 29/6/2026</span><img class="official-link-img" src="assets/icone-diario-oficial.svg" alt="" aria-hidden="true"></a></strong></small></p>
   </footer>
 
-  <script src="app.js?v=20260723q"></script>
+  <script src="app.js?v=20260723s"></script>
 
   <script>
   (function(){

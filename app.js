@@ -45,7 +45,7 @@ const SUBSIDIO_PERIODOS = [
       "Capitão": 27419.78,
       "1º Tenente": 19906.60,
       "2º Tenente": 17119.67,
-      "Subtenente / Aspirante": 14843.14,
+      "Subtenente / Aspirante a Oficial": 14843.14,
       "1º Sargento / Cadete 3º ano": 12982.57,
       "2º Sargento / Cadete 2º ano": 11251.56,
       "3º Sargento / Cadete 1º ano": 10386.05,
@@ -67,7 +67,7 @@ const SUBSIDIO_PERIODOS = [
       "Capitão": 28547.01,
       "1º Tenente": 20724.98,
       "2º Tenente": 17930.43,
-      "Subtenente / Aspirante": 17167.09,
+      "Subtenente / Aspirante a Oficial": 17167.09,
       "1º Sargento / Cadete 3º ano": 13516.29,
       "2º Sargento / Cadete 2º ano": 11714.12,
       "3º Sargento / Cadete 1º ano": 10813.01,
@@ -211,7 +211,7 @@ function setupMesAnoSelect() {
       renderSubsidiosTable();
     }
     if (typeof recomputePercentFromValor === "function") recomputePercentFromValor();
-    if (typeof computeDetalhamento === "function") computeDetalhamento();
+    if (typeof recalcularComIndicadorDeCarregamento === "function") recalcularComIndicadorDeCarregamento();
   };
   // Referência inicial: início do período mais recente (jul/2026), que é a
   // tabela em vigor mais atual conhecida pelo simulador.
@@ -515,7 +515,7 @@ ipasgoSel.addEventListener("change", () => {
   const show = ipasgoSel.value === "manual";
   if (grupoIpasgoValor) grupoIpasgoValor.classList.toggle("hidden", !show);
   recomputePercentFromValor();
-  computeDetalhamento();
+  recalcularComIndicadorDeCarregamento();
 });
 
 // AC4 agora é uma lista de serviços extraordinários
@@ -904,9 +904,12 @@ function renderComparacaoResultado(snapA, snapB){
   if (colBF) colBF.innerHTML = quebrarNomePostoLongo(snapB.posto);
   if (colAA) colAA.innerHTML = quebrarNomePostoLongo(snapA.posto);
   if (colBA) colBA.innerHTML = quebrarNomePostoLongo(snapB.posto);
+  // A faixa "A vs B" tem largura suficiente para o nome do posto/graduação
+  // caber em uma única linha (ao contrário dos cabeçalhos estreitos das
+  // tabelas abaixo, que continuam usando quebrarNomePostoLongo).
   const nomeA = byId("compararNomeA"), nomeB = byId("compararNomeB");
-  if (nomeA) nomeA.innerHTML = quebrarNomePostoLongo(snapA.posto);
-  if (nomeB) nomeB.innerHTML = quebrarNomePostoLongo(snapB.posto);
+  if (nomeA) nomeA.textContent = snapA.posto;
+  if (nomeB) nomeB.textContent = snapB.posto;
 
   // Diferença (B − A): azul quando positiva, laranja quando negativa.
   const linha = (icone, desc, a, b, cls, destaque) => {
@@ -1019,7 +1022,7 @@ function bindAdicionaisEventos(){
       } else {
         adicionaisSelecionados.add(val);
         renderAdicionaisChips();
-        computeDetalhamento();
+        recalcularComIndicadorDeCarregamento();
       }
       adicionaisSelect.value = "";
     });
@@ -1036,7 +1039,7 @@ function bindAdicionaisEventos(){
         ac4DraftConfig = buildAc4DefaultConfig();
       }
       renderAdicionaisChips();
-      computeDetalhamento();
+      recalcularComIndicadorDeCarregamento();
     });
   }
   if (ac4Modal){
@@ -1098,7 +1101,7 @@ function bindAdicionaisEventos(){
         else adicionaisSelecionados.delete("AC4");
         renderAdicionaisChips();
         closeAc4Modal();
-        computeDetalhamento();
+        recalcularComIndicadorDeCarregamento();
       });
     }
     if (ac4CancelBtn){
@@ -1138,16 +1141,8 @@ function recomputePercentFromValor(){
   if (ipasgoPercentBadge){ ipasgoPercentBadge.textContent = percTxt; }
   if (ipasgoManualInfo){ ipasgoManualInfo.textContent = "Plano de Saúde (Manual - " + percTxt.replace(" %","%") + "), sendo que esse percentual é calculado na hora a partir do valor em R$ e do subsídio do posto/graduação selecionado."; }
 }
-// Quando o usuário digitar o valor em R$, sincroniza o %
-if (valorIpasgoInput){
-  valorIpasgoInput.addEventListener("input", () => {
-    // Só calcula se houver posto escolhido
-    recomputePercentFromValor();
-  });
-}
-
 // Se mudar o posto/graduação, sincroniza para ambos os sentidos
-byId("posto").addEventListener("change", () => { recomputePercentFromValor(); if (typeof recomputeIpasgoFromPercent === "function") recomputeIpasgoFromPercent(); computeDetalhamento(); });
+byId("posto").addEventListener("change", () => { recomputePercentFromValor(); if (typeof recomputeIpasgoFromPercent === "function") recomputeIpasgoFromPercent(); recalcularComIndicadorDeCarregamento(); });
 // Máscara simples para inputs monetários
 ["valorIpasgo", "associacaoValor"].forEach(id => {
   const el = byId(id);
@@ -1178,7 +1173,7 @@ const detalhamentoAnualTotalHeaderEl = byId("detalhamentoAnualTotalHeader");
 const valoresAnuaisMediaLiquidaEl = byId("valoresAnuaisMediaLiquida");
 const metodoIrpfEl = byId("metodoIrpf");
 
-form.addEventListener("submit", (e) => { e.preventDefault(); computeDetalhamento(); });
+form.addEventListener("submit", (e) => { e.preventDefault(); recalcularComIndicadorDeCarregamento(); });
 
 function setupDetailCollapses(){
   document.querySelectorAll("[data-collapse-toggle]").forEach((button) => {
@@ -1205,6 +1200,41 @@ function setupDetailCollapses(){
 
 setupDetailCollapses();
 
+// ====== Indicador "Carregando..." ======
+// computeDetalhamento() em si é rápido (poucos ms), mas o app também roda,
+// por baixo, algumas rotinas defensivas de resincronização (observadas em
+// ~150-200ms) que ajustam detalhes da tabela anual após o cálculo direto.
+// O indicador fica visível por essa janela real de acomodação — nem menos
+// (para não sumir "no meio" de uma atualização) nem mais do que o
+// necessário (para não atrasar artificialmente o usuário).
+const CARREGANDO_JANELA_MS = 260;
+let __carregandoHideTimer = null;
+function mostrarCarregando(){
+  const el = byId("carregandoBadge");
+  if (!el) return;
+  if (__carregandoHideTimer) { clearTimeout(__carregandoHideTimer); __carregandoHideTimer = null; }
+  el.classList.remove("hidden");
+}
+function esconderCarregando(){
+  const el = byId("carregandoBadge");
+  if (!el) return;
+  if (__carregandoHideTimer) clearTimeout(__carregandoHideTimer);
+  __carregandoHideTimer = setTimeout(() => { el.classList.add("hidden"); }, CARREGANDO_JANELA_MS);
+}
+// Mostra o aviso, cede um frame para o navegador realmente pintá-lo na tela
+// (senão o show+hide síncronos nunca chegariam a aparecer) e só então roda
+// o cálculo de verdade. Só mostra o aviso quando já há dados mínimos para
+// calcular (mesma condição de computeDetalhamento()) — evita um "Carregando"
+// fantasma em ajustes internos de estado inicial, antes de o usuário
+// escolher um posto/graduação.
+function recalcularComIndicadorDeCarregamento(){
+  const postoEl = byId("posto");
+  const mesEl = byId("mes");
+  if (postoEl && postoEl.value && mesEl && mesEl.value) mostrarCarregando();
+  const rodar = () => { computeDetalhamento(); esconderCarregando(); };
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(rodar);
+  else setTimeout(rodar, 0);
+}
 
 function computeDetalhamento() {
   // Campos obrigatórios
@@ -2053,10 +2083,6 @@ if (ipasgoPercentInput){
     recomputeIpasgoFromPercent();
   });
 }
-if (valorIpasgoInput){
-  valorIpasgoInput.addEventListener("input", () => { recomputePercentFromValor(); computeDetalhamento(); });
-}
-byId("posto").addEventListener("change", () => { recomputePercentFromValor(); if (typeof recomputeIpasgoFromPercent === "function") recomputeIpasgoFromPercent(); computeDetalhamento(); });
 // ====== Reajuste: UI e sincronização ======
 
 // ====== Reajuste: validação/máscara e botões rápidos ======
@@ -2309,26 +2335,28 @@ if (reajustePercentInput){
     computeDetalhamento();
   });
 }
-// Ao trocar o posto, reaplica o mesmo percentual sobre o novo subsídio
-byId("posto").addEventListener("change", () => { recomputePercentFromValor(); if (typeof recomputeIpasgoFromPercent === "function") recomputeIpasgoFromPercent(); computeDetalhamento(); });
 const noPrevTercoEl = byId("noPrevTerco");
 if (noPrevTercoEl) noPrevTercoEl.addEventListener("change", () => { computeDetalhamento(); });
 // ====== Auto-recalcular quando campos mudarem ======
-const camposRecalcChange = ["mes","posto","dependentes","ipasgo"];
+// "posto" e "ipasgo" já têm listener dedicado (com efeitos colaterais
+// próprios, como sincronizar o % do IPASGO manual); mantê-los aqui também
+// disparava computeDetalhamento() em duplicidade a cada interação.
+const camposRecalcChange = ["mes","dependentes"];
 camposRecalcChange.forEach(id => {
   const el = byId(id);
-  if (el) el.addEventListener("change", () => { computeDetalhamento(); });
+  if (el) el.addEventListener("change", () => { recalcularComIndicadorDeCarregamento(); });
 });
-const camposRecalcInput = ["valorIpasgo","ipasgoPercent","associacaoValor"];
+// "valorIpasgo" já tem listener dedicado logo abaixo.
+const camposRecalcInput = ["ipasgoPercent","associacaoValor"];
 camposRecalcInput.forEach(id => {
   const el = byId(id);
-  if (el) el.addEventListener("input", () => { computeDetalhamento(); });
+  if (el) el.addEventListener("input", () => { recalcularComIndicadorDeCarregamento(); });
 });
 
 // force ipasgo default
 (function(){ const s = byId("ipasgo"); if (s) { s.value = "nao"; const ev = new Event("change"); s.dispatchEvent(ev);} })();
 
-byId("valorIpasgo").addEventListener("input", () => { recomputePercentFromValor(); computeDetalhamento(); });
+byId("valorIpasgo").addEventListener("input", () => { recomputePercentFromValor(); recalcularComIndicadorDeCarregamento(); });
 
 
 
