@@ -213,26 +213,17 @@ body{
   max-width:1180px;margin:0 auto;padding:16px 22px;
   display:flex;align-items:center;gap:16px;
 }
+/* Bandeira de Goiás: formato retangular (proporção original preservada),
+   com moldura sutil e sombra para se integrar ao restante do cabeçalho de
+   forma discreta e profissional. */
 .brand-mark{
-  position:relative;width:50px;height:50px;flex:0 0 auto;
-  display:grid;place-items:center;border-radius:14px;
-  background:linear-gradient(155deg, #2a1a12, #140d0a);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), var(--shadow-md);
-  border:1px solid rgba(245,158,11,.3);
+  position:relative;flex:0 0 auto;
+  width:72px;height:48px;
+  border-radius:8px;overflow:hidden;
+  border:1px solid var(--border-strong);
+  box-shadow:var(--shadow-sm), inset 0 0 0 1px rgba(0,0,0,.12);
 }
-.brand-mark-ring{
-  position:absolute;inset:-4px;border-radius:16px;
-  background:conic-gradient(from 0deg, var(--gold), var(--brand), #f97316, var(--gold));
-  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
-  mask:radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
-  animation:spin 7s linear infinite;
-  opacity:.85;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.brand-flame{
-  width:27px;height:27px;color:var(--gold);
-  filter:drop-shadow(0 0 7px rgba(249,115,22,.55));
-}
+.brand-flag-img{display:block;width:100%;height:100%;object-fit:cover}
 .brand-text{min-width:0;display:flex;flex-direction:column;gap:2px;flex:1 1 auto}
 .brand-title-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .brand-text h1{margin:0;font-weight:800;letter-spacing:.05em;line-height:1.1;font-size:1.45rem}
@@ -243,6 +234,14 @@ body{
 .brand-text p{margin:0;color:var(--muted);font-size:.92rem;line-height:1.3}
 .database-tag{font-weight:600}
 .database-period{color:var(--gold);font-weight:700}
+.contador-acessos{
+  display:inline-flex;align-items:center;gap:4px;
+  margin-left:10px;padding-left:10px;
+  border-left:1px solid var(--border);
+  color:var(--muted);font-weight:600;
+}
+.contador-acessos .icon{width:13px;height:13px;color:var(--gold);flex:0 0 auto}
+.contador-acessos-valor{color:var(--gold);font-weight:700;font-family:var(--font-mono)}
 
 .brand-watermark{
   position:absolute;right:-30px;top:50%;transform:translateY(-50%);
@@ -252,8 +251,7 @@ body{
 
 @media (max-width:640px){
   .site-header .brand{padding:13px 16px;gap:12px}
-  .brand-mark{width:42px;height:42px;border-radius:12px}
-  .brand-flame{width:23px;height:23px}
+  .brand-mark{width:58px;height:39px;border-radius:6px}
   .brand-text h1{font-size:1.18rem}
   .brand-text p{font-size:.82rem}
 }
@@ -274,7 +272,7 @@ body{
 /* =========================================================================
    Layout / Card system
    ========================================================================= */
-.container{max-width:1180px;margin:12px auto 18px;padding:0 20px}
+.container{max-width:1180px;margin:12px auto 4px;padding:0 20px}
 
 .card{
   position:relative;
@@ -651,6 +649,8 @@ input[type="text"]:focus-visible{border-color:var(--gold-strong);box-shadow:0 0 
 .modal-close-btn:hover{background:rgba(248,113,113,.16);color:#fca5a5;transform:rotate(90deg)}
 .modal-close-btn .icon{width:16px;height:16px}
 
+.subsidios-data-referencia{margin:0 0 14px;font-size:.86rem;color:var(--text-dim)}
+.subsidios-data-referencia-valor{color:var(--gold);font-weight:700}
 .subsidios-table-scroll{max-height:60vh;overflow-y:auto;border-radius:var(--radius-sm)}
 .subsidios-table th{position:sticky;top:0;background:#18161b;z-index:1}
 
@@ -1309,14 +1309,7 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 .site-footer{max-width:1180px;margin:6px auto 40px;padding:0 20px;text-align:center;color:var(--muted)}
 .site-footer p{margin:4px 0}
 .rights-highlight small{font-size:.8rem;line-height:1.5}
-.update-line small{font-size:.8rem}
-.official-link{
-  display:inline-flex;align-items:center;gap:6px;color:#fcd34d;text-decoration:none;
-  border-bottom:1px dashed rgba(252,211,77,.4);
-  transition:color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
-}
-.official-link:hover{color:#fde68a;border-color:#fde68a}
-.official-link-img{width:15px;height:15px}
+.footer-name-highlight{color:var(--gold);font-weight:700}
 
 /* =========================================================================
    Responsive

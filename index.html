@@ -7,7 +7,7 @@
   <meta name="description" content="Simulador de remuneração, descontos e IRPF para militares do CBMGO." />
   <title>Remuneração – CBMGO</title>
   <link rel="icon" href="assets/bandeira-goias.png" />
-  <link rel="stylesheet" href="styles.css?v=20260723o" />
+  <link rel="stylesheet" href="styles.css?v=20260723s" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -43,7 +43,6 @@
       <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
       <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7.5h8.5M17.8 7.5H20"/><circle cx="15.2" cy="7.5" r="2.3"/><path d="M4 16.5h2.2M9.5 16.5H20"/><circle cx="6.8" cy="16.5" r="2.3"/></symbol>
-      <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3.5c.4 2.9-1 4.5-2.4 6C8.2 11 7 12.4 7 14.7a5 5 0 0 0 10 0c0-1.6-.6-2.8-1.4-4-.4.9-1 1.5-1.9 1.8.5-2.7-.3-6-1.7-9z"/><path d="M12 20.6a2.9 2.9 0 0 1-2.9-2.9c0-1.2.7-2 1.5-2.8.5-.5.9-1 1.1-1.7 1.3.9 3.2 2.3 3.2 4.5a2.9 2.9 0 0 1-2.9 2.9z"/></symbol>
       <symbol id="i-graduation" viewBox="0 0 24 24"><path d="M12 4.2l9 4.3-9 4.3-9-4.3 9-4.3z"/><path d="M6.5 10.4v4.3c0 1.5 2.5 2.7 5.5 2.7s5.5-1.2 5.5-2.7v-4.3"/><path d="M20.5 8.9v5.6"/></symbol>
       <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3.2v17.6"/><path d="M7.2 6.4h9.6"/><path d="M7.2 6.4l-3.4 6.6a3.4 3.4 0 0 0 6.8 0L7.2 6.4z"/><path d="M16.8 6.4l-3.4 6.6a3.4 3.4 0 0 0 6.8 0L16.8 6.4z"/><path d="M8.7 20.8h6.6"/></symbol>
       <symbol id="i-history" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5V9h4.5"/><path d="M12 8v4.3l3 1.9"/></symbol>
@@ -61,15 +60,14 @@
   <header class="site-header">
     <div class="brand">
       <div class="brand-mark">
-        <span class="brand-mark-ring" aria-hidden="true"></span>
-        <svg class="icon brand-flame" aria-hidden="true"><use href="#i-flame"></use></svg>
+        <img src="assets/bandeira-goias.png" alt="Bandeira do Estado de Goiás" class="brand-flag-img" />
       </div>
       <div class="brand-text">
         <div class="brand-title-row">
           <h1>Remuneração <span class="brand-accent">CBMGO</span></h1>
         </div>
         <p class="simulador-linha">Simulador de proventos e descontos</p>
-        <p class="database-tag">Referência <span class="database-period">julho/2026</span></p>
+        <p class="database-tag">Última atualização: <span class="database-period">julho/2026</span><span id="contadorAcessos" class="contador-acessos hidden" title="Total de acessos ao site"><svg class="icon" aria-hidden="true"><use href="#i-users"></use></svg><span id="contadorAcessosValor" class="contador-acessos-valor">0</span> acessos</span></p>
       </div>
     </div>
     <img src="assets/viatura-cbmgo.svg" alt="" aria-hidden="true" class="brand-watermark">
@@ -233,6 +231,7 @@
           </div>
           <button type="button" id="subsidiosClose" class="modal-close-btn" aria-label="Fechar tabela de subsídios"><svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg></button>
         </div>
+        <p class="subsidios-data-referencia">Data de Referência: <span id="subsidiosDataReferenciaValor" class="subsidios-data-referencia-valor">—</span></p>
         <div class="subsidios-table-scroll">
           <table class="table subsidios-table" aria-label="Tabela de subsídios por posto ou graduação">
             <thead>
@@ -818,11 +817,10 @@
   </main>
 
   <footer class="site-footer" role="contentinfo">
-    <p class="rights-line rights-highlight"><small>© <span id="ano"></span> Todos os direitos reservados<br>Cadete CARVALHO, CBMGO</small></p>
-    <p class="update-line"><small>Última atualização: <strong><a class="official-link" href="https://diariooficial.abc.go.gov.br/portal/edicoes/download/7247" target="_blank" rel="noopener noreferrer"><span>DOE/GO N° 24.809 - 29/6/2026</span><img class="official-link-img" src="assets/icone-diario-oficial.svg" alt="" aria-hidden="true"></a></strong></small></p>
+    <p class="rights-line rights-highlight"><small>© <span id="ano"></span> Todos os direitos reservados<br><span class="footer-name-highlight">Cadete CARVALHO</span>, CBMGO</small></p>
   </footer>
 
-  <script src="app.js?v=20260723s"></script>
+  <script src="app.js?v=20260723v"></script>
 
   <script>
   (function(){

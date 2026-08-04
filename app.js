@@ -230,6 +230,76 @@ function setupMesAnoSelect() {
 }
 setupMesAnoSelect();
 
+// ====== Contador de acessos (Supabase) ======
+// Site 100% estático: para ter um total de acessos compartilhado entre
+// todos os visitantes (e não apenas uma contagem local por navegador), o
+// número precisa morar em algum lugar fora do navegador — aqui, uma tabela
+// num projeto Supabase gratuito. Cada navegador soma 1 acesso apenas na
+// primeira vez (marcado via localStorage) chamando a função RPC
+// "incrementar_contador_acessos"; visitas seguintes do mesmo navegador só
+// leem o total atual (SELECT), sem incrementar de novo — não é uma
+// contagem exata "por dispositivo" (dois navegadores no mesmo aparelho
+// contam como 2), mas é a aproximação padrão usada por esse tipo de
+// contador na web. Se o Supabase ainda não tiver sido configurado (URL/
+// chave abaixo) ou estiver fora do ar, o contador simplesmente não
+// aparece — falha silenciosa, sem travar a página.
+//
+// Configuração necessária (ver arquivo supabase-contador-setup.sql na raiz
+// do projeto para o script completo de criação da tabela/função/RLS):
+//   1) Substitua SUPABASE_URL pela "Project URL" do seu projeto.
+//   2) Substitua SUPABASE_ANON_KEY pela chave "anon public" do seu projeto
+//      (Project Settings → API). Essa chave é pública por design do
+//      Supabase — o que protege os dados são as políticas de RLS
+//      configuradas no script SQL (só permitem leitura e a chamada da
+//      função de incremento, nunca escrita livre na tabela).
+const SUPABASE_URL = "https://SEU-PROJETO.supabase.co";
+const SUPABASE_ANON_KEY = "SUA_CHAVE_ANON_PUBLIC_AQUI";
+const CONTADOR_STORAGE_KEY = "remuneracaoCbmgoContadorVisitado";
+
+async function inicializarContadorAcessos(){
+  const wrapEl = byId("contadorAcessos");
+  const valorEl = byId("contadorAcessosValor");
+  if (!wrapEl || !valorEl || typeof fetch !== "function") return;
+  if (!SUPABASE_URL || SUPABASE_URL.includes("SEU-PROJETO") || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("SUA_CHAVE")) return;
+  const jaVisitado = (() => {
+    try { return localStorage.getItem(CONTADOR_STORAGE_KEY) === "1"; }
+    catch (_e) { return false; }
+  })();
+  const headers = {
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+    "Content-Type": "application/json",
+  };
+  const endpoint = jaVisitado
+    ? `${SUPABASE_URL}/rest/v1/contador_acessos?chave=eq.site&select=total`
+    : `${SUPABASE_URL}/rest/v1/rpc/incrementar_contador_acessos`;
+  const opcoes = jaVisitado ? { headers } : { method: "POST", headers };
+  try {
+    // Promise.race garante que a função nunca fique presa esperando o
+    // fetch: se o Supabase não responder em 6s, segue em frente e deixa o
+    // contador oculto — não depende de AbortController estar disponível.
+    const resp = await Promise.race([
+      fetch(endpoint, opcoes),
+      new Promise((_resolve, reject) => setTimeout(() => reject(new Error("contador: tempo esgotado")), 6000)),
+    ]);
+    if (!resp || !resp.ok) return;
+    const dados = await resp.json();
+    // SELECT devolve uma lista de linhas ([{ total }]); a função RPC
+    // devolve o número já incrementado diretamente.
+    const total = Number(jaVisitado ? (Array.isArray(dados) && dados[0] && dados[0].total) : dados);
+    if (!Number.isFinite(total)) return;
+    valorEl.textContent = total.toLocaleString("pt-BR");
+    wrapEl.classList.remove("hidden");
+    if (!jaVisitado) {
+      try { localStorage.setItem(CONTADOR_STORAGE_KEY, "1"); } catch (_e) { /* silencioso */ }
+    }
+  } catch (_e) {
+    // Supabase indisponível ou ainda não configurado: contador permanece
+    // oculto, sem quebrar a página.
+  }
+}
+inicializarContadorAcessos();
+
 // ====== Parâmetros IRRF Mensal 2025 (oficiais RFB) ======
 // Fonte: gov.br/receitafederal - Tributação de 2025 (incidência mensal)
 const PARAMS_IRRF = {
@@ -675,6 +745,12 @@ function renderSubsidiosTable(){
       <td>${fmt(valor)}</td>
     </tr>
   `).join("");
+  const dataRefEl = byId("subsidiosDataReferenciaValor");
+  if (dataRefEl) {
+    const mesAnoSel = byId("mesAno");
+    const opcaoAtual = mesAnoSel && mesAnoSel.selectedOptions ? mesAnoSel.selectedOptions[0] : null;
+    dataRefEl.textContent = opcaoAtual ? opcaoAtual.textContent : "—";
+  }
 }
 
 function openSubsidiosModal(){
