@@ -821,6 +821,8 @@ table.historico-table thead th{text-align:center}
 .cmp-row--destaque .cmp-row-val{font-size:1.02rem}
 
 @media (max-width:560px){
+  /* Aproveita mais largura útil da tela para a tabela comparativa. */
+  .compare-result-modal-card{padding:14px}
   .cmp-vs-banner{padding:12px 10px;gap:10px}
   .cmp-vs-divider{width:34px;height:34px}
   /* Em telas bem estreitas, nomes de posto longos não cabem em uma linha
@@ -829,14 +831,24 @@ table.historico-table thead th{text-align:center}
   .cmp-divider{margin:18px 4px}
   /* Rótulo ocupa a linha inteira; A/B/Diferença passam a dividir 3 colunas
      iguais logo abaixo, tanto no cabeçalho quanto em cada linha de dados. */
-  .cmp-section-head,.cmp-row{grid-template-columns:repeat(3, 1fr)}
-  .cmp-section-head{padding:0 2px 6px;row-gap:4px}
+  .cmp-section-head,.cmp-row{grid-template-columns:repeat(3, 1fr);column-gap:4px}
+  .cmp-section-head{padding:0 4px 6px}
   .cmp-section-head > span:first-child{display:none}
-  .cmp-row{row-gap:6px}
-  .cmp-row-label{grid-column:1 / -1}
+  .cmp-section-head-values span{font-size:.62rem;overflow-wrap:break-word;line-height:1.25}
+  .cmp-row{padding:10px 8px;row-gap:6px}
+  .cmp-row-label{grid-column:1 / -1;font-size:.78rem}
+  .cmp-row-label .icon{width:14px;height:14px}
   .cmp-row-val,.cmp-section-head-values span{text-align:center}
+  .cmp-row-val{font-size:.74rem}
   .cmp-col-b,.cmp-section-head-values span:nth-child(2){border-left:1px solid var(--border-strong);padding-left:0}
-  .cmp-diff-badge{justify-self:center}
+  /* Selo de diferença: fonte/preenchimento menores e permite quebrar em
+     2 linhas se algum valor extremo não couber — nunca corta o número. */
+  .cmp-diff-badge{
+    justify-self:center;font-size:.66rem;padding:3px 6px;
+    white-space:normal;overflow-wrap:anywhere;text-align:center;line-height:1.2;
+  }
+  .cmp-row--destaque .cmp-row-label{font-size:.84rem}
+  .cmp-row--destaque .cmp-row-val{font-size:.82rem}
 }
 
 /* Os 7 dias ficam sempre numa única linha, dividindo igualmente a largura
@@ -1328,7 +1340,10 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .title-row h2{font-size:1.05rem}
 }
 @media (max-width:640px){
-  .actions-buttons{width:100%;flex-direction:column;align-items:stretch}
+  /* Espaço quase nulo entre o cabeçalho e o aviso "não é sistema oficial",
+     e entre o aviso e o card "Informações de Entrada" logo abaixo. */
+  .container{margin-top:4px}
+  .actions-buttons{width:100%;flex-direction:column;align-items:stretch;gap:4px}
   .actions-buttons .btn{width:100%;justify-content:center}
   /* Barra de reajuste em linha única: ícone | barra | percentual à direita */
   .reajuste-wrap{width:100%}
@@ -1343,7 +1358,7 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .info-icon-btn .icon{width:14px;height:14px}
   /* Menos distância entre o fim de "Informações de Entrada" e o rodapé
      (quando o resultado ainda não está visível) */
-  .inputs-card{margin-bottom:10px}
+  .inputs-card{margin-bottom:4px}
   /* Campos com rótulo e seletor na mesma linha, sem cortar conteúdo */
   .grid-2{gap:10px;margin-bottom:12px}
   .grid-2 .field{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
@@ -1373,9 +1388,10 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .planosaude-row .select-wrap{width:100%;min-width:0}
   .planosaude-row select{width:100%;min-width:0;padding-right:26px}
   /* Altura reduzida dos cards Adicionais/Associações/Plano de Saúde
-     (agora em linha única) e menos distância até o botão Calcular */
+     (agora em linha única) e menos distância até o botão Calcular. Gap
+     quase nulo entre os 3 cards, já que cada um empilha sozinho por linha. */
   .section-box{padding:12px 14px}
-  .section-row{gap:10px;margin:4px 0 12px}
+  .section-row{gap:4px;margin:4px 0 8px}
   /* Sem espaçamento entre o título do detalhamento e o card Proventos */
   .output-monthly{gap:0}
   .title-row{margin-bottom:0}
@@ -1385,6 +1401,21 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .container{margin-bottom:0}
   .collapse-title{font-size:.88rem}
   .collapse-total{font-size:.9rem}
+  /* "Simulador Restituição IRPF": título + "A restituir/A pagar R$ X,XX"
+     são, juntos, o cabeçalho mais longo da tela. Fonte/gaps/ícones bem
+     menores SÓ aqui fazem o caso típico (valores de poucos milhares)
+     caber numa única linha. Para o caso extremo (aparelho muito estreito +
+     valor muito alto), "flex-wrap:wrap" garante que o valor desce para uma
+     2ª linha do próprio cabeçalho em vez de ser cortado pelo overflow do
+     card — nunca esconde nem estoura para fora do componente. */
+  #irpfSimBox > .collapse-header{padding:9px 8px;gap:3px;flex-wrap:wrap;row-gap:2px}
+  #irpfSimBox > .collapse-header .collapse-title{font-size:.54rem;gap:3px;letter-spacing:-.01em}
+  #irpfSimBox > .collapse-header .collapse-title-icon{width:10px;height:10px}
+  #irpfSimBox > .collapse-header .f13-info-wrap{margin-left:0}
+  #irpfSimBox > .collapse-header .f13-info-icon{width:9px;height:9px}
+  #irpfSimBox > .collapse-header .collapse-right{gap:3px;margin-left:auto}
+  #irpfSimBox > .collapse-header .collapse-total{font-size:.54rem;letter-spacing:-.01em;white-space:normal;overflow-wrap:break-word;text-align:right}
+  #irpfSimBox > .collapse-header .collapse-icon{width:10px;height:10px}
   .table thead th{font-size:.7rem;padding:0 10px 4px}
   .table tbody td{font-size:.85rem;padding:10px}
   .summary-line{padding:11px 12px}
@@ -1394,7 +1425,7 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .annual-stat{padding:14px 14px 12px}
   .annual-stat-value{font-size:1.16rem}
   #detalhamentoAnualContent{padding:0 10px 12px}
-  .disclaimer-bar{font-size:.78rem;padding:5px 12px;margin-bottom:8px}
+  .disclaimer-bar{font-size:.78rem;padding:5px 12px;margin-bottom:3px}
   .site-footer{margin:0 auto 24px}
 }
 @media (max-width:420px){
