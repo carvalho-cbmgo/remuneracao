@@ -1376,23 +1376,32 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   .mesano-nav-btn{width:32px}
   /* Título e seletor SEMPRE na mesma linha (nowrap): o seletor encolhe
      o quanto for preciso; conteúdo complementar (chips, campo manual do
-     plano) fica em linha própria, fora da linha flex, sem disputar espaço. */
-  .adicionais-row{display:flex;flex-wrap:nowrap;align-items:center;gap:8px}
+     plano) fica em linha própria, fora da linha flex, sem disputar espaço.
+     align-items:flex-start (em vez de center) rente o título ao topo da
+     linha — com align-items:center o próprio select/input (bem mais alto
+     que o texto do título) definia a altura da linha e "empurrava" o
+     título para baixo, criando um espaço visível acima dele mesmo com o
+     padding do card já reduzido; com flex-start esse espaço extra some e
+     o título fica colado à borda superior do card (só o padding do card
+     separa um do outro). O select/input, por já ser o item mais alto,
+     continua sempre rente à borda inferior do card em ambos os casos. */
+  .adicionais-row{display:flex;flex-wrap:nowrap;align-items:flex-start;gap:8px}
   .adicionais-box .section-title{margin-bottom:0;flex:0 0 auto;white-space:nowrap}
   .adicionais-row .form-group{flex:1 1 auto;min-width:0}
   .adicionais-row .select-wrap{width:100%;min-width:0}
-  .adicionais-row select{width:100%;min-width:0;padding-right:26px}
+  .adicionais-row select{width:100%;min-width:0;padding:8px 26px 8px 10px;font-size:.88rem}
   .adicionais-box .adicionais-chips{margin-top:8px}
   /* Associações: título e campo na mesma linha */
-  .associacoes-box{display:flex;align-items:center;gap:10px}
+  .associacoes-box{display:flex;align-items:flex-start;gap:10px}
   .associacoes-box .section-title{margin-bottom:0;flex:0 0 auto}
   .associacoes-box .form-group{flex:1 1 auto;min-width:0}
+  .associacoes-box .input-with-prefix input{padding-top:8px;padding-bottom:8px}
   /* Plano de Saúde: título e seletor na mesma linha */
-  .planosaude-row{display:flex;flex-wrap:nowrap;align-items:center;gap:8px}
+  .planosaude-row{display:flex;flex-wrap:nowrap;align-items:flex-start;gap:8px}
   .planosaude-box .section-title{margin-bottom:0;flex:0 0 auto;white-space:nowrap}
   .planosaude-row .form-group{flex:1 1 auto;min-width:0}
   .planosaude-row .select-wrap{width:100%;min-width:0}
-  .planosaude-row select{width:100%;min-width:0;padding-right:26px}
+  .planosaude-row select{width:100%;min-width:0;padding:8px 26px 8px 10px;font-size:.88rem}
   /* Altura reduzida dos cards Adicionais/Associações/Plano de Saúde
      (agora em linha única) e menos distância até o botão Calcular. Gap
      quase nulo entre os 3 cards, já que cada um empilha sozinho por linha. */
