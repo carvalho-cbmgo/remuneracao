@@ -1396,7 +1396,10 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   /* Altura reduzida dos cards Adicionais/Associações/Plano de Saúde
      (agora em linha única) e menos distância até o botão Calcular. Gap
      quase nulo entre os 3 cards, já que cada um empilha sozinho por linha. */
-  .section-box{padding:12px 14px}
+  /* Espaço quase nulo entre a borda superior de cada card (Adicionais/
+     Associações/Plano de Saúde) e o título, e entre a última linha de
+     conteúdo e a borda inferior. */
+  .section-box{padding:4px 14px}
   .section-row{gap:4px;margin:4px 0 8px}
   /* Sem espaçamento entre o título do detalhamento e o card Proventos */
   .output-monthly{gap:0}
