@@ -250,7 +250,9 @@ body{
 @media (max-width:760px){.brand-watermark{display:none}}
 
 @media (max-width:640px){
-  .site-header .brand{padding:13px 16px;gap:12px}
+  /* Espaço quase nulo depois da linha "Última atualização" (última linha
+     do cabeçalho) até o que vem a seguir na tela. */
+  .site-header .brand{padding:12px 16px 6px;gap:12px}
   .brand-mark{width:58px;height:39px;border-radius:6px}
   .brand-text h1{font-size:1.18rem}
   .brand-text p{font-size:.82rem}
@@ -1342,7 +1344,9 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
 @media (max-width:640px){
   /* Espaço quase nulo entre o cabeçalho e o aviso "não é sistema oficial",
      e entre o aviso e o card "Informações de Entrada" logo abaixo. */
-  .container{margin-top:4px}
+  .container{margin-top:2px}
+  /* Espaço quase nulo entre "Plano de Saúde" e o botão "Calcular". */
+  .actions{margin-top:4px}
   .actions-buttons{width:100%;flex-direction:column;align-items:stretch;gap:4px}
   .actions-buttons .btn{width:100%;justify-content:center}
   /* Barra de reajuste em linha única: ícone | barra | percentual à direita */
@@ -1359,8 +1363,10 @@ body:not(.deltas-on) [id$="Delta"]{display:none !important}
   /* Menos distância entre o fim de "Informações de Entrada" e o rodapé
      (quando o resultado ainda não está visível) */
   .inputs-card{margin-bottom:4px}
-  /* Campos com rótulo e seletor na mesma linha, sem cortar conteúdo */
-  .grid-2{gap:10px;margin-bottom:12px}
+  /* Campos com rótulo e seletor na mesma linha, sem cortar conteúdo.
+     Espaço quase nulo entre as 3 linhas (Data de referência/Posto/
+     Dependentes) e entre elas e o card "Adicionais" logo abaixo. */
+  .grid-2{gap:4px;margin-bottom:4px}
   .grid-2 .field{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
   .grid-2 .field label{flex:0 1 auto;min-width:0;margin-bottom:0}
   .grid-2 .field .select-wrap{flex:1 1 58%;min-width:0}
