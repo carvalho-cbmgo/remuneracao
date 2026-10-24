@@ -504,14 +504,17 @@ const compararResultadoCloseBtn = byId("compararResultadoClose");
 let AC2_VALOR = 1050.00;
 let AC3_VALOR = 828.00;
 const AC5_VALOR = 1000.00;
-const AC4_TOTAL_24H = {
-  seg: 729.03,
-  ter: 729.03,
-  qua: 729.03,
-  qui: 762.06,
-  sex: 1005.94,
-  sab: 1005.94,
-  dom: 972.91
+// Valor de cada hora de AC4 por dia da semana e horário, conforme a tabela
+// do Diário Oficial 24.801/2026 (arquivo "Valores AC4.xlsx"). O índice do
+// array é a hora de início do período: 0 = 0h01–1h, ..., 23 = 23h01–0h.
+const AC4_VALOR_HORA = {
+  seg: [45, 45, 45, 45, 45, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 33, 33],
+  ter: [33, 33, 33, 33, 33, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 33, 33],
+  qua: [33, 33, 33, 33, 33, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 33, 33],
+  qui: [33, 33, 33, 33, 33, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 33, 33],
+  sex: [33, 33, 33, 33, 33, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 45, 45],
+  sab: [45, 45, 45, 45, 45, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 45, 45],
+  dom: [45, 45, 45, 45, 45, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 45, 45]
 };
 const AC4_LABEL_DIA = {
   seg: "Seg",
@@ -599,28 +602,38 @@ function cloneAc4Config(cfg){
   return JSON.parse(JSON.stringify(cfg || buildAc4DefaultConfig()));
 }
 
-// Valor por hora do dia = valor do serviço extraordinário de 24h ÷ 24.
-function ac4ValorHora(day){
-  return (AC4_TOTAL_24H[day] || 0) / 24;
+function ac4ValorHora(day, hora){
+  const valoresDoDia = AC4_VALOR_HORA[day];
+  const indiceHora = Math.max(0, Math.min(23, Math.floor(Number(hora) || 0)));
+  return valoresDoDia ? (valoresDoDia[indiceHora] || 0) : 0;
 }
 
 // Calcula o valor de um serviço que começa em "day" às "inicio"h e dura
-// "horas"h. Se ultrapassar a meia-noite, rateia proporcionalmente entre o
-// dia de início e o dia seguinte (ex.: quarta 24h iniciando às 12h = 12h
-// pelo valor-hora de quarta + 12h pelo valor-hora de quinta).
+// "horas"h. Cada hora usa o valor da faixa correspondente na tabela e, se
+// ultrapassar a meia-noite, passa a usar o dia e o horário seguintes.
 function calcAc4Servico(day, inicio, horas){
   const partes = [];
-  if (AC4_TOTAL_24H[day]) {
+  if (AC4_VALOR_HORA[day]) {
     const horasNoDia = Math.max(0, Math.min(horas, 24 - inicio));
     if (horasNoDia > 0) partes.push({ day, horas: horasNoDia });
     const restante = round2(horas - horasNoDia) > 0 ? horas - horasNoDia : 0;
     if (restante > 0) {
       const proximo = AC4_PROXIMO_DIA[day];
-      if (AC4_TOTAL_24H[proximo]) partes.push({ day: proximo, horas: restante });
+      if (AC4_VALOR_HORA[proximo]) partes.push({ day: proximo, horas: restante });
     }
   }
   let valor = 0;
-  partes.forEach((p) => { valor += ac4ValorHora(p.day) * p.horas; });
+  partes.forEach((p, parteIndex) => {
+    let horaAtual = parteIndex === 0 ? inicio : 0;
+    let horasRestantes = p.horas;
+    while (horasRestantes > 0) {
+      const fracaoAteProximaHora = 1 - (horaAtual % 1);
+      const duracao = Math.min(horasRestantes, fracaoAteProximaHora);
+      valor += ac4ValorHora(p.day, horaAtual) * duracao;
+      horaAtual += duracao;
+      horasRestantes = round2(horasRestantes - duracao);
+    }
+  });
   return { valor: round2(valor), partes };
 }
 
@@ -630,7 +643,7 @@ function calcAc4Servico(day, inicio, horas){
 function calcAc4Total(cfg){
   let total = 0;
   (cfg || []).forEach((item) => {
-    if (!item || !AC4_TOTAL_24H[item.day]) return;
+    if (!item || !AC4_VALOR_HORA[item.day]) return;
     const horas = Math.max(0, Math.min(24, Number(item.horas ?? 0)));
     const inicio = Math.max(0, Math.min(23, Number(item.inicio ?? 0)));
     total += calcAc4Servico(item.day, inicio, horas).valor;
@@ -1129,7 +1142,7 @@ function bindAdicionaisEventos(){
         checks.forEach((el) => {
           if (!el.checked) return;
           const day = el.dataset.day;
-          if (!AC4_TOTAL_24H[day]) return;
+          if (!AC4_VALOR_HORA[day]) return;
           const qtyEl = ac4Modal.querySelector(`.ac4-qty[data-day='${day}']`);
           let horas = qtyEl ? Number(qtyEl.value ?? 0) : 0;
           if (!isFinite(horas)) horas = 0;
