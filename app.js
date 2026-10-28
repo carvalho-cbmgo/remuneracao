@@ -581,6 +581,8 @@ let __irpfAnualDados = null;
 let ac4Config = buildAc4DefaultConfig();
 let ac4DraftConfig = buildAc4DefaultConfig();
 let ac4EntrySeq = 0;
+const AC4_QTD_PADRAO = "12";
+const AC4_INICIO_PADRAO = "8";
 let __reajustePercent = 0;
 const MAX_REAJUSTE_PERCENT = 30;
 const MIN_REAJUSTE_PERCENT = 0;
@@ -715,9 +717,8 @@ function renderAc4Rows(){
   ac4TotalPreview.textContent = fmt(calcAc4Total(ac4DraftConfig));
 }
 
-// Zera os seletores de dia/horas/início (área de montagem de uma nova
-// linha) e redesenha a lista com os serviços já confirmados para este
-// posto/mês.
+// Restaura os seletores com 12h de duração e início às 8h (área de
+// montagem de uma nova linha) e redesenha os serviços já confirmados.
 function syncAc4ModalInputs(){
   if (!ac4Modal) return;
   const checks = ac4Modal.querySelectorAll(".ac4-day input[type='checkbox']");
@@ -726,12 +727,12 @@ function syncAc4ModalInputs(){
     const day = el.dataset.day;
     const qtyEl = ac4Modal.querySelector(`.ac4-qty[data-day='${day}']`);
     if (qtyEl){
-      qtyEl.value = "0";
+      qtyEl.value = AC4_QTD_PADRAO;
       qtyEl.disabled = true;
     }
     const inicioEl = ac4Modal.querySelector(`.ac4-inicio[data-day='${day}']`);
     if (inicioEl){
-      inicioEl.value = "0";
+      inicioEl.value = AC4_INICIO_PADRAO;
       inicioEl.disabled = true;
     }
   });
@@ -1162,12 +1163,12 @@ function bindAdicionaisEventos(){
           const day = el.dataset.day;
           const qtyEl = ac4Modal.querySelector(`.ac4-qty[data-day='${day}']`);
           if (qtyEl){
-            qtyEl.value = "0";
+            qtyEl.value = AC4_QTD_PADRAO;
             qtyEl.disabled = true;
           }
           const inicioEl = ac4Modal.querySelector(`.ac4-inicio[data-day='${day}']`);
           if (inicioEl){
-            inicioEl.value = "0";
+            inicioEl.value = AC4_INICIO_PADRAO;
             inicioEl.disabled = true;
           }
         });
